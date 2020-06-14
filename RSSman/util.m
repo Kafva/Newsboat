@@ -27,14 +27,11 @@
             {
                 // Call the success block with the reply in string format as an argument
                 success( [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]  ); 
-                
-                //self.response = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]; 
             }
             else {  failure( error ); }
         }];
 
         [task resume];
-        NSLog(@"State: %ld", task.state);
 
         while (task.state == 0)
         // Ugly hack to wait for request to complete
@@ -44,7 +41,7 @@
             // NSURLSessionTaskStateCompleted = 3,                   /* The task has completed and the session will receive no more delegate notifications */
             
             usleep(1000000);
-            NSLog(@"State: %ld", task.state);
+            //NSLog(@"State: %ld", task.state);
         }
 
     }
@@ -53,46 +50,52 @@
     {
         if (response != nil)
         {
-            // Init an array of all the tag data
-            NSMutableArray* tagData = [[NSMutableArray alloc] init];
-
-            // Create the full tag: <tag>
+            // Init the neccessary variables
             NSMutableString* fullTag = [[NSMutableString alloc] init];
-            [fullTag setString:@"<>"];
-            [fullTag insertString: tag atIndex:(NSUInteger)1 ];
-            NSLog(@"tag1: %@", fullTag);
+            NSRange range1;
+            NSRange range2;
 
-            // Find the first occurence of the fullTag in the response
-            NSRange range1 = [response rangeOfString: fullTag ];
-            
-            // Create the full tag: </tag>
-            [fullTag setString:@"</>"];
-            [fullTag insertString: tag atIndex:(NSUInteger)2 ];
-            NSLog(@"tag2: %@", fullTag);
+            // Copy the response into a mutable string 
+            NSMutableString* res = [[NSMutableString alloc] init ];
+            [res setString: response];
 
-            // Find the first occurence of the fullTag in the response
-            NSRange range2 = [response rangeOfString: fullTag ];
-            
-            // Get number of characters in selection from vi: <g ctrl-g>
-
-            // The location refers to the first character of the match, we want to extract the
-            // data in between [ location1+length, location2 ] 
-            NSLog(@"location1: %ld -- %ld", range1.location, range1.length);
-            NSLog(@"location2: %ld -- %ld", range2.location, range2.length);
-            NSRange dataRange = NSMakeRange( range1.location + range1.length , range2.location );
-            NSLog(@"location2: %ld -- %ld", dataRange.location, dataRange.length);
-            
-            char* tagData_ = malloc(sizeof(char)*600); 
-
-            for (int i= range1.location + range1.length; i < range2.location; i++)
-            // Extract the data 
+            while (true)
             {
-                tagData_[  i   -   (range1.location + range1.length) ] = [response characterAtIndex:i ];
-            }
-            tagData_[range2.location] = '\0';
+                // Create the full tag: <tag>
+                [fullTag setString:@"<>"];
+                [fullTag insertString: tag atIndex:(NSUInteger)1 ];
 
-            NSLog(@"found data: %s", tagData_);
-            free(tagData_);
+                // Find the first occurence of the fullTag in the response and exit if non exist
+                range1 = [res rangeOfString: fullTag ];
+                if ( range1.location == NSNotFound ) { break; }
+                
+                // Create the full closing tag: </tag>
+                [fullTag setString:@"</>"];
+                [fullTag insertString: tag atIndex:(NSUInteger)2 ];
+
+                // Find the first occurence of the closing tag in the response
+                range2 = [res rangeOfString: fullTag ];
+                
+                // Get number of characters in selection from vi: <g ctrl-g>
+                // The location refers to the first character of the match, we want to extract the
+                // data in between [ location1+length, location2 ] 
+                
+                // Note: NSMakeRange(start,length)
+                NSRange dataRange = NSMakeRange( range1.location + range1.length , range2.location - (range1.location + range1.length)  );
+                
+                // Allocate a new object for each string
+                NSMutableString* tagData_ = [[NSMutableString alloc] init];
+                
+                // Insert the data substring into tagData_
+                [tagData_  insertString: [res substringWithRange: dataRange ] atIndex:0  ];
+                
+                // Append a \0 character and add it to the array
+                [tagData_ insertString: [[NSString alloc] initWithCharacters:(const unichar*)"\0" length:1 ] atIndex: dataRange.length ];
+                [ tagData addObject: tagData_ ];
+
+                // Remove all data in the response up until the end of range2 </tag>
+                [ res deleteCharactersInRange: NSMakeRange(0,range2.location + range2.length) ];
+            }
         }
     }
 

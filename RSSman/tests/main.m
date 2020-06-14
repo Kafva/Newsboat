@@ -27,13 +27,18 @@ int main (int argc, char * argv[])
         else if (TEST == 2)
         {
             NSString* url = @"https://www.youtube.com/feeds/videos.xml?channel_id=UCtGoikgbxP4F3rgI9PldI9g"; 
+            NSString* tag = @"title";
             RequestHandler* re = [[RequestHandler alloc] init];
         
             NSMutableArray* tagData = [[NSMutableArray alloc] init];
 
-            [re httpRequest: url  success: ^(NSString* response) { [re getDataFromTag:@"name" response:response tagData:tagData  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
+            [re httpRequest: url  success: ^(NSString* response) { [re getDataFromTag:tag response:response tagData:tagData  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
 
-            NSLog(@"Now we here");
+            NSLog(@"---- Content of <%@>...</%@>  ----", tag, tag);
+            for ( NSMutableString* str in tagData )
+            {
+                NSLog(@"\t%@",str);
+            }
         
         }
         else if (TEST == 3)
