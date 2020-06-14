@@ -12,11 +12,17 @@
     // in the implementation for the methods to get the names described above
 
     // We utilise 'strong' to keep the data recieved from the request(s)    
-    @property (strong,nonatomic) NSString* response;
+    //@property (strong,nonatomic) NSString* response;
     
-    // Mehtod decleration
-    -(void) httpRequest: (NSString*) url, (void (^)(NSString *response)) success, (void(^)(NSError* error)) failure ;
+    // NOTE that ObjC doesn't have named parameters, success: and failure: simply extend the function name
+    // with additional parameters
+    -(void) httpRequest: 
+        (NSString*) url 
+        success:(void (^)(NSString *response)) success 
+        failure:(void (^)(NSError* error)) failure; 
 
-    -(NSMutableArray*) getDataFromTag:(NSString*)tag;
+    -(void) getDataFromTag: (NSString*) tag   
+        response: (NSString*) response   
+        tagData: (NSMutableArray*)tagData;
 
 @end

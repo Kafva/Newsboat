@@ -5,7 +5,7 @@
 PROJECT=RSSman
 
 if [ "$1" = test ]; then
-    clang -framework Foundation $PROJECT/tests/main.m -o test
+    clang -framework Foundation $PROJECT/tests/main.m $PROJECT/util.m -o test && ./test $2
 elif [ "$1" = clean ]; then 
     [ -f test ] && rm test
     xcodebuild clean && exit 0

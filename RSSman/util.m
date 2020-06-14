@@ -3,14 +3,14 @@
 
 @implementation RequestHandler
 
-    @synthesize response;
-
-    // Blocks work similarly to functions and 
-
-    -(void) httpRequest: (NSString*) url,  (void (^)(NSString *response)) success, (void(^)(NSError* error)) failure
+    -(void) httpRequest: (NSString*) url  success: (void (^)(NSString *response)) success failure: (void(^)(NSError* error)) failure
+    // The function takes two blocks of code as input arguments
+    // The success() argument takes the response as an argument and enables us to access the
+    // reply outside of the completionHandler().
+    
     // Async https://stackoverflow.com/questions/26174692/how-to-get-data-from-blocks-using-nsurlsession
-    // Both sets the attribute and returns the string
     // Blocks: https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/WorkingwithBlocks/WorkingwithBlocks.html
+    // Web requests: https://developer.apple.com/documentation/foundation/url_loading_system/fetching_website_data_into_memory?language=objc
     {
         // Create a sharedSession object
         NSURLSession *session = [NSURLSession sharedSession];
@@ -19,84 +19,82 @@
         // the 'resume' is called on the dataTaskWithURL output to start the task
         // '^' denotes a block, a portion of code that can be treated as a value
         // similiar to the use of 'lambda'
-
-        [[session dataTaskWithURL:[NSURL URLWithString:url] completionHandler: 
-            ^(NSData *data, NSURLResponse *response, NSError *error)
+        
+        NSURLSessionDataTask* task = [session dataTaskWithURL:[NSURL URLWithString:url] 
+        completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error)
+        {
+            if (error.code == 0)
             {
-                //NSLog(@"error: %ld\n", error.code);
+                // Call the success block with the reply in string format as an argument
+                success( [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]  ); 
                 
-                if (error.code == 0)
-                {
-                    // Call the implicitly created setter method (same as assigning to self.res)
-                    //[ self setRes: [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding] ];
-                    self.response = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]; 
-                    
-                    //NSLog(@"This: %@", self.response );
-                }
+                //self.response = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]; 
             }
-        ] resume];
+            else {  failure( error ); }
+        }];
 
-        return self.response; 
+        [task resume];
+        NSLog(@"State: %ld", task.state);
+
+        while (task.state == 0)
+        // Ugly hack to wait for request to complete
+        {
+            // NSURLSessionTaskStateRunning = 0,                     /* The task is currently being serviced by the session */
+            // NSURLSessionTaskStateCanceling = 2,                   /* The task has been told to cancel.  The session will receive a URLSession:task:didCompleteWithError: message. */
+            // NSURLSessionTaskStateCompleted = 3,                   /* The task has completed and the session will receive no more delegate notifications */
+            
+            usleep(1000000);
+            NSLog(@"State: %ld", task.state);
+        }
+
     }
 
-    -(NSMutableArray*) getDataFromTag:(NSString*)tag
+    -(void) getDataFromTag: (NSString*)tag response:(NSString*)response tagData:(NSMutableArray*)tagData
     {
-        NSLog(@"lol %@", self.response);
-        if (self.response != nil)
+        if (response != nil)
         {
+            // Init an array of all the tag data
             NSMutableArray* tagData = [[NSMutableArray alloc] init];
-            unichar uniFoundTag[256]; 
 
+            // Create the full tag: <tag>
             NSMutableString* fullTag = [[NSMutableString alloc] init];
             [fullTag setString:@"<>"];
             [fullTag insertString: tag atIndex:(NSUInteger)1 ];
+            NSLog(@"tag1: %@", fullTag);
 
-            NSRange range = [self.response rangeOfString: fullTag ];
-            [self.response getCharacters: uniFoundTag range:range ];
+            // Find the first occurence of the fullTag in the response
+            NSRange range1 = [response rangeOfString: fullTag ];
             
-            NSString* foundTag = [NSString stringWithUTF8String:uniFoundTag];
+            // Create the full tag: </tag>
+            [fullTag setString:@"</>"];
+            [fullTag insertString: tag atIndex:(NSUInteger)2 ];
+            NSLog(@"tag2: %@", fullTag);
 
-            NSLog(@"Found %@", tag);
-            NSLog(@"Found %s", foundTag);
+            // Find the first occurence of the fullTag in the response
+            NSRange range2 = [response rangeOfString: fullTag ];
             
-            if ( foundTag == tag )
+            // Get number of characters in selection from vi: <g ctrl-g>
+
+            // The location refers to the first character of the match, we want to extract the
+            // data in between [ location1+length, location2 ] 
+            NSLog(@"location1: %ld -- %ld", range1.location, range1.length);
+            NSLog(@"location2: %ld -- %ld", range2.location, range2.length);
+            NSRange dataRange = NSMakeRange( range1.location + range1.length , range2.location );
+            NSLog(@"location2: %ld -- %ld", dataRange.location, dataRange.length);
+            
+            char* tagData_ = malloc(sizeof(char)*600); 
+
+            for (int i= range1.location + range1.length; i < range2.location; i++)
+            // Extract the data 
             {
-                NSLog(@"AAA Found %@", tag);
+                tagData_[  i   -   (range1.location + range1.length) ] = [response characterAtIndex:i ];
             }
+            tagData_[range2.location] = '\0';
 
+            NSLog(@"found data: %s", tagData_);
+            free(tagData_);
         }
-
-        return nil;
     }
 
-
-
-//    -(void)getJsonResponse:(NSString *)urlStr success:(void (^)(NSDictionary *responseDict))success failure:(void(^)(NSError* error))failure
-//    {
-//        NSURLSession *session = [NSURLSession sharedSession];
-//        NSURL *url = [NSURL URLWithString:urlStr];   
-//
-//        // Asynchronously API is hit here
-//        NSURLSessionDataTask *dataTask = [session dataTaskWithURL:url
-//                                                completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) 
-//                                                {            
-//                                                    NSLog(@"%@",data);
-//                                                    if (error)
-//                                                        failure(error);
-//                                                    else {                                               
-//                                                        NSDictionary *json  = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-//                                                        NSLog(@"%@",json);
-//                                                        success(json);                                               
-//                                                    }
-//                                                }];
-//        [dataTask resume];    // Executed First
-//    }
-//
-//[self getJsonResponse:@"Enter your url here" success:^(NSDictionary *responseDict) 
-//{   
-//        NSLog(@"%@",responseDict);
-//} failure:^(NSError *error) {
-//        // error handling here ... 
-//}];
 
 @end
