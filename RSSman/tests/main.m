@@ -39,6 +39,15 @@ int main (int argc, char * argv[])
             {
                 NSLog(@"\t%@",str);
             }
+            
+            tag = @"published";
+            [re httpRequest: url  success: ^(NSString* response) { [re getDataFromTag:tag response:response tagData:tagData  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
+
+            NSLog(@"---- Content of <%@>...</%@>  ----", tag, tag);
+            for ( NSMutableString* str in tagData )
+            {
+                NSLog(@"\t%@",str);
+            }
         
         }
         else if (TEST == 3)
