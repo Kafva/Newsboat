@@ -1,6 +1,5 @@
 #import "../util.h"
 #import <stdlib.h>
-//#import <Foundation/Foundation.h>
 
 int TEST=2;
 
@@ -25,6 +24,7 @@ int main (int argc, char * argv[])
             NSLog(@"%@",str);
         }
         else if (TEST == 2)
+        // XML fetching
         {
             NSString* url = @"https://www.youtube.com/feeds/videos.xml?channel_id=UCtGoikgbxP4F3rgI9PldI9g"; 
             NSString* tag = @"title";
@@ -40,15 +40,17 @@ int main (int argc, char * argv[])
                 NSLog(@"\t%@",str);
             }
             
-            tag = @"published";
-            [re httpRequest: url  success: ^(NSString* response) { [re getDataFromTag:tag response:response tagData:tagData  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
+            NSLog(@"-------------------------");
 
+            NSMutableArray* dates = [[NSMutableArray alloc] init];
+            tag = @"published";
+            [re httpRequest: url  success: ^(NSString* response) { [re getDataFromTag:tag response:response tagData:dates  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
             NSLog(@"---- Content of <%@>...</%@>  ----", tag, tag);
-            for ( NSMutableString* str in tagData )
+            for ( NSMutableString* str in dates )
             {
                 NSLog(@"\t%@",str);
             }
-        
+            
         }
         else if (TEST == 3)
         // Conccurency execution with dispatch queues
@@ -100,6 +102,13 @@ int main (int argc, char * argv[])
 
 
         }
+        else if (TEST == 4)
+        // SQL lite
+        {
+
+
+        }
+
 	}
 
 	return 0;

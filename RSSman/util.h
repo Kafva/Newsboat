@@ -1,4 +1,12 @@
 #include <Foundation/Foundation.h>
+#import <sqlite3.h>
+
+@interface DBHandler : NSObject
+    
+    @property (strong, nonatomic) NSString *dbPath;
+    @property (nonatomic) sqlite3 *db;
+
+@end
 
 @interface RequestHandler : NSObject
 

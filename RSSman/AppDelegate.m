@@ -27,24 +27,33 @@
 
     [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(timerCalled) userInfo:nil repeats:NO];
 
-    // FETCH DATA 
-    // NSLog doesn't print everything but counting the characters we can see that everything is being fetched
-    NSString* url = @"https://www.youtube.com/feeds/videos.xml?channel_id=UCtGoikgbxP4F3rgI9PldI9g";
-
-    // Using 'alloc + init' is [ish] equvivelent to creating a 'new' instance of a class
+    //-----------------------------------------------------------//
+    NSString* url = @"https://www.youtube.com/feeds/videos.xml?channel_id=UCtGoikgbxP4F3rgI9PldI9g"; 
+    NSString* tag = @"title";
     RequestHandler* re = [[RequestHandler alloc] init];
-    NSString* res  = [re httpRequest:url];
-    NSLog(@"GET: %@", re.response);
-    NSLog(@"GET2: %@", res);
 
-    [re getDataFromTag:@"author"];
+    NSMutableArray* tagData = [[NSMutableArray alloc] init];
 
-    //NSString* res = [ RequestHandler httpRequest:url ];
+    [re httpRequest: url  success: ^(NSString* response) { [re getDataFromTag:tag response:response tagData:tagData  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
 
-    //NSString* data = getDataFrom(url);
+    NSLog(@"---- Content of <%@>...</%@>  ----", tag, tag);
+    for ( NSMutableString* str in tagData )
+    {
+        NSLog(@"\t%@",str);
+    }
     
-    //NSLog(@"DATA: %@\n", data);
-    //NSLog(@"Length: %lu", data.length);
+    NSLog(@"-------------------------");
+
+    NSMutableArray* dates = [[NSMutableArray alloc] init];
+    tag = @"published";
+    [re httpRequest: url  success: ^(NSString* response) { [re getDataFromTag:tag response:response tagData:dates  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
+    NSLog(@"---- Content of <%@>...</%@>  ----", tag, tag);
+    for ( NSMutableString* str in dates )
+    {
+        NSLog(@"\t%@",str);
+    }
+    //-----------------------------------------------------------//
+
 
     return YES;
 }

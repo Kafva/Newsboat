@@ -1,6 +1,23 @@
 #include "util.h"
 // Global function can be defined and called with default C syntax
 
+@implementation DBHandler : NSObject
+
+    -(void) init
+    // Constructor
+    {
+
+    }
+
+
+    -(void) dealloc 
+    // Destructor
+    {
+
+    }
+
+@end
+
 @implementation RequestHandler
 
     -(void) httpRequest: (NSString*) url  success: (void (^)(NSString *response)) success failure: (void(^)(NSError* error)) failure
@@ -101,3 +118,4 @@
 
 
 @end
+
