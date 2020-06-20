@@ -5,8 +5,20 @@
 // Class methods:    +(void) foo {}
 // Instance methods: -(void) foo {}
 
+@implementation Channel : NSObject
+@end
+
+@implementation Video : NSObject
+   -(NSString*) description
+    {
+        return [NSString stringWithFormat:@"<Video:%p> title: %@", self, self.title ];
+    }
+@end
+
+
+//---------------------------------------//
+
 @implementation DBHandler : NSObject
-    // https://books.google.se/books?id=CvD72eK1H28C&pg=PA453&lpg=PA453&dq=sqlite+3+objc&source=bl&ots=4FGE2sYr-X&sig=ACfU3U2Y64vzZncjzKzhuV6yZOJA2cnlHg&hl=sv&sa=X&ved=2ahUKEwjvx-XOg4fqAhWHwMQBHYBaA4EQ6AEwCXoECAkQAQ#v=onepage&q=sqlite%203%20objc&f=false
 
     -(id) init
     // Constructor
@@ -39,6 +51,11 @@
         return ret;
     }
 
+    -(int) closeDatabase
+    {
+        if ( self.db ){ return sqlite3_close(self.db); } else { return 0; }
+    }
+
     -(int) queryStmt: (const char*)stmt
     {
         char* err_msg;
@@ -50,26 +67,17 @@
         return ret;
     }
 
-    -(int) execStmt: (const char*)stmt
-    {
-        char* err_msg;
-        int ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
-        
-        if ( ret != SQLITE_OK  ){  NSLog(@"%s", err_msg);  }
-        return ret;
-    }
-
-    -(int) addVideo: (const char* )timestamp title:(const char* )title owner_id:(const char*)owner_id
+    -(int) addVideo: (const char* )timestamp title:(const char* )title owner_id:(const char*)owner_id link:(const char*) link
     {
         // The method will throw an error when encountering already added videos due to the UNIQUE
         // constraint. When adding new videos the oldest one should be deleted if the count exceeds VIDEOS_PER_CHANNEL
 
         char* err_msg;
 
-        char** results = malloc(sizeof(char)*(VIDEOS_PER_CHANNEL+1));
+        char** results = malloc(sizeof(char*)*(VIDEOS_PER_CHANNEL+1));
         for (int i=0; i < VIDEOS_PER_CHANNEL+1; i++) { results[i] = malloc(sizeof(char)*SQL_ROW_BUFFER); }
 
-        char* stmt = [[NSString stringWithFormat: @"INSERT INTO `Videos` (`timestamp`, `title`,`viewed`,`owner`) VALUES (DATE(\"%s\"), \"%s\", 0 , %s); ",timestamp, title, owner_id] cStringUsingEncoding:NSASCIIStringEncoding];
+        const char* stmt = [[NSString stringWithFormat: @"INSERT INTO `Videos` (`timestamp`, `title`, `viewed`, `owner`, `link`) VALUES (DATE(\"%s\"), \"%s\", 0 , %s, \"%s\"); ",timestamp, title, owner_id, link ] cStringUsingEncoding:NSASCIIStringEncoding];
         int ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
         
         if ( ret == SQLITE_OK  )
@@ -111,10 +119,41 @@
         // Fetch each channelId and its corresponding RSS link with the callback function
         // handling the addition of videos via a request for the RSS Feed for each channel
         // Note that the callback in turn calls a member function of the DBHandler (possible by passing self as result)
-        int ret = sqlite3_exec( self.db , stmt, callbackImportRSS, self, &err_msg );
+        int ret = sqlite3_exec( self.db , stmt, callbackImportRSS,  (__bridge void *)self, &err_msg );
         
         if ( ret != SQLITE_OK  ){  NSLog(@"%s", err_msg);  }
         return ret;
+    }
+
+    -(int)getVideosFrom: (char*)channel count:(int)count
+    {
+        char* err_msg;
+        char* stmt = malloc(sizeof(char)*VARCHAR_SIZE); 
+        sprintf(stmt, "SELECT * FROM `Videos` WHERE `owner` = (SELECT `id` FROM `Channels` WHERE `name` LIKE '%%%s%%') ORDER BY `timestamp` DESC LIMIT %d;", channel, count); 
+
+        // The callback function prints the result of the query
+        int ret = sqlite3_exec( self.db , stmt, callbackPrint, NULL, &err_msg );
+        
+        if ( ret != SQLITE_OK  ){  NSLog(@"%s", err_msg);  }
+        free(stmt);
+        return ret;
+
+    }
+
+    -(int) getVideosFrom: (char*)channel count:(int)count videos:(NSMutableArray*) videos
+    {
+        char* err_msg;
+        char* stmt = malloc(sizeof(char)*VARCHAR_SIZE); 
+        sprintf(stmt, "SELECT * FROM `Videos` WHERE `owner` = (SELECT `id` FROM `Channels` WHERE `name` LIKE '%%%s%%') ORDER BY `timestamp` DESC LIMIT %d;", channel, count); 
+
+        // The callback function creates Video objects which are returned to the paramater passed to the method 
+        int ret = sqlite3_exec( self.db , stmt, callbackVideoObjects, (__bridge void*)videos, &err_msg );
+        
+        if ( ret != SQLITE_OK  ){  NSLog(@"%s", err_msg);  }
+        
+        free(stmt);
+        return ret;
+
     }
 
     -(int) handleRSS: (char**)columnValues
@@ -130,15 +169,21 @@
                 
         [re httpRequest: rssLink  success: ^(NSString* response) 
             { 
-                // Fetch the titles and timestamps for each feed
+                // Fetch the titles and timestamps for the perticular feed
                 // the first entry will be the channel name and its creation date
                 NSMutableArray* titles = [[NSMutableArray alloc] init];
                 NSMutableArray* timestamps = [[NSMutableArray alloc] init];
+                NSMutableArray* links = [[NSMutableArray alloc] init];
                 
                 [re getDataFromTag:@"title" response:response tagData:titles  ];
                 [re getDataFromTag:@"published" response:response tagData:timestamps  ];
+                [re getHrefFromTag:@"link" response:response tagData:links  ];
 
-                [self addVideo: [ timestamps[1] cStringUsingEncoding:NSASCIIStringEncoding ] title: [titles[1] cStringUsingEncoding:NSASCIIStringEncoding] owner_id:channelId];
+                for (int i=1; i < titles.count; i++)
+                {
+                    [self addVideo: [ timestamps[i] cStringUsingEncoding:NSASCIIStringEncoding ] title: [titles[i] cStringUsingEncoding:NSASCIIStringEncoding] owner_id:channelId link: [links[i] cStringUsingEncoding:NSASCIIStringEncoding]];
+                }
+
             }  
             failure: ^(NSError* error)
             { NSLog(@"Error: %@", error); }  
@@ -248,10 +293,80 @@
         }
     }
 
+    -(void) getHrefFromTag: (NSString*) tag response: (NSString*) response tagData: (NSMutableArray*)tagData;
+    {
+        // <link rel="alternate" href="https://www.youtube.com/watch?v=hVYzc2Xpup0"/>
+        // ==> https://www.youtube.com/watch?v=hVYzc2Xpup0 
+        
+        if (response != nil)
+        {
+            // Init the neccessary variables
+            NSMutableString* search = [[NSMutableString alloc] init];
+            NSRange range1;
+            NSRange range2;
+
+            // Copy the response into a mutable string 
+            NSMutableString* res = [[NSMutableString alloc] init ];
+            [res setString: response];
+
+            while (true)
+            {
+                // Set the search string for the start of the URL
+                [search setString:@"<link rel=\"alternate\" href=\""];
+
+                // Find the first occurence of the search string
+                range1 = [res rangeOfString: search ];
+                if ( range1.location == NSNotFound ) { break; }
+                
+                // Set the search string for the closing part of the <link/>
+                [search setString:@"\"/>"];
+
+                // Find the first occurence of the closing tag in the response AFTER the first range
+                range2 = [res rangeOfString: search options:(NSStringCompareOptions)0 range: NSMakeRange( range1.location +  range1.length, SQL_ROW_BUFFER ) ];
+                
+                // Get number of characters in selection from vi: <g ctrl-g>
+                // The location refers to the first character of the match, we want to extract the
+                // data in between [ location1+length, location2 ] 
+                
+                // Note: NSMakeRange(start,length)
+                NSRange dataRange = NSMakeRange( range1.location + range1.length , range2.location - (range1.location + range1.length)  );
+                
+                // Allocate a new object for each string
+                NSMutableString* tagData_ = [[NSMutableString alloc] init];
+                
+                // Insert the data substring into tagData_
+                [tagData_  insertString: [res substringWithRange: dataRange ] atIndex:0  ];
+                
+                // Append a \0 character and add it to the array
+                [tagData_ insertString: [[NSString alloc] initWithCharacters:(const unichar*)"\0" length:1 ] atIndex: dataRange.length ];
+                [ tagData addObject: tagData_ ];
+
+                // Remove all data in the response up until the end of range2 </tag>
+                [ res deleteCharactersInRange: NSMakeRange(0,range2.location + range2.length) ];
+            }
+        }
+
+    }
 
 @end
 
-//--------------------------------------//
+//--------------SQLITE CALLBACKS------------------//
+
+static int callbackVideoObjects(void* context, int columnCount, char** columnValues, char** columnNames)
+{
+    // The context object passed is an NSMutableArray to which we add a Video object for each iteration
+    // called from sqlite3_exec()
+
+    Video* video = [[Video alloc] init];
+    video.title = [[ NSString alloc ] initWithCString: columnValues[1] encoding:NSASCIIStringEncoding];  
+    video.viewed = columnValues[2]; 
+    video.owner_id = atoi(columnValues[3]); 
+    video.link = [[ NSString alloc ] initWithCString: columnValues[4] encoding:NSASCIIStringEncoding];  
+
+    [(__bridge NSMutableArray*)context addObject: video];
+    return 0;
+}
+
 
 static int callbackColumnValues(void* context, int columnCount, char** columnValues, char** columnNames)
 // COPYS the columnValues into the result paramater in sqlite3_exec()
@@ -259,7 +374,7 @@ static int callbackColumnValues(void* context, int columnCount, char** columnVal
 {
     for (int i=0; i < columnCount; i++)
     { 
-        strcpy( ((char**)context)[i], columnValues[i] );
+        strncpy( ((char**)context)[i], columnValues[i], SQL_ROW_BUFFER );
     } 
     
     return 0; 
@@ -269,16 +384,15 @@ static int callbackPrint(void* context, int columnCount, char** columnValues, ch
 {
     for (int i = 0; i < columnCount; i++) 
     {
-        printf("%s = %s\n", columnNames[i], columnValues[i] ? columnValues[i] : "NULL");
+        NSLog(@"column[%d] = %s = %s", i, columnNames[i], columnValues[i] ? columnValues[i] : "NULL");
     }
-    printf("\n");
     return 0;
 }
 
 static int callbackImportRSS(void* context, int columnCount, char** columnValues, char** columnNames) 
 // https://stackoverflow.com/questions/38825480/c-mfc-sqlite-sqlite3-exec-callback
 {
-    DBHandler* handler = context;
+    DBHandler* handler = (__bridge DBHandler*)context;
     
     // Delegate callback to class member implementation
     return [handler handleRSS: columnValues];

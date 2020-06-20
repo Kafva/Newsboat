@@ -3,7 +3,6 @@
 
 int TEST=4;
 
-
 int main (int argc, char * argv[])
 {
     srand(time(NULL));
@@ -54,6 +53,16 @@ int main (int argc, char * argv[])
                 NSLog(@"\t%@",str);
             }
 
+            NSLog(@"-------------------------");
+
+            NSMutableArray* urls = [[NSMutableArray alloc] init];
+            tag = @"link";
+            [re httpRequest: url  success: ^(NSString* response) { [re getHrefFromTag:tag response:response tagData:urls  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
+            NSLog(@"---- Content of <%@ ... />  ----", tag);
+            for ( NSMutableString* str in urls )
+            {
+                NSLog(@"\t%@",str);
+            }
 
 
             
@@ -116,8 +125,7 @@ int main (int argc, char * argv[])
 
             // https://stackoverflow.com/questions/28279701/ios-sqlite-misuse-error-code-21
 
-
-            NSString* dbPath = [[NSString alloc] initWithCString: DB_PATH encoding:NSASCIIStringEncoding];
+            NSString* dbPath = [[NSString alloc] initWithCString: TEST_DB_PATH encoding:NSASCIIStringEncoding];
             DBHandler* handler = [[DBHandler alloc] initWithDB: dbPath];
             //NSLog(@"This: %s", [ handler.dbPath cStringUsingEncoding:NSASCIIStringEncoding]);
             
@@ -133,8 +141,18 @@ int main (int argc, char * argv[])
 
             [handler importRSS];
             
-            //char* stmt = "SELECT * FROM Videos;"; 
+            //char* stmt = "SELECT * FROM Videos WHERE owner = (SELECT id FROM Channels WHERE name LIKE '%%Wolf%%');"; 
             //[handler queryStmt: stmt];
+
+            NSMutableArray* videos = [[NSMutableArray alloc] init];
+
+            [handler getVideosFrom: "Eye" count:5 videos:videos];
+
+            for (int i=0; i<videos.count; i++)
+            {
+                NSLog(@"%@", videos[i]);
+            }
+
 
             if ( handler.db ){ sqlite3_close( handler.db); }
         }

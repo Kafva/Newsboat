@@ -7,4 +7,6 @@
     @property (strong, nonatomic) UIWindow *window;
     @property (strong, nonatomic) UIViewController *rootController;
 
+    -(BOOL)application: (UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
+
 @end

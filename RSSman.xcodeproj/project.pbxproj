@@ -48,7 +48,7 @@
 		DD66DFDC24841FD9000CD660 = {
 			isa = PBXGroup;
 			children = (
-				DD66DFE724841FD9000CD660 /* RSSman */,
+				DD66DFE724841FD9000CD660 /* src */,
 				DD66DFE624841FD9000CD660 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -61,7 +61,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		DD66DFE724841FD9000CD660 /* RSSman */ = {
+		DD66DFE724841FD9000CD660 /* src */ = {
 			isa = PBXGroup;
 			children = (
 				DD2C27AE2492CB07004F5A07 /* util.h */,
@@ -79,7 +79,7 @@
 				DD66DFFA24841FDB000CD660 /* main.m */,
 				DD8F0A8E249288DB00800C31 /* LaunchScreen.storyboard */,
 			);
-			path = RSSman;
+			path = src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -278,7 +278,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = R394CK45KY;
-				INFOPLIST_FILE = RSSman/Info.plist;
+				INFOPLIST_FILE = src/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -296,7 +296,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = R394CK45KY;
-				INFOPLIST_FILE = RSSman/Info.plist;
+				INFOPLIST_FILE = src/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

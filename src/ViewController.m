@@ -22,7 +22,8 @@
         [self addLabelView];
     }
 
-    - (void)viewDidLoad {
+    - (void)viewDidLoad 
+    {
         
         // The super keyword will go up the class hierachy and execute the specified method (viewDidLoad)
         // once a superclass which implements it is encountered
