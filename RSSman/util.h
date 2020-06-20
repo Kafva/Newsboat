@@ -1,10 +1,26 @@
 #include <Foundation/Foundation.h>
 #import <sqlite3.h>
+#include <stdlib.h>
+
+#define VIDEOS_PER_CHANNEL 0
+#define SQL_ROW_BUFFER 255
+#define DB_PATH "/Users/jonas/XcodeX/iPK/RSSman/rss.db" 
 
 @interface DBHandler : NSObject
     
     @property (strong, nonatomic) NSString *dbPath;
-    @property (nonatomic) sqlite3 *db;
+    @property (nonatomic) sqlite3* db;
+
+    -(id) initWithDB: (NSString*)dbPath;
+    -(int) openDatabase;
+    -(int) execStmt: (const char*)stmt;
+    -(int) queryStmt: (const char*)stmt;
+    
+    -(int) addVideo: (const char* )timestamp title:(const char* )title owner_id:(const char*)owner_id;
+    
+    -(int) importRSS;
+    -(int) handleRSS: (char**)columnValues;
+
 
 @end
 
@@ -34,3 +50,10 @@
         tagData: (NSMutableArray*)tagData;
 
 @end
+
+//-------------------------------------------------//
+
+static int callbackColumnValues(void* context, int columnCount, char** columnValues, char** columnNames);
+static int callbackPrint(void* context, int columnCount, char** columnValues, char** columnNames);
+static int callbackImportRSS(void* context, int columnCount, char** columnValues, char** columnNames);
+

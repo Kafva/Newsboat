@@ -1,11 +1,13 @@
 #import "../util.h"
-#import <stdlib.h>
+#import <time.h>
 
-int TEST=2;
+int TEST=4;
 
 
 int main (int argc, char * argv[])
 {
+    srand(time(NULL));
+
     if (argc == 2){ TEST = atoi(argv[1]); }
 
 	@autoreleasepool 
@@ -26,7 +28,8 @@ int main (int argc, char * argv[])
         else if (TEST == 2)
         // XML fetching
         {
-            NSString* url = @"https://www.youtube.com/feeds/videos.xml?channel_id=UCtGoikgbxP4F3rgI9PldI9g"; 
+            NSString* url = @"https://www.youtube.com/feeds/videos.xml?channel_id=UCZaT_X_mc0BI-djXOlfhqWQ";
+            //NSString* url = @"https://www.youtube.com/feeds/videos.xml?channel_id=UCtGoikgbxP4F3rgI9PldI9g"; 
             NSString* tag = @"title";
             RequestHandler* re = [[RequestHandler alloc] init];
         
@@ -50,6 +53,9 @@ int main (int argc, char * argv[])
             {
                 NSLog(@"\t%@",str);
             }
+
+
+
             
         }
         else if (TEST == 3)
@@ -104,13 +110,39 @@ int main (int argc, char * argv[])
         }
         else if (TEST == 4)
         // SQL lite
-        {
+        {   
+            // Note that the sqlite3 library must be manually included with -lsqlite3
+            // https://stackoverflow.com/questions/59525583/xcode-build-error-implicit-declaration-of-function-sqlite3-key-is-invalid-i
+
+            // https://stackoverflow.com/questions/28279701/ios-sqlite-misuse-error-code-21
 
 
+            NSString* dbPath = [[NSString alloc] initWithCString: DB_PATH encoding:NSASCIIStringEncoding];
+            DBHandler* handler = [[DBHandler alloc] initWithDB: dbPath];
+            //NSLog(@"This: %s", [ handler.dbPath cStringUsingEncoding:NSASCIIStringEncoding]);
+            
+            [handler openDatabase];
+
+            //char* timestamp = "DATE(\"2015-12-18T15:33:22+00:00\")";
+            //char title[256]; sprintf(title, "uWu%d", rand() % 2000);
+            //char* owner = "Contra";
+            //[handler addVideo: timestamp title:title owner:owner];
+            
+            //char* stmt = "SELECT * FROM Videos;"; 
+            //[handler queryStmt: stmt];
+
+            [handler importRSS];
+            
+            //char* stmt = "SELECT * FROM Videos;"; 
+            //[handler queryStmt: stmt];
+
+            if ( handler.db ){ sqlite3_close( handler.db); }
         }
 
 	}
 
 	return 0;
 } 
+
+
 

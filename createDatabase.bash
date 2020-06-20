@@ -4,30 +4,51 @@
 #   ios-deploy --bundle_id com..RSSman --upload rss.db --to /Documents/rss.db
 
 DBNAME=rss.db
+URLS=~/.newsboat/urls
+
 [ -f $DBNAME ] && rm $DBNAME
 
-sqlite3 $DBNAME -cmd '
-CREATE TABLE IF NOT EXISTS main.`Channels`
-( 
-    `id` INTEGER PRIMARY KEY AUTOINCREMENT, 
-    `name` VARCHAR(255), 
-    `rssLink` VARCHAR(255) 
-);
+# Newsboat URLs format: 
+#   RSS | Channel link | tag | name
 
-CREATE TABLE IF NOT EXISTS main.`Videos`
-( 
-    `timestamp` TIMESTAMP,  
-    `title` VARCHAR(255), 
-    `viewed` BOOLEAN, 
-    `owner` INTEGER,  
-    FOREIGN KEY (`owner`) REFERENCES `Channels`(id) 
-);
+if [ -f $URLS ]; then
+    
+    # Create the neccessary tables
+    echo 'CREATE TABLE IF NOT EXISTS main.`Channels`
+    ( 
+        `id` INTEGER PRIMARY KEY AUTOINCREMENT, 
+        `name` VARCHAR(255) UNIQUE, 
+        `rssLink` VARCHAR(255),
+        `channelLink` VARCHAR(255) 
+    );
+    
+    CREATE TABLE IF NOT EXISTS main.`Videos`
+    ( 
+        `timestamp` TIMESTAMP,  
+        `title` VARCHAR(255), 
+        `viewed` BOOLEAN, 
+        `owner` INTEGER,  
+        FOREIGN KEY (`owner`) REFERENCES `Channels`(id),
+        UNIQUE(title, owner) 
+    );
+    ' | sqlite3 $DBNAME
 
-INSERT INTO main.`Channels` (`name`,`rssLink`) VALUES ("eyepatch wolf", "https://www.youtube.com/feeds/videos.xml?channel_id=UCtGoikgbxP4F3rgI9PldI9g");
+    cmd=""
 
-SELECT @last = last_insert_rowid();
+    while IFS= read -r line; do
+        
+        if $(echo $line | grep -q "^https://www.you"); then
+            name=$(echo $line | sed 's/.*"[~!]\{1\}\([-_.,0-9A-Za-z ]\{1,\}\)"$/\1/g' | tr -d '"')
+            rssLink=$(echo $line | awk '{print $1}')
+            channelLink=$(echo $line | awk '{print $2}')
 
-INSERT INTO main.`Videos` (`title`,`viewed`,`owner`) VALUES ( "WOW title", 0 , @last );
+            cmd="$cmd INSERT INTO main.\`Channels\` (\`name\`,\`rssLink\`,\`channelLink\`) VALUES (\"$name\",\"$rssLink\",$channelLink);" 
+        fi
 
-'
+    done < $URLS
 
+    echo $cmd | sqlite3 $DBNAME
+
+else
+    echo "Can't find: $URLS"
+fi

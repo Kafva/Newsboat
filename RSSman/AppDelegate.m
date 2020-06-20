@@ -52,6 +52,13 @@
     {
         NSLog(@"\t%@",str);
     }
+
+    NSString* dbPath = @"/Documents/rss.db";
+    DBHandler* handler = [[DBHandler alloc] initWithDB: dbPath];
+    
+    if ( handler.db ){ sqlite3_close( *(handler.db) ); }
+
+
     //-----------------------------------------------------------//
 
 
