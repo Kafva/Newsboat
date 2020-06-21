@@ -36,9 +36,9 @@ elif [ "$1" = deploy ]; then
     # Create the database anew
     ./createDatabase.bash $DBNAME $URLS
 
-    # One can add additonal compiler flags such as SQLITE_HAS_CODEC=1
-    xcodebuild build -destination "id=$iphone_id" -allowProvisioningUpdates OTHER_CFLAGS="-Xclang -Wno-unused-function" && ideviceinstaller -i build/Release-iphoneos/${PROJECT}.app &&
     #   xcodebuild -showBuildSettings
+    xcodebuild build -destination "id=$iphone_id" -allowProvisioningUpdates OTHER_CFLAGS="-Xclang -Wno-unused-function" && 
+    ideviceinstaller -i build/Release-iphoneos/${PROJECT}.app &&
 
     # Upload the sqlite database to NSHomeDirectory()/Documents/
     ios-deploy --bundle_id $BUNDLE_ID --upload $DBNAME --to /Documents/$DBNAME

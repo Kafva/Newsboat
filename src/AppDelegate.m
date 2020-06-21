@@ -25,34 +25,7 @@
 
     [self.window makeKeyAndVisible];
 
-    [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(timerCalled) userInfo:nil repeats:NO];
-
-    //-----------------------------------------------------------//
-    //NSString* url = @"https://www.youtube.com/feeds/videos.xml?channel_id=UCtGoikgbxP4F3rgI9PldI9g"; 
-    //NSString* tag = @"title";
-    //RequestHandler* re = [[RequestHandler alloc] init];
-
-    //NSMutableArray* tagData = [[NSMutableArray alloc] init];
-
-    //[re httpRequest: url  success: ^(NSString* response) { [re getDataFromTag:tag response:response tagData:tagData  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
-
-    //NSLog(@"---- Content of <%@>...</%@>  ----", tag, tag);
-    //for ( NSMutableString* str in tagData )
-    //{
-    //    NSLog(@"\t%@",str);
-    //}
-    
-    //NSLog(@"-------------------------");
-
-    //NSMutableArray* dates = [[NSMutableArray alloc] init];
-    //tag = @"published";
-    //[re httpRequest: url  success: ^(NSString* response) { [re getDataFromTag:tag response:response tagData:dates  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
-    //NSLog(@"---- Content of <%@>...</%@>  ----", tag, tag);
-    //for ( NSMutableString* str in dates )
-    //{
-    //    NSLog(@"\t%@",str);
-    //}
-
+    //--------------------------------------------//
 
     NSString* home = NSHomeDirectory();
     NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSASCIIStringEncoding];
@@ -61,8 +34,6 @@
     DBHandler* handler = [[DBHandler alloc] initWithDB: dbPath];
     if ( [handler openDatabase] == SQLITE_OK )
     {
-        
-
         [handler importRSS];
         
         NSMutableArray* videos = [[NSMutableArray alloc] init];
@@ -80,6 +51,7 @@
 
     //-----------------------------------------------------------//
 
+    // [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(timerCalled) userInfo:nil repeats:NO];
 
     return YES;
 }
@@ -87,7 +59,6 @@
 -(void)timerCalled
 {
     NSLog(@"Timer Called");
-
 
     UIViewController *new = [[SubViewController alloc] init];
     

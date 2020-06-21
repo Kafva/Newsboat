@@ -367,7 +367,6 @@ static int callbackVideoObjects(void* context, int columnCount, char** columnVal
     return 0;
 }
 
-
 static int callbackColumnValues(void* context, int columnCount, char** columnValues, char** columnNames)
 // COPYS the columnValues into the result paramater in sqlite3_exec()
 // We can't simply reassign the pointer since the columnValues object gets freed after exiting the handler
