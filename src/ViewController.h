@@ -1,4 +1,7 @@
 #import <UIKit/UIKit.h>
+#import "util.h"
+#define TABLE_ROWS 5
+
 
 static NSString *cellIdentifier = @"newCell";
 
@@ -11,7 +14,6 @@ static NSString *cellIdentifier = @"newCell";
 
     -(void)loadView;
     -(void)viewDidLoad;
-    -(void)addLabelView;
     -(void)addImageView;
     -(void)addTableView;
     

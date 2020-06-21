@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DD2C27AB2492A396004F5A07 /* SubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DD2C27AA2492A396004F5A07 /* SubViewController.m */; };
 		DD2C27AD2492C7FA004F5A07 /* util.m in Sources */ = {isa = PBXBuildFile; fileRef = DD2C27AC2492C7FA004F5A07 /* util.m */; };
 		DD66DFEA24841FD9000CD660 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DD66DFE924841FD9000CD660 /* AppDelegate.m */; };
 		DD66DFF024841FD9000CD660 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DD66DFEF24841FD9000CD660 /* ViewController.m */; };
@@ -17,8 +16,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		DD2C27A92492A396004F5A07 /* SubViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubViewController.h; sourceTree = "<group>"; };
-		DD2C27AA2492A396004F5A07 /* SubViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubViewController.m; sourceTree = "<group>"; };
 		DD2C27AC2492C7FA004F5A07 /* util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = util.m; sourceTree = "<group>"; };
 		DD2C27AE2492CB07004F5A07 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
 		DD66DFE524841FD9000CD660 /* RSSman.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RSSman.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -66,8 +63,6 @@
 			children = (
 				DD2C27AE2492CB07004F5A07 /* util.h */,
 				DD2C27AC2492C7FA004F5A07 /* util.m */,
-				DD2C27A92492A396004F5A07 /* SubViewController.h */,
-				DD2C27AA2492A396004F5A07 /* SubViewController.m */,
 				DD66DFE824841FD9000CD660 /* AppDelegate.h */,
 				DD66DFE924841FD9000CD660 /* AppDelegate.m */,
 				DD66DFEB24841FD9000CD660 /* SceneDelegate.h */,
@@ -155,7 +150,6 @@
 				DD66DFF024841FD9000CD660 /* ViewController.m in Sources */,
 				DD66DFEA24841FD9000CD660 /* AppDelegate.m in Sources */,
 				DD66DFFB24841FDB000CD660 /* main.m in Sources */,
-				DD2C27AB2492A396004F5A07 /* SubViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
