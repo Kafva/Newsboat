@@ -1,10 +1,14 @@
 #include <Foundation/Foundation.h>
-#import <sqlite3.h>
 #include <stdlib.h>
+#import <sqlite3.h>
 
-#define VIDEOS_PER_CHANNEL 7
+#define VIDEOS_PER_CHANNEL 8
 #define VARCHAR_SIZE 255
 #define SQL_ROW_BUFFER 300
+
+#define SCREEN_WIDTH 480
+#define SCREEN_HEIGTH 720
+#define Y_OFFSET 50
 
 #define TEST_DB_PATH "/Users/jonas/XcodeX/iPK/RSSman/rss.db"
 #define DB_PATH "/Documents/rss.db"
@@ -14,12 +18,12 @@
    @property (strong,nonatomic) NSString* name;
    @property (strong,nonatomic) NSString* rssLink;
    @property (strong,nonatomic) NSString* channelLink;
+   -(NSString*) description;
 
 @end
 
 @interface Video : NSObject
    // Important for NSObject properties to have a strong property so that they aren't freed
-    @property (strong,nonatomic) NSDate* timestamp;
     @property (strong,nonatomic) NSString* title;
     @property (strong,nonatomic) NSString* link;  
     @property (assign,nonatomic) bool viewed;
@@ -41,10 +45,13 @@
     -(int) closeDatabase;
     -(int) queryStmt: (const char*)stmt;
     
+    -(int) getChannels: (NSMutableArray*)channels;
     -(int) addVideo: (const char* )timestamp title:(const char* )title owner_id:(const char*)owner_id link:(const char*) link;
-    -(int) getVideosFrom: (char*)channel count:(int)count videos:(NSMutableArray*) videos;
-    -(int) getVideosFrom: (char*)channel count:(int)count;
+    -(int) getVideosFrom: (const char*)channel count:(int)count videos:(NSMutableArray*) videos;
+    -(int) getVideosFrom: (const char*)channel count:(int)count;
+    -(int) importRSS: (const char*)channel;
     -(int) importRSS;
+
     -(int) handleRSS: (char**)columnValues;
 
 
@@ -86,6 +93,7 @@
 //--------------SQLITE CALLBACKS------------------//
 
 static int callbackVideoObjects(void* context, int columnCount, char** columnValues, char** columnNames);
+static int callbackChannelObjects(void* context, int columnCount, char** columnValues, char** columnNames);
 static int callbackColumnValues(void* context, int columnCount, char** columnValues, char** columnNames);
 static int callbackPrint(void* context, int columnCount, char** columnValues, char** columnNames);
 static int callbackImportRSS(void* context, int columnCount, char** columnValues, char** columnNames);

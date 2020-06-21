@@ -6,13 +6,11 @@
 // Instance methods: -(void) foo {}
 
 @implementation Channel : NSObject
+   -(NSString*) description { return [NSString stringWithFormat:@"<Channel:%p> %@", self, self.name ]; }
 @end
 
 @implementation Video : NSObject
-   -(NSString*) description
-    {
-        return [NSString stringWithFormat:@"<Video:%p> title: %@", self, self.title ];
-    }
+   -(NSString*) description { return [NSString stringWithFormat:@"<Video:%p> title: %@", self, self.title ]; }
 @end
 
 
@@ -20,10 +18,10 @@
 
 @implementation DBHandler : NSObject
 
-    -(id) init
     // Constructor
-    {
-        self.dbPath = @""; 
+    -(id) init 
+    { 
+        self.dbPath = @"";
         self.db = nil;
         return self;
     }
@@ -77,7 +75,9 @@
         char** results = malloc(sizeof(char*)*(VIDEOS_PER_CHANNEL+1));
         for (int i=0; i < VIDEOS_PER_CHANNEL+1; i++) { results[i] = malloc(sizeof(char)*SQL_ROW_BUFFER); }
 
-        const char* stmt = [[NSString stringWithFormat: @"INSERT INTO `Videos` (`timestamp`, `title`, `viewed`, `owner`, `link`) VALUES (DATE(\"%s\"), \"%s\", 0 , %s, \"%s\"); ",timestamp, title, owner_id, link ] cStringUsingEncoding:NSASCIIStringEncoding];
+        // The IGNORE keyword will inhibit errors from not adhearing to the UNIQUE constraints
+        // and instead simply ignore the perticular INSERT statement
+        const char* stmt = [[NSString stringWithFormat: @"INSERT OR IGNORE INTO `Videos` (`timestamp`, `title`, `viewed`, `owner`, `link`) VALUES (DATE(\"%s\"), \"%s\", 0 , %s, \"%s\"); ",timestamp, title, owner_id, link ] cStringUsingEncoding:NSASCIIStringEncoding];
         int ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
         
         if ( ret == SQLITE_OK  )
@@ -107,6 +107,26 @@
 
         return ret;
     }
+    
+    -(int) importRSS: (const char*)channel
+    {
+        char* stmt = malloc(sizeof(char)*VARCHAR_SIZE); 
+        sprintf(stmt, "SELECT `id`,`rssLink` FROM `Channels` WHERE `name` = '%s';", channel); 
+        char* err_msg;
+        
+        // The callback function works as a lambda function in that each row in
+        // the result is processed individually
+        
+        // Fetch each channelId and its corresponding RSS link with the callback function
+        // handling the addition of videos via a request for the RSS Feed for each channel
+        // Note that the callback in turn calls a member function of the DBHandler (possible by passing self as result)
+        int ret = sqlite3_exec( self.db , stmt, callbackImportRSS,  (__bridge void *)self, &err_msg );
+        
+        if ( ret != SQLITE_OK  ){  NSLog(@"%s", err_msg);  }
+        
+        free(stmt);
+        return ret;
+    }
 
     -(int) importRSS
     {
@@ -125,7 +145,7 @@
         return ret;
     }
 
-    -(int)getVideosFrom: (char*)channel count:(int)count
+    -(int)getVideosFrom: (const char*)channel count:(int)count
     {
         char* err_msg;
         char* stmt = malloc(sizeof(char)*VARCHAR_SIZE); 
@@ -140,7 +160,7 @@
 
     }
 
-    -(int) getVideosFrom: (char*)channel count:(int)count videos:(NSMutableArray*) videos
+    -(int) getVideosFrom: (const char*)channel count:(int)count videos:(NSMutableArray*) videos
     {
         char* err_msg;
         char* stmt = malloc(sizeof(char)*VARCHAR_SIZE); 
@@ -148,6 +168,7 @@
 
         // The callback function creates Video objects which are returned to the paramater passed to the method 
         int ret = sqlite3_exec( self.db , stmt, callbackVideoObjects, (__bridge void*)videos, &err_msg );
+        //int ret = sqlite3_exec( self.db , stmt, callbackPrint, NULL, &err_msg );
         
         if ( ret != SQLITE_OK  ){  NSLog(@"%s", err_msg);  }
         
@@ -162,8 +183,6 @@
     {
         RequestHandler* re = [[RequestHandler alloc] init];
         char* channelId = columnValues[0];
-
-        if (0!=strcmp(channelId, "1")){ return 0; }
 
         NSString* rssLink = [[NSString alloc] initWithCString: columnValues[1] encoding:NSASCIIStringEncoding];
                 
@@ -192,6 +211,21 @@
         return 0;
     }
 
+    -(int) getChannels: (NSMutableArray*)channels
+    // Return all the channel objects from the database
+    {
+        char* err_msg;
+        char* stmt = "SELECT * FROM `Channels`"; 
+
+        // The callback function creates Video objects which are returned to the paramater passed to the method 
+        int ret = sqlite3_exec( self.db , stmt, callbackChannelObjects, (__bridge void*)channels, &err_msg );
+        //int ret = sqlite3_exec( self.db , stmt, callbackPrint, (__bridge void*)channels, &err_msg );
+        
+        if ( ret != SQLITE_OK  ){  NSLog(@"%s", err_msg);  }
+        
+        return ret;
+
+    }
 
 @end
 
@@ -356,6 +390,7 @@ static int callbackVideoObjects(void* context, int columnCount, char** columnVal
 {
     // The context object passed is an NSMutableArray to which we add a Video object for each iteration
     // called from sqlite3_exec()
+    // Note that we never import the timestamp at columnValues[0]
 
     Video* video = [[Video alloc] init];
     video.title = [[ NSString alloc ] initWithCString: columnValues[1] encoding:NSASCIIStringEncoding];  
@@ -367,6 +402,18 @@ static int callbackVideoObjects(void* context, int columnCount, char** columnVal
     return 0;
 }
 
+static int callbackChannelObjects(void* context, int columnCount, char** columnValues, char** columnNames)
+{
+    Channel* channel = [[Channel alloc] init];
+    channel.id = atoi(columnValues[0]); 
+    channel.name = [[ NSString alloc ] initWithCString: columnValues[1] encoding:NSASCIIStringEncoding];  
+    channel.rssLink = [[ NSString alloc ] initWithCString: columnValues[2] encoding:NSASCIIStringEncoding];; 
+    channel.channelLink = [[ NSString alloc ] initWithCString: columnValues[3] encoding:NSASCIIStringEncoding];  
+
+    [(__bridge NSMutableArray*)context addObject: channel];
+    return 0;
+
+}
 static int callbackColumnValues(void* context, int columnCount, char** columnValues, char** columnNames)
 // COPYS the columnValues into the result paramater in sqlite3_exec()
 // We can't simply reassign the pointer since the columnValues object gets freed after exiting the handler

@@ -139,7 +139,7 @@ int main (int argc, char * argv[])
             //char* stmt = "SELECT * FROM Videos;"; 
             //[handler queryStmt: stmt];
 
-            [handler importRSS];
+            [handler importRSS: "Super Eyepatch Wolf"];
             
             //char* stmt = "SELECT * FROM Videos WHERE owner = (SELECT id FROM Channels WHERE name LIKE '%%Wolf%%');"; 
             //[handler queryStmt: stmt];
