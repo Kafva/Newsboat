@@ -43,10 +43,14 @@
         // https://stackoverflow.com/questions/227078/creating-a-left-arrow-button-like-uinavigationbars-back-style-on-a-uitoolba
         
         UIButton *backButton = [UIButton buttonWithType: UIButtonTypeRoundedRect];
-        [backButton setFrame:CGRectMake(0, 0, 20, 40)];
+        UIImage* backImage = [UIImage imageNamed:@"back.png"];
+        [backButton setFrame:CGRectMake(0, 0, 77, 128)];
         
-        // sets title for the button
-        [backButton setTitle:@"Back" forState: UIControlStateNormal];
+        //backImage.size.height = 77;
+        //backImage.size.height = 128;
+
+        [backButton setImage: backImage forState:UIControlStateNormal];
+
         [self.view addSubview:backButton];
 
     }
@@ -78,7 +82,7 @@
         //----------------------------------------------// 
     
         NSString* home = NSHomeDirectory();
-        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSASCIIStringEncoding];
+        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSUTF8StringEncoding];
         [dbPath insertString: home atIndex:(NSUInteger)0];
 
         DBHandler* handler = [[DBHandler alloc] initWithDB: dbPath];
@@ -121,7 +125,7 @@
         //----------------------------------------------// 
     
         NSString* home = NSHomeDirectory();
-        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSASCIIStringEncoding];
+        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSUTF8StringEncoding];
         [dbPath insertString: home atIndex:(NSUInteger)0];
 
         DBHandler* handler = [[DBHandler alloc] initWithDB: dbPath];
@@ -131,12 +135,12 @@
             self.videos = [[NSMutableArray alloc] init];
             //NSMutableArray* videos = [[NSMutableArray alloc] init];
 
-            [handler importRSS: [channel cStringUsingEncoding: NSASCIIStringEncoding]];
-            [handler getVideosFrom: [channel cStringUsingEncoding: NSASCIIStringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
+            [handler importRSS: [channel cStringUsingEncoding: NSUTF8StringEncoding]];
+            [handler getVideosFrom: [channel cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
 
             for (int i=0; i<self.videos.count; i++)
             {
-                NSLog(@"%@: %@ (%@)", channel , [self.videos[i] title] , [self.videos[i] link]  );
+                NSLog(@"addVideoView(): %@: %@ (%@)", channel , [self.videos[i] title] , [self.videos[i] link]  );
             }
 
             [handler closeDatabase]; 
@@ -164,11 +168,13 @@
 
         // Clear background and white text
         cell.backgroundColor = [UIColor clearColor];
+        
+        //cell.textLabel.font =   [UIFont fontWithName:@"AppleColorEmoji" size:16.0];
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.detailTextLabel.textColor = [UIColor whiteColor];
         
         // TODO
-        cell.selectedBackgroundView.backgroundColor = [UIColor systemPinkColor];
+        //cell.selectedBackgroundView.backgroundColor = [UIColor systemPinkColor];
 
         // Populate with the datasource corresponding to the active tableView
         if ( self.channelView == tableView ) { cell.textLabel.text = [[self.channels objectAtIndex:indexPath.row] name ]; }
@@ -207,7 +213,7 @@
             
             self.channelView.hidden = YES;
             
-            //[self addButtonView];
+            [self addButtonView];
             [self addVideoView: channel];
         }
         else

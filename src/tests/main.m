@@ -125,9 +125,9 @@ int main (int argc, char * argv[])
 
             // https://stackoverflow.com/questions/28279701/ios-sqlite-misuse-error-code-21
 
-            NSString* dbPath = [[NSString alloc] initWithCString: TEST_DB_PATH encoding:NSASCIIStringEncoding];
+            NSString* dbPath = [[NSString alloc] initWithCString: TEST_DB_PATH encoding:NSUTF8StringEncoding];
             DBHandler* handler = [[DBHandler alloc] initWithDB: dbPath];
-            //NSLog(@"This: %s", [ handler.dbPath cStringUsingEncoding:NSASCIIStringEncoding]);
+            //NSLog(@"This: %s", [ handler.dbPath cStringUsingEncoding:NSUTF8StringEncoding]);
             
             [handler openDatabase];
 

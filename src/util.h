@@ -93,6 +93,7 @@
 //--------------SQLITE CALLBACKS------------------//
 
 static int callbackVideoObjects(void* context, int columnCount, char** columnValues, char** columnNames);
+static int callbackGetTitle(void* context, int columnCount, char** columnValues, char** columnNames);
 static int callbackChannelObjects(void* context, int columnCount, char** columnValues, char** columnNames);
 static int callbackColumnValues(void* context, int columnCount, char** columnValues, char** columnNames);
 static int callbackPrint(void* context, int columnCount, char** columnValues, char** columnNames);
