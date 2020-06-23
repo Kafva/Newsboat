@@ -19,6 +19,13 @@ static NSString *cellIdentifier = @"newCell";
     
     -(void)addChannelView;
     -(void)addVideoView: (NSString*) channel;
+    -(void)addButtonView:(NSString*)btn selector:(SEL)selector width:(int)width height:(int)height;
+
+    -(UIImage*) imageWithImage:(UIImage *)image convertToSize:(CGSize)size; 
+    - (void) goBack:(UIButton*) sender; 
+    
+    -(void) reloadRSS;
+
 @end
 
 

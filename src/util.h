@@ -10,6 +10,12 @@
 #define SCREEN_HEIGTH 720
 #define Y_OFFSET 50
 
+#define BACK_WIDTH 43
+#define BACK_HEIGHT 56
+
+#define RELOAD_WIDTH 21
+#define RELOAD_HEIGHT 28
+
 #define TEST_DB_PATH "/Users/jonas/XcodeX/iPK/RSSman/rss.db"
 #define DB_PATH "/Documents/rss.db"
 

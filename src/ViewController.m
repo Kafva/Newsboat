@@ -1,10 +1,13 @@
 #import "ViewController.h"
 // TODO
-//  Back-button
+//  Move reload to right side (avoid the need to unload it but will require handling on both scenes)
+//  Landscape mode background
+//  Recrop launchimage
 //  Load-all button
 //  Show new video count on channel view
 //  Hide links on video view
 //  Rename + new icon with magick
+
 
 @implementation ViewController 
     // The ViewController is respsoible for displaying the different views of the app
@@ -27,6 +30,7 @@
 
         [self addImageView];
         [self addChannelView];
+        [self addButtonView: @"reload.png" selector: @selector(reloadRSS:) width: RELOAD_WIDTH height: RELOAD_HEIGHT ];
     }
 
     - (void)viewDidLoad 
@@ -38,21 +42,24 @@
 
     }
 
-    -(void)addButtonView
+    -(void)addButtonView:(NSString*)btn selector:(SEL)selector width:(int)width height:(int)height
+    // To reuset the button function we pass the selector method which defines the
+    // action on-tap for the button
     {
-        // https://stackoverflow.com/questions/227078/creating-a-left-arrow-button-like-uinavigationbars-back-style-on-a-uitoolba
+        UIButton *backButton = [UIButton buttonWithType: UIButtonTypeSystem];
+        backButton.tintColor = [UIColor whiteColor];
         
-        UIButton *backButton = [UIButton buttonWithType: UIButtonTypeRoundedRect];
-        UIImage* backImage = [UIImage imageNamed:@"back.png"];
-        [backButton setFrame:CGRectMake(0, 0, 77, 128)];
+        // Create a UIImage object of the back icon and create a rect with the same dimensions
+        // as the smallest version in the imageset
+        UIImage* backImage = [UIImage imageNamed:btn];
+        backImage = [self imageWithImage: backImage convertToSize: CGSizeMake(width, height) ];
         
-        //backImage.size.height = 77;
-        //backImage.size.height = 128;
-
+        [backButton setFrame:CGRectMake(0, 20, width, height)];
         [backButton setImage: backImage forState:UIControlStateNormal];
+        //[backButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside ];
+        [backButton addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside ];
 
         [self.view addSubview:backButton];
-
     }
 
     -(void)addImageView
@@ -82,7 +89,7 @@
         //----------------------------------------------// 
     
         NSString* home = NSHomeDirectory();
-        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSUTF8StringEncoding];
+        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSASCIIStringEncoding];
         [dbPath insertString: home atIndex:(NSUInteger)0];
 
         DBHandler* handler = [[DBHandler alloc] initWithDB: dbPath];
@@ -112,7 +119,7 @@
         //-----------------------------------------------//
         CGFloat width = self.view.frame.size.width;
         CGFloat height = self.view.frame.size.height;
-        CGRect tableFrame = CGRectMake(0, Y_OFFSET, width, height);
+        CGRect tableFrame = CGRectMake(0, Y_OFFSET*1.5, width, height);
 
         self.videoView = [[UITableView alloc]initWithFrame:tableFrame style:UITableViewStylePlain];
 
@@ -125,7 +132,7 @@
         //----------------------------------------------// 
     
         NSString* home = NSHomeDirectory();
-        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSUTF8StringEncoding];
+        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSASCIIStringEncoding];
         [dbPath insertString: home atIndex:(NSUInteger)0];
 
         DBHandler* handler = [[DBHandler alloc] initWithDB: dbPath];
@@ -135,8 +142,8 @@
             self.videos = [[NSMutableArray alloc] init];
             //NSMutableArray* videos = [[NSMutableArray alloc] init];
 
-            [handler importRSS: [channel cStringUsingEncoding: NSUTF8StringEncoding]];
-            [handler getVideosFrom: [channel cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
+            [handler importRSS: [channel cStringUsingEncoding: NSASCIIStringEncoding]];
+            [handler getVideosFrom: [channel cStringUsingEncoding: NSASCIIStringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
 
             for (int i=0; i<self.videos.count; i++)
             {
@@ -147,6 +154,8 @@
         }
 
     }
+
+
 
     //------------ TABLE -------------------//
     // https://gist.github.com/keicoder/8682867 
@@ -213,8 +222,8 @@
             
             self.channelView.hidden = YES;
             
-            [self addButtonView];
             [self addVideoView: channel];
+            [self addButtonView: @"back.png" selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT];
         }
         else
         {
@@ -222,15 +231,6 @@
             NSLog(@"Tapped entry[%ld]: %@", indexPath.row, link);
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:link] options:NULL completionHandler:^(BOOL success) { NSLog(@"opened url %d", success); } ];
         } 
-        
-        //else
-        //{
-        //    // Exit
-        //    [ tableView removeFromSuperview ];
-        //    self.channelView.hidden = NO;
-        //    //[self.view setNeedsDisplay];
-        //}
-
     }        
 
     -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -239,4 +239,31 @@
         return 70;
     }
 
+    -(UIImage*) imageWithImage:(UIImage *)image convertToSize:(CGSize)size 
+    // Helper to scale UIImage objects
+    {
+        UIGraphicsBeginImageContext(size);
+        [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
+        UIImage *destImage = UIGraphicsGetImageFromCurrentImageContext();    
+        UIGraphicsEndImageContext();
+        return destImage;
+    }
+    
+    //------ BUTTONS -------// 
+    
+    -(void) reloadRSS: (UIButton*)sender
+    {
+        NSLog(@"TODO");
+    }
+
+    - (void) goBack: (UIButton*) sender 
+    // When the back button is tapped from a video view
+    // unhide the channels view and delete the button and video view (for the specific channel)
+    {
+        [self.videoView removeFromSuperview];
+        [sender removeFromSuperview];
+        self.channelView.hidden = NO;
+    }
+
 @end
+
