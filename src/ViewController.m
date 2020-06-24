@@ -2,13 +2,10 @@
 // TODO
 //  Move reload to right side (avoid the need to unload it but will require handling on both scenes)
 //  Landscape mode background
-//  Recrop launchimage
-//  Load-all button
-//  Show new video count on channel view
+//  Load button
+//  Show new video count on channel view    (emoji on the side of cells?)
+//  Sort by new
 //  Hide links on video view
-//  Rename + new icon with magick
-
-
 
 @implementation ViewController 
     // The ViewController is respsoible for displaying the different views of the app
@@ -91,6 +88,9 @@
         self.channelView.delegate = self;
         self.channelView.dataSource = self;
         [self.view addSubview: self.channelView];
+
+        self.currentViewName = @"channel";
+
         //----------------------------------------------// 
     
         NSString* home = NSHomeDirectory();
@@ -134,6 +134,9 @@
         self.videoView.delegate = self;
         self.videoView.dataSource = self;
         [self.view addSubview: self.videoView];
+
+        self.currentViewName = @"video";
+
         //----------------------------------------------// 
     
         NSString* home = NSHomeDirectory();
@@ -228,7 +231,7 @@
             self.channelView.hidden = YES;
             
             [self addVideoView: channel];
-            [self addButtonView: @"back.png" selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT x_offset:0 y_offset:BTN_Y_OFFSET];
+            [self addButtonView: @"back.png" selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT x_offset:0 y_offset:BTN_Y_OFFSET ];
         }
         else
         {
@@ -258,15 +261,21 @@
     
     -(void) reloadRSS: (UIButton*)sender
     {
-        NSLog(@"TODO");
+        if ( [ self.currentViewName isEqual: @"channel"] )
+        {
+            NSLog(@"chan!");
+
+        } else { NSLog(@"vid!"); }
+        
     }
 
-    - (void) goBack: (UIButton*) sender 
+    -(void) goBack: (UIButton*)sender 
     // When the back button is tapped from a video view
     // unhide the channels view and delete the button and video view (for the specific channel)
     {
         [self.videoView removeFromSuperview];
         [sender removeFromSuperview];
+        self.currentViewName = @"channel";
         self.channelView.hidden = NO;
     }
 

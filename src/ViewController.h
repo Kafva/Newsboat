@@ -5,6 +5,8 @@ static NSString *cellIdentifier = @"newCell";
 @interface ViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
     // The <...> objects are protocols used for the implementation of the tableView
 
+    @property (strong, nonatomic) NSString* currentViewName;
+
     @property (strong, nonatomic) UITableView *channelView;
     @property (nonatomic, strong) NSMutableArray *channels; 
     

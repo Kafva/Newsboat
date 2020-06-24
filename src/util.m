@@ -13,11 +13,11 @@
    -(NSString*) description { return [NSString stringWithFormat:@"<Video:%p> title: %@", self, self.title ]; }
 @end
 
-@implementation Cell
+@implementation Cell : UITableViewCell
 @end
 
 
-//---------------------------------------//
+//--------------------------------------------------//
 
 @implementation DBHandler : NSObject
 
