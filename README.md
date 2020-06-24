@@ -1,1 +1,1 @@
-# RSSman
+# Newsboat

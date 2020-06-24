@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Upload to app's filesystem
-#   ios-deploy --bundle_id com..RSSman --upload rss.db --to /Documents/rss.db
+#   ios-deploy --bundle_id com..Newsboat --upload rss.db --to /Documents/rss.db
 
 [ -n $1 ] && DBNAME=rss.db
 [ -n $1 ] || DBNAME=$1

@@ -13,6 +13,9 @@
    -(NSString*) description { return [NSString stringWithFormat:@"<Video:%p> title: %@", self, self.title ]; }
 @end
 
+@implementation Cell
+@end
+
 
 //---------------------------------------//
 
@@ -393,6 +396,7 @@
     }
 
 @end
+
 
 //--------------SQLITE CALLBACKS------------------//
 

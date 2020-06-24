@@ -1,3 +1,4 @@
+#import <UIKit/UIKit.h>
 #include <Foundation/Foundation.h>
 #include <stdlib.h>
 #import <sqlite3.h>
@@ -10,13 +11,15 @@
 #define SCREEN_HEIGTH 720
 #define Y_OFFSET 50
 
-#define BACK_WIDTH 43
-#define BACK_HEIGHT 56
+#define BTN_Y_OFFSET 20
+
+#define BACK_WIDTH 21
+#define BACK_HEIGHT 28
 
 #define RELOAD_WIDTH 21
 #define RELOAD_HEIGHT 28
 
-#define TEST_DB_PATH "/Users/jonas/XcodeX/iPK/RSSman/rss.db"
+#define TEST_DB_PATH "/Users/jonas/XcodeX/iPK/Newsboat/rss.db"
 #define DB_PATH "/Documents/rss.db"
 
 @interface Channel : NSObject
@@ -37,6 +40,11 @@
 
    // The function called when printing NSObjects with NSLog()
    -(NSString*) description;
+@end
+
+@interface Cell : UITableViewCell
+    // Create a subclass of the table cell elements to store additional information
+    @property (strong,nonatomic) NSString* link;
 @end
 
 //----------------------------------------------------------//
@@ -93,6 +101,7 @@
         tagData: (NSMutableArray*)tagData;
 
 @end
+
 
 
 

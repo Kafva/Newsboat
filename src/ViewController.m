@@ -9,6 +9,7 @@
 //  Rename + new icon with magick
 
 
+
 @implementation ViewController 
     // The ViewController is respsoible for displaying the different views of the app
     // (Usually there are several) and inherits from the UIViewController class
@@ -30,7 +31,9 @@
 
         [self addImageView];
         [self addChannelView];
-        [self addButtonView: @"reload.png" selector: @selector(reloadRSS:) width: RELOAD_WIDTH height: RELOAD_HEIGHT ];
+
+        // Positioning of reload button is not well made
+        [self addButtonView: @"reload.png" selector: @selector(reloadRSS:) width: RELOAD_WIDTH height: RELOAD_HEIGHT x_offset: SCREEN_WIDTH - BTN_Y_OFFSET*6 - 10 y_offset: BTN_Y_OFFSET ];
     }
 
     - (void)viewDidLoad 
@@ -42,7 +45,7 @@
 
     }
 
-    -(void)addButtonView:(NSString*)btn selector:(SEL)selector width:(int)width height:(int)height
+    -(void)addButtonView:(NSString*)btn selector:(SEL)selector width:(int)width height:(int)height x_offset:(int)x_offset y_offset:(int)y_offset
     // To reuset the button function we pass the selector method which defines the
     // action on-tap for the button
     {
@@ -54,7 +57,7 @@
         UIImage* backImage = [UIImage imageNamed:btn];
         backImage = [self imageWithImage: backImage convertToSize: CGSizeMake(width, height) ];
         
-        [backButton setFrame:CGRectMake(0, 20, width, height)];
+        [backButton setFrame:CGRectMake(x_offset, y_offset, width, height)];
         [backButton setImage: backImage forState:UIControlStateNormal];
         //[backButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside ];
         [backButton addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside ];
@@ -65,8 +68,10 @@
     -(void)addImageView
     {
         UIImageView *imgview = [[UIImageView alloc] initWithFrame:CGRectMake(0,0,SCREEN_WIDTH,SCREEN_HEIGTH)  ];
-        [imgview setImage:[UIImage imageNamed:@"opera"] ];
-        [imgview setContentMode:UIViewContentModeScaleAspectFit];
+        [imgview setImage:[UIImage imageNamed:@"sea"] ];
+
+        // AspectFill will ensure that the whole screen is filled
+        [imgview setContentMode:UIViewContentModeScaleAspectFill];
         
         [self.view addSubview:imgview];
     }
@@ -80,7 +85,7 @@
 
         self.channelView = [[UITableView alloc]initWithFrame:tableFrame style:UITableViewStylePlain];
 
-        [self.channelView registerClass:[UITableViewCell class] forCellReuseIdentifier:cellIdentifier];
+        [self.channelView registerClass:[Cell class] forCellReuseIdentifier:cellIdentifier];
         
         self.channelView.backgroundColor = [UIColor clearColor];
         self.channelView.delegate = self;
@@ -123,7 +128,7 @@
 
         self.videoView = [[UITableView alloc]initWithFrame:tableFrame style:UITableViewStylePlain];
 
-        [self.videoView registerClass:[UITableViewCell class] forCellReuseIdentifier:cellIdentifier];
+        [self.videoView registerClass:[Cell class] forCellReuseIdentifier:cellIdentifier];
         
         self.videoView.backgroundColor = [UIColor clearColor];
         self.videoView.delegate = self;
@@ -155,9 +160,7 @@
 
     }
 
-
-
-    //------------ TABLE -------------------//
+    //------------ TABLES -------------------//
     // https://gist.github.com/keicoder/8682867 
 
     // Required functions for the dataSource and delegate implemntations of the 
@@ -169,7 +172,7 @@
     // Called when adding a new cell to the tableView
     {
         // Deque an unusued cell object based on the static cellIdentifier
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        Cell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
 
         // Set the style value to enable the use of detailTextLabels        
         [cell initWithStyle: UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
@@ -183,15 +186,17 @@
         cell.detailTextLabel.textColor = [UIColor whiteColor];
         
         // TODO
-        //cell.selectedBackgroundView.backgroundColor = [UIColor systemPinkColor];
+        cell.selectedBackgroundView.backgroundColor = [UIColor redColor];
 
         // Populate with the datasource corresponding to the active tableView
         if ( self.channelView == tableView ) { cell.textLabel.text = [[self.channels objectAtIndex:indexPath.row] name ]; }
         else 
         { 
-            // The detailTextLabel isn't displayed but holds the video link
+            // Set the text of the cell and store the link to the video in a custom property of the cell subclass
             cell.textLabel.text = [[self.videos objectAtIndex:indexPath.row] title]; 
-            cell.detailTextLabel.text = [[self.videos objectAtIndex:indexPath.row] link]; 
+            cell.link = [[self.videos objectAtIndex:indexPath.row] link];
+            
+            //cell.detailTextLabel.text = [[self.videos objectAtIndex:indexPath.row] link]; 
         }
 
         return cell;
@@ -223,11 +228,11 @@
             self.channelView.hidden = YES;
             
             [self addVideoView: channel];
-            [self addButtonView: @"back.png" selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT];
+            [self addButtonView: @"back.png" selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT x_offset:0 y_offset:BTN_Y_OFFSET];
         }
         else
         {
-            NSString* link = [ tableView cellForRowAtIndexPath: indexPath ].detailTextLabel.text;
+            NSString* link = [[tableView cellForRowAtIndexPath: indexPath ] link];
             NSLog(@"Tapped entry[%ld]: %@", indexPath.row, link);
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:link] options:NULL completionHandler:^(BOOL success) { NSLog(@"opened url %d", success); } ];
         } 

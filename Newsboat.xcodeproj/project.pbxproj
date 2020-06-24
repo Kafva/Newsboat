@@ -18,7 +18,7 @@
 /* Begin PBXFileReference section */
 		DD2C27AC2492C7FA004F5A07 /* util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = util.m; sourceTree = "<group>"; };
 		DD2C27AE2492CB07004F5A07 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
-		DD66DFE524841FD9000CD660 /* RSSman.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RSSman.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD66DFE524841FD9000CD660 /* Newsboat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Newsboat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD66DFE824841FD9000CD660 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		DD66DFE924841FD9000CD660 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		DD66DFEB24841FD9000CD660 /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
@@ -53,7 +53,7 @@
 		DD66DFE624841FD9000CD660 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DD66DFE524841FD9000CD660 /* RSSman.app */,
+				DD66DFE524841FD9000CD660 /* Newsboat.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -80,9 +80,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		DD66DFE424841FD9000CD660 /* RSSman */ = {
+		DD66DFE424841FD9000CD660 /* Newsboat */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DD66DFFE24841FDB000CD660 /* Build configuration list for PBXNativeTarget "RSSman" */;
+			buildConfigurationList = DD66DFFE24841FDB000CD660 /* Build configuration list for PBXNativeTarget "Newsboat" */;
 			buildPhases = (
 				DD66DFE124841FD9000CD660 /* Sources */,
 				DD66DFE224841FD9000CD660 /* Frameworks */,
@@ -92,9 +92,9 @@
 			);
 			dependencies = (
 			);
-			name = RSSman;
-			productName = RSSman;
-			productReference = DD66DFE524841FD9000CD660 /* RSSman.app */;
+			name = Newsboat;
+			productName = Newsboat;
+			productReference = DD66DFE524841FD9000CD660 /* Newsboat.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -111,7 +111,7 @@
 					};
 				};
 			};
-			buildConfigurationList = DD66DFE024841FD9000CD660 /* Build configuration list for PBXProject "RSSman" */;
+			buildConfigurationList = DD66DFE024841FD9000CD660 /* Build configuration list for PBXProject "Newsboat" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -124,7 +124,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				DD66DFE424841FD9000CD660 /* RSSman */,
+				DD66DFE424841FD9000CD660 /* Newsboat */,
 			);
 		};
 /* End PBXProject section */
@@ -278,7 +278,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com..RSSman;
+				PRODUCT_BUNDLE_IDENTIFIER = com..Newsboat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -296,7 +296,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com..RSSman;
+				PRODUCT_BUNDLE_IDENTIFIER = com..Newsboat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -305,7 +305,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DD66DFE024841FD9000CD660 /* Build configuration list for PBXProject "RSSman" */ = {
+		DD66DFE024841FD9000CD660 /* Build configuration list for PBXProject "Newsboat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DD66DFFC24841FDB000CD660 /* Debug */,
@@ -314,7 +314,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DD66DFFE24841FDB000CD660 /* Build configuration list for PBXNativeTarget "RSSman" */ = {
+		DD66DFFE24841FDB000CD660 /* Build configuration list for PBXNativeTarget "Newsboat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DD66DFFF24841FDB000CD660 /* Debug */,

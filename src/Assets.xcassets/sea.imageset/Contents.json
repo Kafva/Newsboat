@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "opera.png",
+      "filename" : "sea.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "opera@2x.png",
+      "filename" : "sea@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "opera@3x.png",
+      "filename" : "sea@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

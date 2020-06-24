@@ -2,10 +2,10 @@
 # For the provisioing profile to update automatically (as in the Xcode GUI) 
 # the -allowProvisiongUpdates flag is neccessary
 # The profiles are stored under ~/Library/MobileDevice/Provisioning\ Profiles
-PROJECT=RSSman
+PROJECT=Newsboat
 SRC_DIR=src
 DBNAME=rss.db
-BUNDLE_ID=com..RSSman
+BUNDLE_ID=com..Newsboat
 URLS=~/.newsboat/urls
 
 if [ "$1" = test ]; then

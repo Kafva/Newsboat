@@ -1,4 +1,3 @@
-#import <UIKit/UIKit.h>
 #import "util.h"
 
 static NSString *cellIdentifier = @"newCell";
@@ -19,12 +18,12 @@ static NSString *cellIdentifier = @"newCell";
     
     -(void)addChannelView;
     -(void)addVideoView: (NSString*) channel;
-    -(void)addButtonView:(NSString*)btn selector:(SEL)selector width:(int)width height:(int)height;
+    -(void)addButtonView:(NSString*)btn selector:(SEL)selector width:(int)width height:(int)height x_offset:(int)x_offset y_offset:(int)y_offset;
 
     -(UIImage*) imageWithImage:(UIImage *)image convertToSize:(CGSize)size; 
     - (void) goBack:(UIButton*) sender; 
     
-    -(void) reloadRSS;
+    -(void) reloadRSS: (UIButton*)sender;
 
 @end
 
