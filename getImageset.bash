@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # For AppIcon imagesets use: https://appicon.co/#app-icon
 # The scripts accepts an arbitrary image type and produces pngs
 image=$1
