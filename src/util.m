@@ -13,7 +13,45 @@
    -(NSString*) description { return [NSString stringWithFormat:@"<Video:%p> title: %@", self, self.title ]; }
 @end
 
+@implementation CellButton : UIButton
+    -(UIImage*) getImage
+    // Get the corresponding image based upon the viewed attribute
+    {
+        NSString* btnName = [NSString stringWithFormat:@"%s", VIEWED_IMAGE];
+        if (self.viewed == FALSE){  btnName = [NSString stringWithFormat:@"%s", UNVIEWED_IMAGE]; } 
+    
+        UIImage* btnImage = [UIImage imageNamed:btnName];
+        btnImage = imageWithImage( btnImage, CGSizeMake(CELL_BTN_WIDTH, CELL_BTN_HEIGHT));
+        return btnImage;
+    }
+@end
+
 @implementation Cell : UITableViewCell
+
+
+    //// To reuset the button function we pass the selector method which defines the
+    //// action on-tap for the button
+    //{
+    //    // https://stackoverflow.com/questions/6443639/objective-c-buttons-created-from-subclass-of-uibutton-class-not-working
+    //    if (nil == self.toggleBtn)
+    //    // Initalise the toggle button from scratch
+    //    {
+    //        //self.toggleBtn = [CellButton buttonWithType: UIButtonTypeSystem];
+    //        self.toggleBtn = [[CellButton alloc] init];
+    //        self.toggleBtn.tintColor = [UIColor whiteColor];
+    //        [self.toggleBtn setFrame:CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, CELL_BTN_WIDTH, CELL_BTN_HEIGHT)];
+    //        
+    //        [self.toggleBtn addTarget:controller action:selector forControlEvents:UIControlEventTouchUpInside ];
+    //    }
+    //    
+    //    // Set the image depending on the toggleBtn 'viewed' attribute
+    //    UIImage* btnImage = [self.toggleBtn getImage];
+    //    self.toggleBtn.title = title;
+    //    self.toggleBtn.owner_id = owner_id;
+    //    [self.toggleBtn setImage: btnImage forState:UIControlStateNormal];
+    //}
+
+
 @end
 
 
@@ -240,6 +278,18 @@
 
     }
 
+    -(int) toggleViewedVideos: (const char*)title owner_id:(int)owner_id
+    // Toggle the viewed attribute for the video matching the given title and owner_id
+    {
+        char* err_msg;
+        const char* stmt = [[NSString stringWithFormat: @"UPDATE `Videos` SET `viewed` = NOT `viewed` WHERE `owner` = %d AND `title` = '%s' ",owner_id, title ] cStringUsingEncoding:NSASCIIStringEncoding];
+        int ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
+        
+        if (ret != SQLITE_OK) {  NSLog(@"%s", err_msg);  }
+        return ret;
+    }
+
+
 @end
 
 @implementation RequestHandler
@@ -397,6 +447,17 @@
 
 @end
 
+//---------------MISC---------------------//
+
+UIImage* imageWithImage(UIImage* image, CGSize size) 
+// Helper to scale UIImage objects
+{
+    UIGraphicsBeginImageContext(size);
+    [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    UIImage *destImage = UIGraphicsGetImageFromCurrentImageContext();    
+    UIGraphicsEndImageContext();
+    return destImage;
+}
 
 //--------------SQLITE CALLBACKS------------------//
 

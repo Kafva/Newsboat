@@ -1,5 +1,9 @@
 #import "ViewController.h"
 // TODO
+//  Add switch button in each content view, linking with the tag of each row
+//      https://developer.apple.com/documentation/uikit/uiswitch?language=objc
+//      https://stackoverflow.com/questions/28894765/uibutton-action-in-table-view-cell
+//        
 //  Move reload to right side (avoid the need to unload it but will require handling on both scenes)
 //  Landscape mode background
 //  Load button
@@ -30,7 +34,7 @@
         [self addChannelView];
 
         // Positioning of reload button is not well made
-        [self addButtonView: @"reload.png" selector: @selector(reloadRSS:) width: RELOAD_WIDTH height: RELOAD_HEIGHT x_offset: SCREEN_WIDTH - BTN_Y_OFFSET*6 - 10 y_offset: BTN_Y_OFFSET ];
+        [self addButtonView: @"reload.png" selector: @selector(reloadRSS:) width: RELOAD_WIDTH height: RELOAD_HEIGHT x_offset: BTN_X_OFFSET y_offset: BTN_Y_OFFSET ];
     }
 
     - (void)viewDidLoad 
@@ -52,7 +56,7 @@
         // Create a UIImage object of the back icon and create a rect with the same dimensions
         // as the smallest version in the imageset
         UIImage* backImage = [UIImage imageNamed:btn];
-        backImage = [self imageWithImage: backImage convertToSize: CGSizeMake(width, height) ];
+        backImage = imageWithImage(backImage, CGSizeMake(width, height));
         
         [backButton setFrame:CGRectMake(x_offset, y_offset, width, height)];
         [backButton setImage: backImage forState:UIControlStateNormal];
@@ -89,7 +93,7 @@
         self.channelView.dataSource = self;
         [self.view addSubview: self.channelView];
 
-        self.currentViewName = @"channel";
+        self.currentViewFlag = CHANNEL_VIEW;
 
         //----------------------------------------------// 
     
@@ -97,14 +101,14 @@
         NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSASCIIStringEncoding];
         [dbPath insertString: home atIndex:(NSUInteger)0];
 
-        DBHandler* handler = [[DBHandler alloc] initWithDB: dbPath];
+        self.handler = [[DBHandler alloc] initWithDB: dbPath];
 
-        if ( [handler openDatabase] == SQLITE_OK )
+        if ( [self.handler openDatabase] == SQLITE_OK )
         {
             self.channels = [[NSMutableArray alloc] init];
             NSMutableArray* channels = [[NSMutableArray alloc] init];
             
-            [handler getChannels: channels];
+            [self.handler getChannels: channels];
             
             for (int i=0; i<channels.count; i++)
             {
@@ -112,10 +116,7 @@
                 [self.channels addObject: channels[i] ];
             }
 
-            [handler closeDatabase]; 
-
-
-
+            [self.handler closeDatabase]; 
         }
     }
 
@@ -129,16 +130,17 @@
         self.videoView = [[UITableView alloc]initWithFrame:tableFrame style:UITableViewStylePlain];
 
         [self.videoView registerClass:[Cell class] forCellReuseIdentifier:cellIdentifier];
-        
+
         self.videoView.backgroundColor = [UIColor clearColor];
         self.videoView.delegate = self;
         self.videoView.dataSource = self;
         [self.view addSubview: self.videoView];
 
-        self.currentViewName = @"video";
+        self.currentViewFlag = VIDEO_VIEW;
 
         //----------------------------------------------// 
-    
+
+        // Fetch all the videos from the RSS feed for the given channel 
         NSString* home = NSHomeDirectory();
         NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSASCIIStringEncoding];
         [dbPath insertString: home atIndex:(NSUInteger)0];
@@ -148,7 +150,6 @@
         if ( [handler openDatabase] == SQLITE_OK )
         {
             self.videos = [[NSMutableArray alloc] init];
-            //NSMutableArray* videos = [[NSMutableArray alloc] init];
 
             [handler importRSS: [channel cStringUsingEncoding: NSASCIIStringEncoding]];
             [handler getVideosFrom: [channel cStringUsingEncoding: NSASCIIStringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
@@ -171,6 +172,7 @@
     // Note that both the videoView and channelView utilise the same tableView() functions
     // when adding new cells etc.
     
+    
     -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
     // Called when adding a new cell to the tableView
     {
@@ -178,9 +180,8 @@
         Cell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
 
         // Set the style value to enable the use of detailTextLabels        
-        [cell initWithStyle: UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
-
-
+        [cell initWithStyle: UITableViewCellStyleValue1 reuseIdentifier:cellIdentifier];
+        
         // Clear background and white text
         cell.backgroundColor = [UIColor clearColor];
         
@@ -188,9 +189,6 @@
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.detailTextLabel.textColor = [UIColor whiteColor];
         
-        // TODO
-        cell.selectedBackgroundView.backgroundColor = [UIColor redColor];
-
         // Populate with the datasource corresponding to the active tableView
         if ( self.channelView == tableView ) { cell.textLabel.text = [[self.channels objectAtIndex:indexPath.row] name ]; }
         else 
@@ -199,11 +197,32 @@
             cell.textLabel.text = [[self.videos objectAtIndex:indexPath.row] title]; 
             cell.link = [[self.videos objectAtIndex:indexPath.row] link];
             
-            //cell.detailTextLabel.text = [[self.videos objectAtIndex:indexPath.row] link]; 
+            // Create the 'viewed' toggle button depending on the viewed attribute from the videos array
+            //------------------------------------------//
+            cell.toggleBtn = [CellButton buttonWithType: UIButtonTypeSystem];
+
+            cell.toggleBtn.tintColor = [UIColor whiteColor];
+            [cell.toggleBtn setFrame:CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, CELL_BTN_WIDTH, CELL_BTN_HEIGHT)];
+
+            cell.toggleBtn.title = [cell.textLabel.text cStringUsingEncoding:NSASCIIStringEncoding];
+            cell.toggleBtn.owner_id = [[self.videos objectAtIndex:indexPath.row] owner_id];
+            cell.toggleBtn.viewed = [[self.videos objectAtIndex:indexPath.row] viewed];
+
+            //**** NOTE **** that the target needs to be the ViewController (self)
+            [cell.toggleBtn addTarget:self action:@selector(toggleViewed:) forControlEvents:UIControlEventTouchUpInside ];
+        
+            // Set the image depending on the toggleBtn 'viewed' attribute
+            UIImage* btnImage = [cell.toggleBtn getImage];
+            [cell.toggleBtn setImage: btnImage forState:UIControlStateNormal];
+            //--------------------------------------------//
+
+            [cell.contentView addSubview: [cell toggleBtn]];
         }
 
         return cell;
     }
+
+
 
     -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
     // Returns the number of sections in the tableView
@@ -219,7 +238,7 @@
     }
 
     -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-    // Called when a row is selected
+    //--- Called when a row is selected ----//
     {
         
         if ( self.channelView == tableView )
@@ -227,7 +246,7 @@
         {
             NSString* channel = [ tableView cellForRowAtIndexPath: indexPath ].textLabel.text;
             NSLog(@"Tapped entry[%ld]: %@", indexPath.row, channel);
-            
+
             self.channelView.hidden = YES;
             
             [self addVideoView: channel];
@@ -247,25 +266,35 @@
         return 70;
     }
 
-    -(UIImage*) imageWithImage:(UIImage *)image convertToSize:(CGSize)size 
-    // Helper to scale UIImage objects
-    {
-        UIGraphicsBeginImageContext(size);
-        [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
-        UIImage *destImage = UIGraphicsGetImageFromCurrentImageContext();    
-        UIGraphicsEndImageContext();
-        return destImage;
-    }
     
     //------ BUTTONS -------// 
+    -(void) toggleViewed: (CellButton*)sender
+    // UIButton is still being sent as an argument
+    {
+        if ( [self.handler openDatabase] == SQLITE_OK )
+        {
+            // Update the viewed status in the database
+            [self.handler toggleViewedVideos: sender.title owner_id: sender.owner_id];
+            [self.handler closeDatabase]; 
+        }
+
+        // Update the state of the button in the cell
+        sender.viewed = !sender.viewed;
+        [sender setImage: [sender getImage] forState:UIControlStateNormal];
+
+        NSLog(@"Title is now %d", sender.viewed);
+    }
     
     -(void) reloadRSS: (UIButton*)sender
     {
-        if ( [ self.currentViewName isEqual: @"channel"] )
+        if ( self.currentViewFlag == CHANNEL_VIEW )
         {
             NSLog(@"chan!");
 
-        } else { NSLog(@"vid!"); }
+        } else
+        { 
+            NSLog(@"vid!"); 
+        }
         
     }
 
@@ -275,9 +304,11 @@
     {
         [self.videoView removeFromSuperview];
         [sender removeFromSuperview];
-        self.currentViewName = @"channel";
+        self.currentViewFlag = CHANNEL_VIEW;
         self.channelView.hidden = NO;
     }
 
 @end
+
+
 
