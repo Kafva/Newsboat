@@ -11,7 +11,7 @@ URLS=~/.newsboat/urls
 if [ "$1" = test ]; then
     [ -f test ] && rm test
     [ -d test.dSYM ] && rm -rf test.dSYM
-    clang -g -framework Foundation -lsqlite3 $SRC_DIR/tests/main.m $SRC_DIR/util.m -o test && ./test $2
+    clang -g -framework Foundation -lsqlite3 $SRC_DIR/tests/main.m $SRC_DIR/backend.m -o test && ./test $2
 elif [ "$1" = ls ]; then
     # NOTE that the path shown is the root of the app which is mounted at NSHomeDirectory()
     [ -z $(system_profiler SPUSBDataType | sed -n 's/^[ ]\{1,\}Serial Number: \(.*\)/\1/p') ] && echo "No iOS device connected" && exit 1

@@ -1,4 +1,4 @@
-#include "util.h"
+#include "backend.h"
 // Global function can be defined and called with default C syntax
 
 // Nearly all methods should act upon the created object and not the entire class
@@ -12,48 +12,6 @@
 @implementation Video : NSObject
    -(NSString*) description { return [NSString stringWithFormat:@"<Video:%p> title: %@", self, self.title ]; }
 @end
-
-@implementation CellButton : UIButton
-    -(UIImage*) getImage
-    // Get the corresponding image based upon the viewed attribute
-    {
-        NSString* btnName = [NSString stringWithFormat:@"%s", VIEWED_IMAGE];
-        if (self.viewed == FALSE){  btnName = [NSString stringWithFormat:@"%s", UNVIEWED_IMAGE]; } 
-    
-        UIImage* btnImage = [UIImage imageNamed:btnName];
-        btnImage = imageWithImage( btnImage, CGSizeMake(CELL_BTN_WIDTH, CELL_BTN_HEIGHT));
-        return btnImage;
-    }
-@end
-
-@implementation Cell : UITableViewCell
-
-
-    //// To reuset the button function we pass the selector method which defines the
-    //// action on-tap for the button
-    //{
-    //    // https://stackoverflow.com/questions/6443639/objective-c-buttons-created-from-subclass-of-uibutton-class-not-working
-    //    if (nil == self.toggleBtn)
-    //    // Initalise the toggle button from scratch
-    //    {
-    //        //self.toggleBtn = [CellButton buttonWithType: UIButtonTypeSystem];
-    //        self.toggleBtn = [[CellButton alloc] init];
-    //        self.toggleBtn.tintColor = [UIColor whiteColor];
-    //        [self.toggleBtn setFrame:CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, CELL_BTN_WIDTH, CELL_BTN_HEIGHT)];
-    //        
-    //        [self.toggleBtn addTarget:controller action:selector forControlEvents:UIControlEventTouchUpInside ];
-    //    }
-    //    
-    //    // Set the image depending on the toggleBtn 'viewed' attribute
-    //    UIImage* btnImage = [self.toggleBtn getImage];
-    //    self.toggleBtn.title = title;
-    //    self.toggleBtn.owner_id = owner_id;
-    //    [self.toggleBtn setImage: btnImage forState:UIControlStateNormal];
-    //}
-
-
-@end
-
 
 //--------------------------------------------------//
 
@@ -80,7 +38,7 @@
         // Create a seperate db_ object pointer for the open() call
         sqlite3* db_;
 
-        int ret = sqlite3_open( [self.dbPath cStringUsingEncoding:NSASCIIStringEncoding ], &db_ );
+        int ret = sqlite3_open( [self.dbPath cStringUsingEncoding:NSUTF8StringEncoding ], &db_ );
         if ( ret != SQLITE_OK  )
         {
             NSLog(@"Error opening database: %d", ret);
@@ -94,7 +52,7 @@
     {
         if ( self.db ){ return sqlite3_close(self.db); } else { return 0; }
     }
-
+    
     -(int) queryStmt: (const char*)stmt
     {
         char* err_msg;
@@ -107,6 +65,7 @@
     }
 
     -(int) addVideo: (const char* )timestamp title:(const char* )title owner_id:(const char*)owner_id link:(const char*) link
+    // Called in `handleRSS()`
     {
         // The method will throw an error when encountering already added videos due to the UNIQUE
         // constraint. When adding new videos the oldest one should be deleted if the count exceeds VIDEOS_PER_CHANNEL
@@ -119,27 +78,27 @@
 
         // The IGNORE keyword will inhibit errors from not adhearing to the UNIQUE constraints
         // and instead simply ignore the perticular INSERT statement
-        const char* stmt = [[NSString stringWithFormat: @"INSERT OR IGNORE INTO `Videos` (`timestamp`, `title`, `viewed`, `owner`, `link`) VALUES (DATE(\"%s\"), \"%s\", 0 , %s, \"%s\"); ",timestamp, title, owner_id, link ] cStringUsingEncoding:NSASCIIStringEncoding];
+        const char* stmt = [[NSString stringWithFormat: @"INSERT OR IGNORE INTO `Videos` (`timestamp`, `title`, `viewed`, `owner`, `link`) VALUES (DATE(\"%s\"), \"%s\", FALSE , %s, \"%s\"); ",timestamp, title, owner_id, link ] cStringUsingEncoding:NSUTF8StringEncoding];
         int ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
         
         if ( ret == SQLITE_OK  )
         // Only go through the process of potentially removing an old video if the insertion was successful
         {
-            stmt = [[NSString stringWithFormat: @"SELECT COUNT(*) FROM `Videos` WHERE owner = %s; ",owner_id] cStringUsingEncoding:NSASCIIStringEncoding];
+            stmt = [[NSString stringWithFormat: @"SELECT COUNT(*) FROM `Videos` WHERE owner = %s; ",owner_id] cStringUsingEncoding:NSUTF8StringEncoding];
 
             if ( sqlite3_exec( self.db , stmt, callbackColumnValues, (void*)results, &err_msg ) == SQLITE_OK )
             // "The 4th argument to sqlite3_exec() is relayed as the first argument ot the callback()"
             // Check if the row count for the Channel exceeds VIDEOS_PER_CHANNEL
             {
-                //NSLog(@"ROWS: %d , %d", atoi(results[0]), VIDEOS_PER_CHANNEL);
+                NSLog(@"ROWS: %d , %d", atoi(results[0]), VIDEOS_PER_CHANNEL);
 
                 if ( atoi(results[0]) > VIDEOS_PER_CHANNEL )
                 // If so find the oldest video(s) and delete it/them from the channel in question
                 {
-                    stmt = [[NSString stringWithFormat: @"SELECT `title` FROM `Videos` WHERE (`title`,`owner`) IN (SELECT `title`,`owner` FROM `Videos` WHERE `owner` = %s ORDER BY `timestamp` ASC LIMIT %d);", owner_id,  atoi(results[0]) - VIDEOS_PER_CHANNEL ] cStringUsingEncoding:NSASCIIStringEncoding];
+                    stmt = [[NSString stringWithFormat: @"SELECT `title` FROM `Videos` WHERE (`title`,`owner`) IN (SELECT `title`,`owner` FROM `Videos` WHERE `owner` = %s ORDER BY `timestamp` ASC LIMIT %d);", owner_id,  atoi(results[0]) - VIDEOS_PER_CHANNEL ] cStringUsingEncoding:NSUTF8StringEncoding];
                     if ( sqlite3_exec(self.db, stmt, callbackGetTitle, (void*)delete_title, &err_msg) != SQLITE_OK ) {  NSLog(@"%s", err_msg);  }
                     
-                    stmt = [[NSString stringWithFormat: @"DELETE FROM `Videos` WHERE (`title`,`owner`) IN (SELECT `title`,`owner` FROM `Videos` WHERE `owner` = %s ORDER BY `timestamp` ASC LIMIT %d);", owner_id,  atoi(results[0]) - VIDEOS_PER_CHANNEL ] cStringUsingEncoding:NSASCIIStringEncoding];
+                    stmt = [[NSString stringWithFormat: @"DELETE FROM `Videos` WHERE (`title`,`owner`) IN (SELECT `title`,`owner` FROM `Videos` WHERE `owner` = %s ORDER BY `timestamp` ASC LIMIT %d);", owner_id,  atoi(results[0]) - VIDEOS_PER_CHANNEL ] cStringUsingEncoding:NSUTF8StringEncoding];
                     if ( sqlite3_exec(self.db, stmt, NULL,NULL, &err_msg) == SQLITE_OK ) { NSLog(@"Successfully deleted: \"%s\" from owner_id:%s", delete_title, owner_id  ); }
                     else {  NSLog(@"%s", err_msg);  }
 
@@ -160,7 +119,7 @@
     -(int) importRSS: (const char*)channel
     {
         char* stmt = malloc(sizeof(char)*VARCHAR_SIZE); 
-        sprintf(stmt, "SELECT `id`,`rssLink` FROM `Channels` WHERE `name` = '%s';", channel); 
+        sprintf(stmt, "SELECT `id`,`rssLink` FROM `Channels` WHERE `name` = '%s';", sanitize(channel) ); 
         char* err_msg;
         
         // The callback function works as a lambda function in that each row in
@@ -198,7 +157,7 @@
     {
         char* err_msg;
         char* stmt = malloc(sizeof(char)*VARCHAR_SIZE); 
-        sprintf(stmt, "SELECT * FROM `Videos` WHERE `owner` = (SELECT `id` FROM `Channels` WHERE `name` LIKE '%s') ORDER BY `timestamp` DESC LIMIT %d;", channel, count); 
+        sprintf(stmt, "SELECT * FROM `Videos` WHERE `owner` = (SELECT `id` FROM `Channels` WHERE `name` LIKE '%s') ORDER BY `timestamp` DESC LIMIT %d;", sanitize(channel), count); 
 
         // The callback function prints the result of the query
         int ret = sqlite3_exec( self.db , stmt, callbackPrint, NULL, &err_msg );
@@ -215,11 +174,11 @@
         char* stmt = malloc(sizeof(char)*VARCHAR_SIZE); 
 
         // NOTE that if channels have similar names the wrong vidoes could be returned with a greedy RegEx
-        sprintf(stmt, "SELECT * FROM `Videos` WHERE `owner` = (SELECT `id` FROM `Channels` WHERE `name` LIKE '%s') ORDER BY `timestamp` DESC LIMIT %d;", channel, count); 
+        sprintf(stmt, "SELECT * FROM `Videos` WHERE `owner` = (SELECT `id` FROM `Channels` WHERE `name` LIKE '%s') ORDER BY `timestamp` DESC LIMIT %d;", sanitize(channel), count); 
 
         // The callback function creates Video objects which are returned to the paramater passed to the method 
         int ret = sqlite3_exec( self.db , stmt, callbackVideoObjects, (__bridge void*)videos, &err_msg );
-        //int ret = sqlite3_exec( self.db , stmt, callbackPrint, NULL, &err_msg );
+        //ret = sqlite3_exec( self.db , stmt, callbackPrint, NULL, &err_msg );
         
         if ( ret != SQLITE_OK  ){  NSLog(@"%s", err_msg);  }
         
@@ -235,7 +194,7 @@
         RequestHandler* re = [[RequestHandler alloc] init];
         char* channelId = columnValues[0];
 
-        NSString* rssLink = [[NSString alloc] initWithCString: columnValues[1] encoding:NSASCIIStringEncoding];
+        NSString* rssLink = [[NSString alloc] initWithCString: columnValues[1] encoding:NSUTF8StringEncoding];
                 
         [re httpRequest: rssLink  success: ^(NSString* response) 
             { 
@@ -251,7 +210,7 @@
 
                 for (int i=1; i < titles.count; i++)
                 {
-                    [self addVideo: [ timestamps[i] cStringUsingEncoding:NSASCIIStringEncoding ] title: [titles[i] cStringUsingEncoding:NSASCIIStringEncoding] owner_id:channelId link: [links[i] cStringUsingEncoding:NSASCIIStringEncoding]];
+                    [self addVideo: [ timestamps[i] cStringUsingEncoding:NSUTF8StringEncoding ] title: [titles[i] cStringUsingEncoding:NSUTF8StringEncoding] owner_id:channelId link: [links[i] cStringUsingEncoding:NSUTF8StringEncoding]];
                 }
 
             }  
@@ -282,7 +241,9 @@
     // Toggle the viewed attribute for the video matching the given title and owner_id
     {
         char* err_msg;
-        const char* stmt = [[NSString stringWithFormat: @"UPDATE `Videos` SET `viewed` = NOT `viewed` WHERE `owner` = %d AND `title` = '%s' ",owner_id, title ] cStringUsingEncoding:NSASCIIStringEncoding];
+        const char* stmt = [[NSString stringWithFormat: @"UPDATE `Videos` SET `viewed` = NOT `viewed` WHERE `owner` = %d AND `title` = '%s' ",owner_id, sanitize(title) ] cStringUsingEncoding:NSUTF8StringEncoding];
+        NSLog(@"STATEMENT: %s", stmt);
+        
         int ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
         
         if (ret != SQLITE_OK) {  NSLog(@"%s", err_msg);  }
@@ -317,7 +278,7 @@
             if (error.code == 0)
             {
                 // Call the success block with the reply in string format as an argument
-                success( [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]  ); 
+                success( [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]  ); 
             }
             else {  failure( error ); }
         }];
@@ -382,6 +343,17 @@
                 
                 // Append a \0 character and add it to the array
                 [tagData_ insertString: [[NSString alloc] initWithCharacters:(const unichar*)"\0" length:1 ] atIndex: dataRange.length ];
+                
+                //NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\[A-Za-z0-9][-^][A-Za-z0-9_@#]" options:NSRegularExpressionCaseInsensitive error:NULL];
+                //NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\M" options:NSRegularExpressionCaseInsensitive error:NULL];
+                //[regex replaceMatchesInString: tagData_ options:0 range:NSMakeRange(0, tagData_.length) withTemplate:@"XD"];
+
+                tagData_ = (NSMutableString*)[tagData_ stringByReplacingOccurrencesOfString: @"&amp;" withString: @"&"];
+                tagData_ = (NSMutableString*)[tagData_ stringByReplacingOccurrencesOfString: @"&qout;" withString: @"\""];
+                tagData_ = (NSMutableString*)[tagData_ stringByReplacingOccurrencesOfString: @"’" withString: @"'"];
+
+                NSLog(@"Tagdata: %@", tagData_);
+
                 [ tagData addObject: tagData_ ];
 
                 // Remove all data in the response up until the end of range2 </tag>
@@ -449,14 +421,14 @@
 
 //---------------MISC---------------------//
 
-UIImage* imageWithImage(UIImage* image, CGSize size) 
-// Helper to scale UIImage objects
+const char* sanitize(const char* str)
+// Sanitize input for SQL by escaping qoutes
 {
-    UIGraphicsBeginImageContext(size);
-    [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
-    UIImage *destImage = UIGraphicsGetImageFromCurrentImageContext();    
-    UIGraphicsEndImageContext();
-    return destImage;
+    NSString* str_ = [[NSString alloc] initWithCString:str encoding:NSUTF8StringEncoding];
+    NSLog(@"str_=%@", str_);
+    str_ = [str_ stringByReplacingOccurrencesOfString:@"'" withString:@"\\"];
+    NSLog(@"str_=%@", str_);
+    return [[str_ stringByReplacingOccurrencesOfString:@"'" withString:@"\\"] cStringUsingEncoding:NSUTF8StringEncoding];
 }
 
 //--------------SQLITE CALLBACKS------------------//
@@ -468,10 +440,15 @@ static int callbackVideoObjects(void* context, int columnCount, char** columnVal
     // Note that we never import the timestamp at columnValues[0]
 
     Video* video = [[Video alloc] init];
-    video.title = [[ NSString alloc ] initWithCString: columnValues[1] encoding:NSASCIIStringEncoding];  
-    video.viewed = columnValues[2]; 
+    video.title = [[ NSString alloc ] initWithCString: columnValues[1] encoding:NSUTF8StringEncoding];  
+
+    // Note that the boolean attribute is given as a string and thus can't simply be casted 
+    video.viewed = false;
+    NSLog(@"Strcmp: %s [ret=%d]", columnValues[2], strcmp("0",columnValues[2]));
+    if ( strcmp("0",columnValues[2])!=0 ){ video.viewed = true; }
+    
     video.owner_id = atoi(columnValues[3]); 
-    video.link = [[ NSString alloc ] initWithCString: columnValues[4] encoding:NSASCIIStringEncoding];  
+    video.link = [[ NSString alloc ] initWithCString: columnValues[4] encoding:NSUTF8StringEncoding];  
     
     //NSLog(@"callbackVideo(): %@", video);
     [(__bridge NSMutableArray*)context addObject: video];
@@ -482,9 +459,9 @@ static int callbackChannelObjects(void* context, int columnCount, char** columnV
 {
     Channel* channel = [[Channel alloc] init];
     channel.id = atoi(columnValues[0]); 
-    channel.name = [[ NSString alloc ] initWithCString: columnValues[1] encoding:NSASCIIStringEncoding];  
-    channel.rssLink = [[ NSString alloc ] initWithCString: columnValues[2] encoding:NSASCIIStringEncoding];; 
-    channel.channelLink = [[ NSString alloc ] initWithCString: columnValues[3] encoding:NSASCIIStringEncoding];  
+    channel.name = [[ NSString alloc ] initWithCString: columnValues[1] encoding:NSUTF8StringEncoding];  
+    channel.rssLink = [[ NSString alloc ] initWithCString: columnValues[2] encoding:NSUTF8StringEncoding];; 
+    channel.channelLink = [[ NSString alloc ] initWithCString: columnValues[3] encoding:NSUTF8StringEncoding];  
 
     [(__bridge NSMutableArray*)context addObject: channel];
     return 0;

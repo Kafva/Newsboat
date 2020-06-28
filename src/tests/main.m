@@ -1,4 +1,4 @@
-#import "../util.h"
+#import "../backend.h"
 #import <time.h>
 
 int TEST=4;
@@ -27,7 +27,7 @@ int main (int argc, char * argv[])
         else if (TEST == 2)
         // XML fetching
         {
-            NSString* url = @"https://www.youtube.com/feeds/videos.xml?channel_id=UCZaT_X_mc0BI-djXOlfhqWQ";
+            NSString* url = @"https://www.youtube.com/feeds/videos.xml\?channel_id=UC3nPaf5MeeDTHA2JN7clidg";
             //NSString* url = @"https://www.youtube.com/feeds/videos.xml?channel_id=UCtGoikgbxP4F3rgI9PldI9g"; 
             NSString* tag = @"title";
             RequestHandler* re = [[RequestHandler alloc] init];
@@ -42,27 +42,27 @@ int main (int argc, char * argv[])
                 NSLog(@"\t%@",str);
             }
             
-            NSLog(@"-------------------------");
+            //NSLog(@"-------------------------");
 
-            NSMutableArray* dates = [[NSMutableArray alloc] init];
-            tag = @"published";
-            [re httpRequest: url  success: ^(NSString* response) { [re getDataFromTag:tag response:response tagData:dates  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
-            NSLog(@"---- Content of <%@>...</%@>  ----", tag, tag);
-            for ( NSMutableString* str in dates )
-            {
-                NSLog(@"\t%@",str);
-            }
+            //NSMutableArray* dates = [[NSMutableArray alloc] init];
+            //tag = @"published";
+            //[re httpRequest: url  success: ^(NSString* response) { [re getDataFromTag:tag response:response tagData:dates  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
+            //NSLog(@"---- Content of <%@>...</%@>  ----", tag, tag);
+            //for ( NSMutableString* str in dates )
+            //{
+            //    NSLog(@"\t%@",str);
+            //}
 
-            NSLog(@"-------------------------");
+            //NSLog(@"-------------------------");
 
-            NSMutableArray* urls = [[NSMutableArray alloc] init];
-            tag = @"link";
-            [re httpRequest: url  success: ^(NSString* response) { [re getHrefFromTag:tag response:response tagData:urls  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
-            NSLog(@"---- Content of <%@ ... />  ----", tag);
-            for ( NSMutableString* str in urls )
-            {
-                NSLog(@"\t%@",str);
-            }
+            //NSMutableArray* urls = [[NSMutableArray alloc] init];
+            //tag = @"link";
+            //[re httpRequest: url  success: ^(NSString* response) { [re getHrefFromTag:tag response:response tagData:urls  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
+            //NSLog(@"---- Content of <%@ ... />  ----", tag);
+            //for ( NSMutableString* str in urls )
+            //{
+            //    NSLog(@"\t%@",str);
+            //}
 
 
             
@@ -125,9 +125,9 @@ int main (int argc, char * argv[])
 
             // https://stackoverflow.com/questions/28279701/ios-sqlite-misuse-error-code-21
 
-            NSString* dbPath = [[NSString alloc] initWithCString: TEST_DB_PATH encoding:NSASCIIStringEncoding];
+            NSString* dbPath = [[NSString alloc] initWithCString: TEST_DB_PATH encoding:NSUTF8StringEncoding];
             DBHandler* handler = [[DBHandler alloc] initWithDB: dbPath];
-            //NSLog(@"This: %s", [ handler.dbPath cStringUsingEncoding:NSASCIIStringEncoding]);
+            //NSLog(@"This: %s", [ handler.dbPath cStringUsingEncoding:NSUTF8StringEncoding]);
             
             [handler openDatabase];
 

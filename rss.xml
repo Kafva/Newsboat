@@ -1,1107 +1,418 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns:media="http://search.yahoo.com/mrss/" xmlns="http://www.w3.org/2005/Atom">
- <link rel="self" href="http://www.youtube.com/feeds/videos.xml?channel_id=UCtGoikgbxP4F3rgI9PldI9g"/>
- <id>yt:channel:UCtGoikgbxP4F3rgI9PldI9g</id>
- <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
- <title>Super Eyepatch Wolf</title>
- <link rel="alternate" href="https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g"/>
+ <link rel="self" href="http://www.youtube.com/feeds/videos.xml?channel_id=UC3nPaf5MeeDTHA2JN7clidg"/>
+ <id>yt:channel:UC3nPaf5MeeDTHA2JN7clidg</id>
+ <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+ <title>Bellular News</title>
+ <link rel="alternate" href="https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg"/>
  <author>
-  <name>Super Eyepatch Wolf</name>
-  <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+  <name>Bellular News</name>
+  <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
  </author>
- <published>2015-12-18T15:33:22+00:00</published>
+ <published>2015-07-06T18:45:38+00:00</published>
  <entry>
-  <id>yt:video:hVYzc2Xpup0</id>
-  <yt:videoId>hVYzc2Xpup0</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>The Manga That Breaks People</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=hVYzc2Xpup0"/>
+  <id>yt:video:jyHDy7wXAwo</id>
+  <yt:videoId>jyHDy7wXAwo</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>This Can’t Go On Forever: Ex-Sony Worldwide Studios Lead Speaks Out On Broken AAA Development</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=jyHDy7wXAwo"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2020-05-31T14:02:54+00:00</published>
-  <updated>2020-06-01T09:21:13+00:00</updated>
+  <published>2020-06-27T17:28:27+00:00</published>
+  <updated>2020-06-27T17:28:27+00:00</updated>
   <media:group>
-   <media:title>The Manga That Breaks People</media:title>
-   <media:content url="https://www.youtube.com/v/hVYzc2Xpup0?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i1.ytimg.com/vi/hVYzc2Xpup0/hqdefault.jpg" width="480" height="360"/>
-   <media:description>Correction - Silence of the lambs did actually win best picture in 1992.
-
-Here’s a video on the heart warming story of a mother and son and their inspirational journey to over come adversity. 
-
-Patreon: https://www.patreon.com/Supereyepatchwolf
-Tshirts: https://www.fangamer.com/collections/super-eyepatch-wolf
-Twitch: https://www.twitch.tv/supereyepatchwolf
-
-Lets Fight a Boss Podcast:
-
-Itunes: 
-https://itunes.apple.com/ie/podcast/lets-fight-a-boss/id1048483221?mt=2
-Sound Cloud: https://soundcloud.com/letsfightaboss
-Youtube: https://www.youtube.com/channel/UCawXJIKUj2o_tFPMZ4xiXBw
-
-Other Super Eyepatch Wolf stuff
-
-Instagram: https://www.instagram.com/super_eyepatch_wolf/
-Twitter: https://twitter.com/EyePatchWolf
-
-Sources:
-https://www.eiagroup.com/facial-expressions-explored/
-
-https://www.smithsonianmag.com/science-nature/the-enchanting-sea-monsters-on-medieval-maps-1805646/
-
-Why Horror Sedueces- by Mathias Clasen (Book)
-
-
-Song List:
-
-https://imgur.com/a/2pkjg8n</media:description>
+   <media:title>This Can’t Go On Forever: Ex-Sony Worldwide Studios Lead Speaks Out On Broken AAA Development</media:title>
+   <media:content url="https://www.youtube.com/v/jyHDy7wXAwo?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i3.ytimg.com/vi/jyHDy7wXAwo/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Sign up at https://crunchyroll.com/bellularnews to get Crunchyroll ad-free for 14-days!
+Shawn makes a great point: AAA is stuck in a rut, and they know what they need to do to solve it - even EA are taking the right first steps.
+Supported by our Patrons: http://www.patreon.com/bellularnews
+Twitter: http://www.twitter.com/bellulargaming
+Join our Discord! https://discord.gg/BNh7bfW
+Our game studio's site: https://www.coffeeboxgames.com/</media:description>
    <media:community>
-    <media:starRating count="63255" average="4.94" min="1" max="5"/>
-    <media:statistics views="783012"/>
+    <media:starRating count="2638" average="4.71" min="1" max="5"/>
+    <media:statistics views="34211"/>
    </media:community>
   </media:group>
  </entry>
  <entry>
-  <id>yt:video:nVena5MgShU</id>
-  <yt:videoId>nVena5MgShU</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>Why You Should Watch Outlaw Star</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=nVena5MgShU"/>
+  <id>yt:video:T-7Z9QvfYgw</id>
+  <yt:videoId>T-7Z9QvfYgw</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>CURSED | Randy Pitchford &amp; Gearbox Mired In MORE Lawsuits - What Happened To Duke Nukem</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=T-7Z9QvfYgw"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2020-05-09T14:20:09+00:00</published>
-  <updated>2020-05-09T14:32:09+00:00</updated>
+  <published>2020-06-26T17:32:32+00:00</published>
+  <updated>2020-06-28T10:55:02+00:00</updated>
   <media:group>
-   <media:title>Why You Should Watch Outlaw Star</media:title>
-   <media:content url="https://www.youtube.com/v/nVena5MgShU?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i3.ytimg.com/vi/nVena5MgShU/hqdefault.jpg" width="480" height="360"/>
-   <media:description>Do you enjoy overly sentimental videos about old anime?? No? Me Neither. But unfortunately, but here's me talking about Outlaw Star.
-
-Patreon: https://www.patreon.com/Supereyepatchwolf
-Tshirts: https://www.fangamer.com/collections/super-eyepatch-wolf
-Twitch: https://www.twitch.tv/supereyepatchwolf
-
-Lets Fight a Boss Podcast:
-
-Itunes: https://itunes.apple.com/ie/podcast/lets-fight-a-boss/id1048483221?mt=2
-Sound Cloud: https://soundcloud.com/letsfightaboss
-Youtube: https://www.youtube.com/channel/UCawXJIKUj2o_tFPMZ4xiXBw
-
-Other Super Eyepatch Wolf stuff
-
-Instagram: https://www.instagram.com/super_eyepatch_wolf/
-Twitter: https://twitter.com/EyePatchWolf
-
-Song List:
-https://imgur.com/a/r2GG1Al</media:description>
+   <media:title>CURSED | Randy Pitchford &amp; Gearbox Mired In MORE Lawsuits - What Happened To Duke Nukem</media:title>
+   <media:content url="https://www.youtube.com/v/T-7Z9QvfYgw?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i1.ytimg.com/vi/T-7Z9QvfYgw/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Randy and his crew at Gearbox can't keep themselves away from perpetual lawsuits. It's looking like Duke Nukem is an extremely cursed IP for everyone involved.
+Supported by our Patrons: http://www.patreon.com/bellularnews
+Twitter: http://www.twitter.com/bellulargaming
+Join our Discord! https://discord.gg/BNh7bfW
+Our game studio's site: https://www.coffeeboxgames.com/</media:description>
    <media:community>
-    <media:starRating count="21886" average="4.97" min="1" max="5"/>
-    <media:statistics views="256308"/>
+    <media:starRating count="2345" average="4.94" min="1" max="5"/>
+    <media:statistics views="32726"/>
    </media:community>
   </media:group>
  </entry>
  <entry>
-  <id>yt:video:JR9F2Z7zSbA</id>
-  <yt:videoId>JR9F2Z7zSbA</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>The Bizarre Modern Reality of Sonic the Hedgehog</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=JR9F2Z7zSbA"/>
+  <id>yt:video:M2owy3LIbkA</id>
+  <yt:videoId>M2owy3LIbkA</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>IGN’s Naughty Dog LIES?! | Severe Ethics Breaches, Staff Harassment &amp; Corruption</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=M2owy3LIbkA"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2020-04-18T13:00:06+00:00</published>
-  <updated>2020-04-23T14:18:56+00:00</updated>
+  <published>2020-06-25T16:30:49+00:00</published>
+  <updated>2020-06-26T07:22:50+00:00</updated>
   <media:group>
-   <media:title>The Bizarre Modern Reality of Sonic the Hedgehog</media:title>
-   <media:content url="https://www.youtube.com/v/JR9F2Z7zSbA?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i3.ytimg.com/vi/JR9F2Z7zSbA/hqdefault.jpg" width="480" height="360"/>
-   <media:description>For the last four weeks I have thought more about Sonic the Hedgehog than any human ever should. Enjoy. (This is a reupload)
-
-Patreon: https://www.patreon.com/Supereyepatchwolf
-Tshirts: https://www.fangamer.com/collections/super-eyepatch-wolf
-Twitch: https://www.twitch.tv/supereyepatchwolf
-
-This is an edited version of the original video which ran into youtube trouble for some of its content, you can find the original edit here:
-
-https://t.co/mGSjuq96gA?amp=1
-
-Lets Fight a Boss Podcast:
-
-Itunes: https://itunes.apple.com/ie/podcast/lets-fight-a-boss/id1048483221?mt=2
-Sound Cloud: https://soundcloud.com/letsfightaboss
-Youtube: https://www.youtube.com/channel/UCawXJIKUj2o_tFPMZ4xiXBw
-
-Other Super Eyepatch Wolf stuff
-
-Instagram: https://www.instagram.com/super_eyepatch_wolf/
-Twitter: https://twitter.com/EyePatchWolf
-
-
-Links:
-
-Sprite Animations:
-Sonic Final Fantasy - https://www.newgrounds.com/portal/view/443187
-
-Super Mario Bros Z - https://www.youtube.com/watch?v=O6zkGU3-OVI
-
-Fan Comics:
-Hangin Out - https://www.deviantart.com/hydroxianchaos/art/Hangin-Out-1-705180641
-
-Ghosts of the Future - https://www.deviantart.com/evanstanley/gallery/71108020/ghosts-of-the-future-18
-
-Sonic Skyline - https://www.deviantart.com/drawloverlala
-
-Sonics Big Fat Adventure - https://t.co/Vm9L7BZP1K?amp=1
-
-Tails Gets Trolled - http://www.tailsgetstrolled.org/
-
-Fan Games
-Sonic Smackdown - https://sonicfangameshq.com/forums/showcase/sonic-smackdown.341/
-
-Sonic Utopia - https://sonicfangameshq.com/forums/showcase/sonic-utopia-early-demo.33/
-
-Sonic Dreams Collection - https://sonic-dreams-collection.en.softonic.com/
-
-Animations
-Sonic Mania fan animation collab - https://youtu.be/VTeleM2qLyo
-
-Sonic Vs Sanic - https://www.youtube.com/watch?v=lBNNt57p1Sk
-
-Movies:
-The Hedgehog - https://vimeo.com/117371025
-
-Adult stuff 
-- I have a feeling linking any adult stuff here would get the video demonetized/ potentially be illegal, so just search the characters name in the search engine shown in the video. 
-
-Sources:
-
-Gametap Sonic Retrospective:
-https://youtu.be/f-ij_RcEzcI
-
-https://www.polygon.com/2016/2/8/10756318/sonic-the-hedgehog-great-rocky-history
-
-https://www.polygon.com/2019/3/6/18253330/sonic-the-hedgehog-live-action-fan-redesign
-
-
-https://www.theverge.com/2019/5/2/18527476/sonic-live-action-cgi-redesign-sega-paramount-director-fan-edits
-
-
-https://nymag.com/intelligencer/2020/02/why-is-there-so-much-christian-sonic-the-hedgehog-fan-art.html
-
-https://www.destructoid.com/sega-gives-sonic-fans-the-okay-to-make-games-386389.phtml
-
-https://ottawacitizen.com/life/life-story/youre-going-to-grow-out-of-this-its-a-fad-one-ottawa-fans-super-sonic-obsession
-
-https://www.usgamer.net/articles/sonic-fandom-deep-dive
-
-https://kotaku.com/a-look-inside-the-soul-of-sonic-the-hedgehog-1615891
-
-
-
-
-Song List:
-https://imgur.com/a/osObB2n</media:description>
+   <media:title>IGN’s Naughty Dog LIES?! | Severe Ethics Breaches, Staff Harassment &amp; Corruption</media:title>
+   <media:content url="https://www.youtube.com/v/M2owy3LIbkA?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i2.ytimg.com/vi/M2owy3LIbkA/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Professional intimidation, staff harassment &amp; starting one of the most egregious and dramatic rumours in the industry - yup, it's IGN.
+Supported by our Patrons: http://www.patreon.com/bellularnews
+Twitter: http://www.twitter.com/bellulargaming
+Join our Discord! https://discord.gg/BNh7bfW
+Our game studio's site: https://www.coffeeboxgames.com/</media:description>
    <media:community>
-    <media:starRating count="29233" average="4.94" min="1" max="5"/>
-    <media:statistics views="423000"/>
+    <media:starRating count="4272" average="4.90" min="1" max="5"/>
+    <media:statistics views="61282"/>
    </media:community>
   </media:group>
  </entry>
  <entry>
-  <id>yt:video:krzTyLtt18w</id>
-  <yt:videoId>krzTyLtt18w</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>My Favorite Things Winter 2020</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=krzTyLtt18w"/>
+  <id>yt:video:lvSJPnI-PRg</id>
+  <yt:videoId>lvSJPnI-PRg</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>Aaaand… It’s GONE! MS KILL Mixer - Ninja &amp; Shoud’s MASSIVE Payday, Facebook Alliance &amp; MORE</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=lvSJPnI-PRg"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2020-03-14T14:00:14+00:00</published>
-  <updated>2020-04-12T11:33:36+00:00</updated>
+  <published>2020-06-23T19:50:48+00:00</published>
+  <updated>2020-06-23T19:50:48+00:00</updated>
   <media:group>
-   <media:title>My Favorite Things Winter 2020</media:title>
-   <media:content url="https://www.youtube.com/v/krzTyLtt18w?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i4.ytimg.com/vi/krzTyLtt18w/hqdefault.jpg" width="480" height="360"/>
-   <media:description>Here is a video talking about Granblue Fantasy, 16 bit anime, Hands off My Eizoken, Dorohedoro, Fire Punch and AEW. Stay safe everyone.
-
-Patreon: https://www.patreon.com/Supereyepatchwolf
-Tshirts: https://www.fangamer.com/collections/super-eyepatch-wolf
-Twitch: https://www.twitch.tv/supereyepatchwolf
-
-Lets Fight a Boss Podcast:
-
-Itunes: https://itunes.apple.com/ie/podcast/lets-fight-a-boss/id1048483221?mt=2
-Sound Cloud: https://soundcloud.com/letsfightaboss
-Youtube: https://www.youtube.com/channel/UCawXJIKUj2o_tFPMZ4xiXBw
-
-Other Super Eyepatch Wolf stuff
-
-Instagram: https://www.instagram.com/super_eyepatch_wolf/
-Twitter: https://twitter.com/EyePatchWolf
-
-Pool Boy: https://soundcloud.com/oypoolboy/tracks
-
-Links:
-
-Blood Sun Vendetta:
- https://www.youtube.com/watch?v=iJs2zwHwl5U
-
-Doggie Corgi
-https://www.youtube.com/channel/UCsqffkpc-dfAFS8mLDq9Iag
-
-Thor High Heels:
-PC 98 Video- https://www.youtube.com/watch?v=OVpX2y6KjwA
-JayJay Mcafiled and the Island of the Missing - https://www.youtube.com/watch?v=vFT9tKpiFdg
-Bizzare Japanese Horror Games - https://www.youtube.com/watch?v=TKwOeZiqrnA&amp;t
-
-Woolie Vs
-Gon in 60 Seconds: https://tinyurl.com/u859mb9
-Mystical Ninja LP: https://youtu.be/lvvniMfPSOY
-Woolie Versus Super Eyepatch Wolf Panel: (Coming Soon)
-My Panel at Magfest: 
-https://youtu.be/XDaJUdSOS5g
-
-Song List:
-
-https://imgur.com/a/UzhF7YL</media:description>
+   <media:title>Aaaand… It’s GONE! MS KILL Mixer - Ninja &amp; Shoud’s MASSIVE Payday, Facebook Alliance &amp; MORE</media:title>
+   <media:content url="https://www.youtube.com/v/lvSJPnI-PRg?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i1.ytimg.com/vi/lvSJPnI-PRg/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Mixer has suddenly been put out of its misery by Microsoft and it bodes poorly for xCloud and a key part of Xbox's platform strategy going forward. Facebook Gaming just isn't going to cut it for gamers.
+Supported by our Patrons: http://www.patreon.com/bellularnews
+Twitter: http://www.twitter.com/bellulargaming
+Join our Discord! https://discord.gg/BNh7bfW
+Our game studio's site: https://www.coffeeboxgames.com/</media:description>
    <media:community>
-    <media:starRating count="24545" average="4.92" min="1" max="5"/>
-    <media:statistics views="344130"/>
+    <media:starRating count="3075" average="4.94" min="1" max="5"/>
+    <media:statistics views="48258"/>
    </media:community>
   </media:group>
  </entry>
  <entry>
-  <id>yt:video:4arTCRhueAY</id>
-  <yt:videoId>4arTCRhueAY</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>The Current State of Shonen Jump 2020</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=4arTCRhueAY"/>
+  <id>yt:video:CFmfbcCIvTI</id>
+  <yt:videoId>CFmfbcCIvTI</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>“NO MTX” EA’s Core Gamer Double Standard! State of PCGaming, Microsoft’s INSANE $200 Plan + MORE!</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=CFmfbcCIvTI"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2020-02-22T14:00:01+00:00</published>
-  <updated>2020-04-02T20:11:43+00:00</updated>
+  <published>2020-06-22T14:45:14+00:00</published>
+  <updated>2020-06-22T14:45:14+00:00</updated>
   <media:group>
-   <media:title>The Current State of Shonen Jump 2020</media:title>
-   <media:content url="https://www.youtube.com/v/4arTCRhueAY?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i1.ytimg.com/vi/4arTCRhueAY/hqdefault.jpg" width="480" height="360"/>
-   <media:description>One Piece, The Promised Neverland, Demon Slayer, My Hero Academia, ALL THE WARRIORS ARE HERE AND IT’S TIME TO BATTLE
+   <media:title>“NO MTX” EA’s Core Gamer Double Standard! State of PCGaming, Microsoft’s INSANE $200 Plan + MORE!</media:title>
+   <media:content url="https://www.youtube.com/v/CFmfbcCIvTI?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i4.ytimg.com/vi/CFmfbcCIvTI/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Star Wars Squadrons could be indicative of big change at EA - although continuing to rely on FUT for income shows them to be two-faced. PC gaming is going strong, Microsoft are rumoured to be extremely bullish and more - lots of news to cover!
+Supported by our Patrons: http://www.patreon.com/bellularnews
+Twitter: http://www.twitter.com/bellulargaming
+Join our Discord! https://discord.gg/BNh7bfW
+Our game studio's site: https://www.coffeeboxgames.com/
 
-Patreon: https://www.patreon.com/Supereyepatchwolf
-Tshirts: https://www.fangamer.com/collections/super-eyepatch-wolf
-Twitch: https://www.twitch.tv/supereyepatchwolf
-
-Lets Fight a Boss Podcast:
-
-Itunes: https://itunes.apple.com/ie/podcast/lets-fight-a-boss/id1048483221?mt=2
-Sound Cloud: https://soundcloud.com/letsfightaboss
-Youtube: https://www.youtube.com/channel/UCawXJIKUj2o_tFPMZ4xiXBw
-
-Other Super Eyepatch Wolf stuff
-
-Instagram: https://www.instagram.com/super_eyepatch_wolf/
-Twitter: https://twitter.com/EyePatchWolf
-
-Links:
-
-Ruggia Blog: https://ruggiablog.wordpress.com/
-
-Sources:
-
-All Sales figures from: https://www.oricon.co.jp/
-
-Further Info on Sales:
-
-https://www.oricon.co.jp/confidence/special/53961/5/
-
-https://www.animenewsnetwork.com/news/2019-11-27/top-selling-manga-in-japan-by-volume-2019/.153762
-
-https://www.crunchyroll.com/en-gb/anime-news/2019/11/27/oricon-reports-demon-slayer-kimetsu-no-yaiba-is-top-selling-manga-series-of-2019
-
-https://www.oricon.co.jp/news/2149643/
-
-https://www.resetera.com/threads/oricon-japan-manga-sales-2019-2018-nov-19-2019-nov-17-demon-slayer-1-one-piece-2.155654/
-
-Samurai 8 Sales Figures:
-https://twitter.com/WSJ_manga/status/1181944192580411392
-
-Oricon Chainsaw Man Vol 1:
-https://www.animenewsnetwork.com/news/2019-03-21/japanese-comic-ranking-march-4-10/.144510
-
-Contrasting report from Shueisha:
-
-(A note on why I went with oricons numbers over Shueishas - Generally I’m always going to trust a trusted independent source over an official one, but also because I needed to stick to one set of data, and Shueisha doesn't release much data aside from this one article, while data is the sole focus of Oricon.)
-
-https://www.crunchyroll.com/en-gb/anime-news/2019/11/25/eiichiro-odas-one-piece-confirmed-as-top-selling-manga-of-this-year
-
-Hero Academia End Date:
-https://comicbook.com/anime/2018/07/11/kohei-horikoshi-how-long-my-hero-academia-will-last/
-
-Song List:
-
-https://imgur.com/a/Gq0PGfJ</media:description>
+Linus' video on Linux gaming: https://www.youtube.com/watch?v=6T_-HMkgxt0</media:description>
    <media:community>
-    <media:starRating count="40175" average="4.93" min="1" max="5"/>
-    <media:statistics views="736982"/>
+    <media:starRating count="3577" average="4.92" min="1" max="5"/>
+    <media:statistics views="61695"/>
    </media:community>
   </media:group>
  </entry>
  <entry>
-  <id>yt:video:gjbSCEhmjJA</id>
-  <yt:videoId>gjbSCEhmjJA</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>The Bizarre World of Fake Martial Arts</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=gjbSCEhmjJA"/>
+  <id>yt:video:9yRNwy7By9c</id>
+  <yt:videoId>9yRNwy7By9c</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>Important Correction Regarding Last of Us Part 2 Director Cameo</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=9yRNwy7By9c"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2020-02-01T13:58:00+00:00</published>
-  <updated>2020-03-02T20:32:41+00:00</updated>
+  <published>2020-06-21T17:15:09+00:00</published>
+  <updated>2020-06-24T08:22:48+00:00</updated>
   <media:group>
-   <media:title>The Bizarre World of Fake Martial Arts</media:title>
-   <media:content url="https://www.youtube.com/v/gjbSCEhmjJA?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i4.ytimg.com/vi/gjbSCEhmjJA/hqdefault.jpg" width="480" height="360"/>
-   <media:description>**NOTE** 
-People have been going to fightcommentarys channel and leaving hateful comments on some of their videos of Xu Xiadong. This is really messed up. Their videos where they talk about Xu being &quot;disrespectful&quot; were made BEFORE FCB (and everyone else) knew the full extent of Xus situation. There's also people &quot;correcting&quot; their timeline based on my video- again this is wrong- my video is not a chronological events of Xus story (and it wasn't meant to be), its a summary using the most relevant events with everything we know now about his current situation.
-
-FCB has been THE English speaking channel covering Xus story, and they've been doing it for years. The only reason I know about it is because of their efforts. They should be commended for bringing Xus story to light, not harassed.
-
-Patreon: https://www.patreon.com/Supereyepatchwolf
-Tshirts: https://www.fangamer.com/collections/super-eyepatch-wolf
-Twitch: https://www.twitch.tv/supereyepatchwolf
-
-Lets Fight a Boss Podcast:
-
-Itunes: https://itunes.apple.com/ie/podcast/lets-fight-a-boss/id1048483221?mt=2
-Sound Cloud: https://soundcloud.com/letsfightaboss
-Youtube: https://www.youtube.com/channel/UCawXJIKUj2o_tFPMZ4xiXBw
-
-Other Super Eyepatch Wolf stuff
-
-Instagram: https://www.instagram.com/super_eyepatch_wolf/
-Twitter: https://twitter.com/EyePatchWolf
-
-
-Links:
-Fight Commentary Break Downs: https://www.youtube.com/channel/UCAzXqFoW1Y7KDqwZ1x5m9EA
-
-McDojo Life:
-https://www.instagram.com/mcdojolife/?hl=en
-
-Jackie Chans Kung Fu is Fake and thats ok:
-https://www.youtube.com/watch?v=CtbPHmPJB1A
-
-Sources:
-
-MMA vs Yellow Bamboo Chi
-https://www.mixedmartialarts.com/vault/exotics/no-touch-chi-blast-vs-bjj-the-yellow-bamboo-edition
-
-Documentary on James Hydrick
-https://www.youtube.com/watch?v=30o7_iy-O1g
-
-Cults exploiting a basic desire for comfort:
-https://www.businessinsider.com/how-cults-exploit-one-of-our-most-basic-psychological-urges-2016-4?r=US&amp;IR=T
-
-Psychology of Cult Leaders:
-https://sites.psu.edu/psy533wheeler/2017/03/23/uo4-the-psychology-of-cult-leaders/
-
-Tai Chi being taught as part of high school curriculum in China:
-https://news.cgtn.com/news/3d3d414d7a496a4d30457a6333566d54/share_p.html
-
-Deadspin Article on China and Xu Xiaodong:
-https://deadspin.com/he-never-intended-to-become-a-political-dissident-but-1838706430
-
-The great Rejuvenation of China:
-https://www.cfr.org/backgrounder/chinas-big-bet-soft-power
-
-Article on the life of Count Dante:
-https://www.chicagoreader.com/chicago/the-life-and-death-of-the-deadliest-man-alive/Content?oid=922605
-
-Frank Dux Skeptics:
-https://www.latimes.com/archives/la-xpm-1988-05-01-me-3111-story.html
-
-No Touch vs Actual Fighter
-https://www.mixedmartialarts.com/vault/exotics/no-touch-master-vs-actual-mma-fighter-real-fight
-
-https://thesanghakommune.org/2017/03/07/the-curious-case-of-yanagi-ryuken-2006/
-
-Hydricks imprisonment:
-https://www.latimes.com/archives/la-xpm-1989-08-19-me-634-story.html
-
-More info on Xu:
-https://www.scmp.com/sport/china/article/2174830/chinese-kick-boxer-knocks-out-tai-chi-master-one-punch-latest-blow
-
-Benny Hin:
-https://www.dmagazine.com/publications/d-magazine/2003/august/the-heretic/
-
-Videos on Xu:
-https://www.youtube.com/watch?v=-r24WQLrS9w&amp;
-https://www.youtube.com/watch?v=_UvRavszvPY&amp;
-
-Song List:
-https://imgur.com/a/oGHq2TF</media:description>
+   <media:title>Important Correction Regarding Last of Us Part 2 Director Cameo</media:title>
+   <media:content url="https://www.youtube.com/v/9yRNwy7By9c?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i2.ytimg.com/vi/9yRNwy7By9c/hqdefault.jpg" width="480" height="360"/>
+   <media:description></media:description>
    <media:community>
-    <media:starRating count="147130" average="4.93" min="1" max="5"/>
-    <media:statistics views="3253534"/>
+    <media:starRating count="6958" average="4.58" min="1" max="5"/>
+    <media:statistics views="139439"/>
    </media:community>
   </media:group>
  </entry>
  <entry>
-  <id>yt:video:9V68GCZ61Rc</id>
-  <yt:videoId>9V68GCZ61Rc</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>The Impact of Final Fantasy 7: The Game that Changed Everything</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=9V68GCZ61Rc"/>
+  <id>yt:video:4Gzi2ceBqGQ</id>
+  <yt:videoId>4Gzi2ceBqGQ</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>A Barren Story, Poorly Told | The Last Of Us Part 2 Review: How Is This A “Masterpiece&quot;?</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=4Gzi2ceBqGQ"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2019-12-23T17:12:00+00:00</published>
-  <updated>2020-05-15T22:41:06+00:00</updated>
+  <published>2020-06-21T15:56:15+00:00</published>
+  <updated>2020-06-21T17:12:39+00:00</updated>
   <media:group>
-   <media:title>The Impact of Final Fantasy 7: The Game that Changed Everything</media:title>
-   <media:content url="https://www.youtube.com/v/9V68GCZ61Rc?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i2.ytimg.com/vi/9V68GCZ61Rc/hqdefault.jpg" width="480" height="360"/>
-   <media:description>Hey. Final Fantasy 7s like my favorite game ever. Here’s a video about it.
+   <media:title>A Barren Story, Poorly Told | The Last Of Us Part 2 Review: How Is This A “Masterpiece&quot;?</media:title>
+   <media:content url="https://www.youtube.com/v/4Gzi2ceBqGQ?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i1.ytimg.com/vi/4Gzi2ceBqGQ/hqdefault.jpg" width="480" height="360"/>
+   <media:description>My thoughts on The Last of Us Part 2's narrative, including the ending, characters, structure, and a bunch more.
 
-Patreon: https://www.patreon.com/Supereyepatchwolf
-Tshirts: https://www.fangamer.com/collections/super-eyepatch-wolf
-Twitch: https://www.twitch.tv/supereyepatchwolf
-
-My Other Final Fantasy Video: 
-https://www.youtube.com/watch?v=v8lvAq_yp_w&amp;t=1s
-
-
-Lets Fight a Boss Podcast:
-
-Itunes: https://itunes.apple.com/ie/podcast/lets-fight-a-boss/id1048483221?mt=2
-Sound Cloud: https://soundcloud.com/letsfightaboss
-Youtube: https://www.youtube.com/channel/UCawXJIKUj2o_tFPMZ4xiXBw
-
-Other Super Eyepatch Wolf stuff
-
-Instagram: https://www.instagram.com/super_eyepatch_wolf/
-Twitter: https://twitter.com/EyePatchWolf
-
-Links
-Sober Dwarfs Video on Rude and Tifa: 
-https://www.youtube.com/watch?v=noB9Azcbqio
-
-Some Footage from:
-https://www.youtube.com/watch?v=4Bt-YLR5FcA&amp;t
-https://www.youtube.com/watch?v=_e_fhzNTUTo&amp;t
-
-
-Sources:
-Great Set of articles on Final Fantasy 7 by Jeremy Parish:
-https://www.usgamer.net/articles/final-fantasy-vii-a-six-part-deep-dive-into-squares-rpg-classic
-
-General FF7 Discussion with its creators:
-http://shmuplations.com/ff7/
-
-Early Square:
-https://www.webcitation.org/6gLNbLUfI?url=http://www.1up.com/news/hironobu-sakaguchi-final-fantasy-roller-coaster
-
-Chrono Trigger Sales
-https://vgsales.fandom.com/wiki/Chrono_Trigger
-
-FF7s Tv Ads:
-https://www.gamespot.com/articles/final-fantasy-vii-hits-tv/1100-2466616/
-
-Books:
-Final Fantasy an Oral History
-The Legend of Final Fantasy 7 - Nicolas Courcier
-
-Song List:
-
-https://imgur.com/a/EkK7rqp</media:description>
+Supported by our Patrons: http://www.patreon.com/bellularnews
+Twitter: http://www.twitter.com/bellulargaming
+Join our Discord! https://discord.gg/BNh7bfW
+Our game studio's site: https://www.coffeeboxgames.com/</media:description>
    <media:community>
-    <media:starRating count="30695" average="4.94" min="1" max="5"/>
-    <media:statistics views="616193"/>
+    <media:starRating count="16233" average="4.74" min="1" max="5"/>
+    <media:statistics views="270069"/>
    </media:community>
   </media:group>
  </entry>
  <entry>
-  <id>yt:video:tEDhWT2hmr8</id>
-  <yt:videoId>tEDhWT2hmr8</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>Why You Should Watch Jojos Bizarre Adventure Part 5: Golden Wind</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=tEDhWT2hmr8"/>
+  <id>yt:video:KV6k3ikBuso</id>
+  <yt:videoId>KV6k3ikBuso</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>SERIOUS: Activision, EA &amp; Take-Two’s INSANE New Option &amp; Epic Price War - SO MANY GAMES!</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=KV6k3ikBuso"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2019-11-23T15:42:20+00:00</published>
-  <updated>2019-11-26T23:04:02+00:00</updated>
+  <published>2020-06-20T16:21:09+00:00</published>
+  <updated>2020-06-20T16:21:09+00:00</updated>
   <media:group>
-   <media:title>Why You Should Watch Jojos Bizarre Adventure Part 5: Golden Wind</media:title>
-   <media:content url="https://www.youtube.com/v/tEDhWT2hmr8?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i1.ytimg.com/vi/tEDhWT2hmr8/hqdefault.jpg" width="480" height="360"/>
-   <media:description>We're talking Jojo's Bizarre Adventure Part 5 Golden Wind, our beautiful boy Giorno, Bruno, and MAYBE just maybe, explain how King Crimson Works.
-
-Patreon: https://www.patreon.com/Supereyepatchwolf
-Tshirts: https://www.fangamer.com/collections/super-eyepatch-wolf
-Twitch: https://www.twitch.tv/supereyepatchwolf
-Twitter: https://twitter.com/EyePatchWolf
-Insta: https://www.instagram.com/super_eyepatch_wolf/
-
-Voices From:
-Woolie Vs - https://www.youtube.com/channel/UCyOJzQzyDGihKpTO3-zyhYg
-Red Bard - https://www.youtube.com/channel/UCQuZgTeDkLjVdsO6Ahg9Qjw
-Falldogs - https://twitter.com/falldogs
-Foxcade - https://www.youtube.com/channel/UCOgYxEFQIVkmo4865ap0Zbw
-The Sphere Hunter - https://www.youtube.com/channel/UCJhsl2VeLfSXzkutwlICyZw
-
-Lets Fight a Boss Podcast:
-
-Itunes: https://itunes.apple.com/ie/podcast/lets-fight-a-boss/id1048483221?mt=2
-Sound Cloud: https://soundcloud.com/letsfightaboss
-Youtube: https://www.youtube.com/channel/UCawXJIKUj2o_tFPMZ4xiXBw
-
-Song List:
-
-https://imgur.com/a/PMZ5JVf</media:description>
+   <media:title>SERIOUS: Activision, EA &amp; Take-Two’s INSANE New Option &amp; Epic Price War - SO MANY GAMES!</media:title>
+   <media:content url="https://www.youtube.com/v/KV6k3ikBuso?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i4.ytimg.com/vi/KV6k3ikBuso/hqdefault.jpg" width="480" height="360"/>
+   <media:description>$4 billion for Warner Bros games: their studios, devs, games and maybe even IP deals. Between Acti, EA and Take-Two, which one wants to splash the cash for Batman, Lord of the Rings and more?
+Supported by our Patrons: http://www.patreon.com/bellularnews
+Twitter: http://www.twitter.com/bellulargaming
+Join our Discord! https://discord.gg/BNh7bfW
+Our game studio's site: https://www.coffeeboxgames.com/</media:description>
    <media:community>
-    <media:starRating count="30956" average="4.94" min="1" max="5"/>
-    <media:statistics views="554649"/>
+    <media:starRating count="2927" average="4.92" min="1" max="5"/>
+    <media:statistics views="49769"/>
    </media:community>
   </media:group>
  </entry>
  <entry>
-  <id>yt:video:E19E9QgcqDc</id>
-  <yt:videoId>E19E9QgcqDc</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>My Favorite Things Fall 2019</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=E19E9QgcqDc"/>
+  <id>yt:video:Lj6Vhiu66as</id>
+  <yt:videoId>Lj6Vhiu66as</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>Last Of Us 2’s BRUTAL Reviews | Deceitful Marketing, Sony’s Double Standards, Ego Accusations</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=Lj6Vhiu66as"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2019-10-26T13:29:21+00:00</published>
-  <updated>2019-11-04T21:27:12+00:00</updated>
+  <published>2020-06-19T18:42:52+00:00</published>
+  <updated>2020-06-21T17:03:41+00:00</updated>
   <media:group>
-   <media:title>My Favorite Things Fall 2019</media:title>
-   <media:content url="https://www.youtube.com/v/E19E9QgcqDc?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i2.ytimg.com/vi/E19E9QgcqDc/hqdefault.jpg" width="480" height="360"/>
-   <media:description>Heres a video where I talk about Kengan Ashura, Vinland Saga, Vocaloid, Miku Hatsune, and nothing spooky whatsoever.
+   <media:title>Last Of Us 2’s BRUTAL Reviews | Deceitful Marketing, Sony’s Double Standards, Ego Accusations</media:title>
+   <media:content url="https://www.youtube.com/v/Lj6Vhiu66as?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i1.ytimg.com/vi/Lj6Vhiu66as/hqdefault.jpg" width="480" height="360"/>
+   <media:description>The Last Of Us Part 2 is out, and as many expected - the user scores don't quite match up with the critic scores.
+Supported by our Patrons: http://www.patreon.com/bellularnews
+Twitter: http://www.twitter.com/bellulargaming
+Join our Discord! https://discord.gg/BNh7bfW
+Our game studio's site: https://www.coffeeboxgames.com/
 
-Patreon: https://www.patreon.com/Supereyepatchwolf
-Tshirts: https://www.fangamer.com/collections/super-eyepatch-wolf
-Twitch: https://www.twitch.tv/supereyepatchwolf
-
-Lets Fight a Boss Podcast:
-
-Itunes: https://itunes.apple.com/ie/podcast/lets-fight-a-boss/id1048483221?mt=2
-Sound Cloud: https://soundcloud.com/letsfightaboss
-Youtube: https://www.youtube.com/channel/UCawXJIKUj2o_tFPMZ4xiXBw
-
-Other Super Eyepatch Wolf stuff
-
-Instagram: https://www.instagram.com/super_eyepatch_wolf/
-Twitter: https://twitter.com/EyePatchWolf
-
-
-Links:
-
-Serpham On the Ring:
-https://www.youtube.com/watch?v=lWuJRRCTHrg
-Tsukasa Blog: https://www.pixiv.net/member.php?id=2998633
-
-Nerrel:
-https://www.youtube.com/channel/UCZKyj7wDE51SMbkrRBT6SdA/videos
-Secret of Mana Remake Video: https://www.youtube.com/watch?v=ur78f36rzm0&amp;t
-Majoras Mask Video: https://www.youtube.com/watch?v=653wuaP0wzs
-Motion Controls Part 1: https://www.youtube.com/watch?v=binPB4YbWmM
-Motion Controls Part 2: https://www.youtube.com/watch?v=RZ0xDRkC8LI
-
-Syrmor:
-https://www.youtube.com/channel/UCV8Qe8z3RDLiAV7E0WP7-Fg
-Girl talking about foster care: https://www.youtube.com/watch?v=RO4W5WOSo1E&amp;t=246s
-Kid having trouble at school: https://www.youtube.com/watch?v=KZWOXgc7PA4
-Terminally ill man: https://www.youtube.com/watch?v=61V3-TLee2s&amp;t=52s
-
-
-Furby:
-https://furbeeeeeeeeees.tumblr.com/post/175313879177/please-welcome-your-new-favorite
-https://www.instagram.com/long.furby.fam/?utm_source=ig_embed
-https://nerdist.com/article/longified-furbies-are-beautiful-cursed-creatures/
-(I had a tough time sourcing some of these images because of how many have become memes, if one of them is yours and I’ve missed it, email me or mention it in the tweet thread of this video and I’ll credit you on twitter.)
-
-World of Horror:
-https://panstasz.itch.io/world-of-horror
-
-Poolyboy:
-https://soundcloud.com/oypoolboy
-
-Silent Hill2 links:
-
-My old video on Silent Hill 2:
-https://www.youtube.com/watch?v=ckYvsSjV99A&amp;t
-
-Silent Hill 2 Enhanced edition:
-http://www.enhanced.townofsilenthill.com/SH2/
-
- (Unfortunately I can’t link to a version of the PC game directly, but its basically abandonware at this point and if you want to track it down yourself you should, maybe someone in the twitter thread for this video can help you out)
-
-Song List:
-https://imgur.com/a/iDNseA2</media:description>
+Alanah's video: https://www.youtube.com/watch?v=Bgg7_0rBUOA</media:description>
    <media:community>
-    <media:starRating count="21268" average="4.94" min="1" max="5"/>
-    <media:statistics views="370736"/>
+    <media:starRating count="15423" average="4.72" min="1" max="5"/>
+    <media:statistics views="347340"/>
    </media:community>
   </media:group>
  </entry>
  <entry>
-  <id>yt:video:UsCflZqDtCw</id>
-  <yt:videoId>UsCflZqDtCw</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>The Insanity of Gantz and Why You Should Care</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=UsCflZqDtCw"/>
+  <id>yt:video:IQzks6uZ3F0</id>
+  <yt:videoId>IQzks6uZ3F0</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>Sea Of Thieves Just Had Its BEST Month EVER | How Steam Helped Make It Happen</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=IQzks6uZ3F0"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2019-09-29T14:30:00+00:00</published>
-  <updated>2019-10-02T06:33:15+00:00</updated>
+  <published>2020-06-18T15:44:10+00:00</published>
+  <updated>2020-06-18T16:19:56+00:00</updated>
   <media:group>
-   <media:title>The Insanity of Gantz and Why You Should Care</media:title>
-   <media:content url="https://www.youtube.com/v/UsCflZqDtCw?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i2.ytimg.com/vi/UsCflZqDtCw/hqdefault.jpg" width="480" height="360"/>
-   <media:description>From Hiroya Oku, the guy who made Inuyashiki, Gantz is a really weird series and I’m gonna talk about it now.
-
-Patreon: https://www.patreon.com/Supereyepatchwolf
-Tshirts: https://www.fangamer.com/collections/super-eyepatch-wolf
-
-Lets Fight a Boss Podcast:
-
-Itunes: https://itunes.apple.com/ie/podcast/lets-fight-a-boss/id1048483221?mt=2
-Sound Cloud: https://soundcloud.com/letsfightaboss
-Youtube: https://www.youtube.com/channel/UCawXJIKUj2o_tFPMZ4xiXBw
-
-Other Super Eyepatch Wolf stuff
-
-Instagram: https://www.instagram.com/super_eyepatch_wolf/
-Twitter: https://twitter.com/EyePatchWolf
-Twitch: https://www.twitch.tv/supereyepatchwolf
-
-Sources:
-https://kodanshacomics.com/2017/11/27/hiroya-oku-interview/
-https://kodanshacomics.com/2016/02/23/hiroya-oku-interview-part-1/
-https://www.youtube.com/watch?v=gJH2fjr2MhY
-https://gigazine.net/gsc_news/en/20161006-gantz-o-hiroya-oku-interview
-https://otakumode.com/news/52eae86f35ba15077f00022f/An-Exclusive-Interview-with-Hiroya-Oku%E2%80%9CPleasure-to-meet-you-EVENING!%E2%80%9D
-https://mangabrog.wordpress.com/2014/07/13/hiroya-oku-on-gantz/
-
-Song List:
-https://imgur.com/a/ldWepWr</media:description>
+   <media:title>Sea Of Thieves Just Had Its BEST Month EVER | How Steam Helped Make It Happen</media:title>
+   <media:content url="https://www.youtube.com/v/IQzks6uZ3F0?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i2.ytimg.com/vi/IQzks6uZ3F0/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Sea of Thieves, despite an awful start, has continued to improve. Now, over 2 years after its initial release, it's shown up on Steam in a tour-de-force. 
+Supported by our Patrons: http://www.patreon.com/bellularnews
+Twitter: http://www.twitter.com/bellulargaming
+Join our Discord! https://discord.gg/BNh7bfW
+Our game studio's site: https://www.coffeeboxgames.com/</media:description>
    <media:community>
-    <media:starRating count="46809" average="4.94" min="1" max="5"/>
-    <media:statistics views="862199"/>
+    <media:starRating count="3084" average="4.90" min="1" max="5"/>
+    <media:statistics views="49323"/>
    </media:community>
   </media:group>
  </entry>
  <entry>
-  <id>yt:video:BHrIPFXzOZs</id>
-  <yt:videoId>BHrIPFXzOZs</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>Am I a Furry? And Other Burning Questions</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=BHrIPFXzOZs"/>
+  <id>yt:video:i3EK4sJ0CHY</id>
+  <yt:videoId>i3EK4sJ0CHY</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>Torchlight 3 RAVAGED Critically After Being Praised For Going Premium From F2P: How Did It Go Wrong?</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=i3EK4sJ0CHY"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2019-08-29T19:00:02+00:00</published>
-  <updated>2020-06-02T13:55:43+00:00</updated>
+  <published>2020-06-17T16:47:01+00:00</published>
+  <updated>2020-06-17T16:57:45+00:00</updated>
   <media:group>
-   <media:title>Am I a Furry? And Other Burning Questions</media:title>
-   <media:content url="https://www.youtube.com/v/BHrIPFXzOZs?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i3.ytimg.com/vi/BHrIPFXzOZs/hqdefault.jpg" width="480" height="360"/>
-   <media:description>Am I a Furry? Being a wrestler?? My anime collection??? I answer all questions, reveal all mysteries. 
-
-Patreon: https://www.patreon.com/Supereyepatchwolf
-Tshirts: https://www.fangamer.com/collections/super-eyepatch-wolf
-
-Q-Con: http://www.q-con.org.uk
-Connichi: https://www.connichi.de/en/
-
-Brobex on Twitter: https://twitter.com/brobexx
- 
-Islas Youtube:  https://www.youtube.com/user/hiisla/videos
-
-All music from Silent Hill 2 and 3 osts
-
-Super Eyepatch Wolf, Face, Furry, Wrestling, Anime, Questions, Anwsers</media:description>
+   <media:title>Torchlight 3 RAVAGED Critically After Being Praised For Going Premium From F2P: How Did It Go Wrong?</media:title>
+   <media:content url="https://www.youtube.com/v/i3EK4sJ0CHY?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i2.ytimg.com/vi/i3EK4sJ0CHY/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Torchlight 3's awful reviews and server nightmares - what went wrong? We were singing its praises after it escaped the F2P world, but it doesn't look like it made it all the way out.
+Supported by our Patrons: http://www.patreon.com/bellularnews
+Twitter: http://www.twitter.com/bellulargaming
+Join our Discord! https://discord.gg/BNh7bfW
+Our game studio's site: https://www.coffeeboxgames.com/</media:description>
    <media:community>
-    <media:starRating count="13611" average="4.92" min="1" max="5"/>
-    <media:statistics views="247339"/>
+    <media:starRating count="4489" average="4.90" min="1" max="5"/>
+    <media:statistics views="86124"/>
    </media:community>
   </media:group>
  </entry>
  <entry>
-  <id>yt:video:8er83V2OJ1o</id>
-  <yt:videoId>8er83V2OJ1o</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>The Bizarre Modern Reality of The Simpsons</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=8er83V2OJ1o"/>
+  <id>yt:video:ue8hCbKJeyc</id>
+  <yt:videoId>ue8hCbKJeyc</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>Last of Us Part 2’s Lead CALLS OUT Enemy Journo, Dodges Exposé! ...Then it Gets Worse</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=ue8hCbKJeyc"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2019-08-17T13:00:01+00:00</published>
-  <updated>2020-01-23T18:50:34+00:00</updated>
+  <published>2020-06-16T16:06:09+00:00</published>
+  <updated>2020-06-16T16:29:43+00:00</updated>
   <media:group>
-   <media:title>The Bizarre Modern Reality of The Simpsons</media:title>
-   <media:content url="https://www.youtube.com/v/8er83V2OJ1o?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i1.ytimg.com/vi/8er83V2OJ1o/hqdefault.jpg" width="480" height="360"/>
-   <media:description>Here is a video where I argue passionately about Simpsons Memes. Enjoy.
-
-Patreon: https://www.patreon.com/Supereyepatchwolf
-My previous video on The Simpsons: https://www.youtube.com/watch?v=KqFNbCcyFkk
-Tshirts: https://www.fangamer.com/collections/super-eyepatch-wolf
-
-Lets Fight a Boss Podcast:
-
-Itunes: https://itunes.apple.com/ie/podcast/lets-fight-a-boss/id1048483221?mt=2
-Sound Cloud: https://soundcloud.com/letsfightaboss
-Youtube: https://www.youtube.com/channel/UCawXJIKUj2o_tFPMZ4xiXBw
-
-Other Super Eyepatch Wolf stuff
-
-Instagram: https://www.instagram.com/super_eyepatch_wolf/
-Twitter: https://twitter.com/EyePatchWolf
-Twitch: https://www.twitch.tv/supereyepatchwolf
-
-I've been told some of the editing is tough on people with Epilepsy, time stamps below:
-3:20-3:39
-5:31-5:58
-Possibly 8:07-8:17
-
-SIMPSONWAVE SECTION 
-21:55-22:16
-22:49- approx 22:55
-23:00-23:16!
-23:37-23:52!!!!!
-24:00-24:26
-24:27-24:37!!
-25:06-25:30!
-SIMPSONWAVE ENDS AT 25:31
-
-25:52-25:55
-26:02-26:09!
-27:37-27:53
-Maybe 28:03-28:24
-
-FEATURING
-
-SIMPSONS ANIMATIONS:
-
-Bartkira The Animation: https://www.youtube.com/watch?v=0SWt6OQ4Nl4
-Electronic Simpsons Music - S3RL &amp; Radio Gosha https://www.youtube.com/watch?v=5JVQA2aWgpE
-Weird Simpsons VHS:
-https://www.youtube.com/watch?v=IEIzuJZj03U
-Simpsons Couch Gag (You’re Next):
-https://www.youtube.com/watch?v=_NT2ZiPIukw&amp;
-
-Note: Due to the character limit in Youtube descriptions I couldnt include all the links like I originally intended, to see a FULL list of all videos featured, go here: https://eyepatchwolf.tumblr.com/post/187060243519/full-simpsons-video-links
-
-SIMPSONS INSTAGRAM:
-
-Scenic Simpsons:
-https://www.instagram.com/scenic_simpsons/?hl=en
-Surreal Simpsons:
-https://www.instagram.com/surrealsimpsons/?hl=en
-Psychedelic Simpsons:
-https://www.instagram.com/psychedelic.simpsons/?hl=en
-Open Mouth Simpsons:
-https://www.instagram.com/openmouthsimpsons/?hl=en
-Squinty Eyed Simpsons:
-https://www.instagram.com/squintyeyedsimpsons/?hl=en
-Worst Simpsons Faces:
-https://www.instagram.com/worstsimpsonsfaces/?hl=en
-Lynchian Simpsons:
-https://www.instagram.com/lynchiansimpsons/?hl=en
-
-STEAMED HAMS:
-
-But Theres a Different Animator Every 13 seconds:
-https://www.youtube.com/watch?v=a8R3qHKS-dk
-[ʸᵀᴾᴹᵛ] Steamed Hams Inc.:
-https://www.youtube.com/watch?v=aRsOBFhNjVM
-Steamed Hams but Chalmers is Everywhere:
-https://www.youtube.com/watch?v=-tUx4eksG1g
-Steamed Hams but it's Earthbound
-https://www.youtube.com/watch?v=WKHahGY_5Qk
-Steamed Hams but it's edited in the style of Nier Automata
-https://www.youtube.com/watch?v=L-XtMNYHsZc
-Steamed Hams but it's WWF No Mercy:
-https://www.youtube.com/watch?v=o0f73ww5ehE
-
-
-Don’t talk about this in the video but this guy did a cool video essay just on steamed hams:
-https://www.youtube.com/watch?v=RsxoiWu0i3k
-
-
-SIMPSONS COMICS/ ZINES:
-
-Marge Simpsons Anime:
-https://margesimpsonanime.tumblr.com/
-Depressing Simpsons Comics:
-https://www.etsy.com/listing/478073212/depressing-simpsons-comics-zine
-Ballad of Dark Homer (4 Pages as part of a large gallery)
-http://gunshowcomic.com/447
-Simpsons Unreal Estate:
-http://www.mrdoyle.com/gallery
-Article About Simpsons Fan Zines (apologies, alot of the Zines dont have a direct web link):
-https://www.vice.com/en_uk/article/a3j39j/the-true-spirit-of-the-simpsons-lives-on-in-these-bootleg-zines
-
-
-BARTKIRA
-http://www.bartkira.com/
-
-
-
-SIMPSONS WAVE:
-
-Lucien Hughes:
-２１０ ＬＩＬＡＣ ＳＫＹ
-https://www.youtube.com/watch?v=COPAV3onrKs
-C R I S I S
-https://www.youtube.com/watch?v=FCb3rblTEds
-DEAD BART:
-https://www.youtube.com/watch?v=5DrvXlCtCXw
-ＳＵＮＤＡＹ ＳＣＨＯＯＬ
-https://www.youtube.com/watch?v=rTfa-9aCTYg
-
-
-Sources:
-
-Fantastic write up by Dead Homer Society on Simpsons tapped out:
-https://deadhomersociety.com/tag/the-simpsons-tapped-out/
-
-Simpsons Tv Ratings (based on Nielsen ratings, the standard used by american Tv broadcasting ) :
-https://tvseriesfinale.com/tv-show/the-simpsons-season-30-ratings/
-
-Forbes article on Simpsons Ratings:
-https://www.forbes.com/sites/niallmccarthy/2017/04/20/30-years-on-and-the-simpsons-isnt-aging-well-infographic/#55427bb26967
-
-Most image of bootleg merchandise from:
-https://twitter.com/bootlegbart
-
-Review Scores for The Simpsons taken from review aggregates of Rotten Tomatos (Season by Season Audience Score, insufficient data for critic score) and IMDB, (Review aggregate of individual episode IMDB ratings)
-
-Source: Electronic Arts Q1 FY14 Financial Report:
-https://news.ea.com/press-release/archive/electronic-arts-reports-q1-fy14-financial-results
-
-
-Song List:
-https://imgur.com/a/vuqKdMJ</media:description>
+   <media:title>Last of Us Part 2’s Lead CALLS OUT Enemy Journo, Dodges Exposé! ...Then it Gets Worse</media:title>
+   <media:content url="https://www.youtube.com/v/ue8hCbKJeyc?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i2.ytimg.com/vi/ue8hCbKJeyc/hqdefault.jpg" width="480" height="360"/>
+   <media:description>The Last Of Us Part 2 comes with mighty stakes for everyone involved. Tensions are high, and that's obvious - Neil, Jason Schreier and even God of War's Cory Barlog are fighting about it on Twitter!
+Supported by our Patrons: http://www.patreon.com/bellularnews
+Twitter: http://www.twitter.com/bellulargaming
+Join our Discord! https://discord.gg/BNh7bfW
+Our game studio's site: https://www.coffeeboxgames.com/</media:description>
    <media:community>
-    <media:starRating count="68072" average="4.85" min="1" max="5"/>
-    <media:statistics views="1195705"/>
+    <media:starRating count="6146" average="4.72" min="1" max="5"/>
+    <media:statistics views="136427"/>
    </media:community>
   </media:group>
  </entry>
  <entry>
-  <id>yt:video:vLaHYE0XbEw</id>
-  <yt:videoId>vLaHYE0XbEw</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>My Favorite Things Summer 2019</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=vLaHYE0XbEw"/>
+  <id>yt:video:Oxg68iLpPb4</id>
+  <yt:videoId>Oxg68iLpPb4</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>Sony FINALLY Unzipped: People Are IMPRESSED | Why Sony Looks SO STRONG &amp; What It Means For PC</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=Oxg68iLpPb4"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2019-06-29T14:24:18+00:00</published>
-  <updated>2019-08-13T10:22:30+00:00</updated>
+  <published>2020-06-12T20:02:49+00:00</published>
+  <updated>2020-06-12T20:17:26+00:00</updated>
   <media:group>
-   <media:title>My Favorite Things Summer 2019</media:title>
-   <media:content url="https://www.youtube.com/v/vLaHYE0XbEw?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i3.ytimg.com/vi/vLaHYE0XbEw/hqdefault.jpg" width="480" height="360"/>
-   <media:description>My Patreon: https://www.patreon.com/Supereyepatchwolf
-
-My T-shirts: https://www.fangamer.com/collections/super-eyepatch-wolf
-
-Thumbnail Image of Mob Psycho 100:  @rtil  https://twitter.com/rtil
-
-Lets Fight a Boss Podcast:
-
-Itunes: https://itunes.apple.com/ie/podcast/lets-fight-a-boss/id1048483221?mt=2
-Sound Cloud: https://soundcloud.com/letsfightaboss
-Youtube: https://www.youtube.com/channel/UCawXJIKUj2o_tFPMZ4xiXBw
-
-Other Super Eyepatch Wolf stuff
-
-Instagram: https://www.instagram.com/super_eyepatch_wolf/
-Twitter: https://twitter.com/EyePatchWolf
-Twitch: https://www.twitch.tv/supereyepatchwolf
-
-Youtube recommendations:
-
-Nier Tribute
-https://www.youtube.com/watch?v=p1WgczYzZJs&amp;t=12s
-SparkleRedPanda on Twitter: https://twitter.com/Sparkleredpanda
-
-Cock Fight:
-https://vimeo.com/332491594
-
-Little V:
-Rashids Theme SFV: https://www.youtube.com/watch?v=SrItxuXXves
-POP/ Stars: https://www.youtube.com/watch?v=Wff8JAcRqhY
-Hopes and Dreams: https://www.youtube.com/watch?v=ZPamD7-1igQ
-
-4096:
-Blank VHS Tapes were Kinda Beautiful: https://www.youtube.com/watch?v=e9DfSCk-6Ko
-Error: https://youtu.be/5BZLz21ZS_Y
-
-Atrocity Guide: 
-The Philmarilian: https://www.youtube.com/watch?v=AkLOB5wAAbI&amp;
-Japanese Reality TV: https://www.youtube.com/watch?v=k_o8v88nkKc
-
-Fire Fly Fun House:
-https://www.youtube.com/watch?v=nDD0RC0PKBM
-https://youtu.be/wUwlRhLQfWQ
-https://www.youtube.com/watch?v=JwtEqmUBzvY
-
-Pool Boy:
-https://soundcloud.com/oypoolboy
-
-
-Song List:
-https://imgur.com/a/NdlI4La
-
-(Song in Devil May Cry section is form the OST, apologies, dont have exact title at hand)</media:description>
+   <media:title>Sony FINALLY Unzipped: People Are IMPRESSED | Why Sony Looks SO STRONG &amp; What It Means For PC</media:title>
+   <media:content url="https://www.youtube.com/v/Oxg68iLpPb4?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i4.ytimg.com/vi/Oxg68iLpPb4/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Sony have shown us what everyone wanted: Games. Their business model is apparent once you look at what they have in store - let's talk about that! Supported by our Patrons: http://www.patreon.com/bellularnews
+Twitter: http://www.twitter.com/bellulargaming
+Join our Discord! https://discord.gg/BNh7bfW
+Our game studio's site: https://www.coffeeboxgames.com/</media:description>
    <media:community>
-    <media:starRating count="23667" average="4.92" min="1" max="5"/>
-    <media:statistics views="470023"/>
+    <media:starRating count="4073" average="4.84" min="1" max="5"/>
+    <media:statistics views="60738"/>
    </media:community>
   </media:group>
  </entry>
  <entry>
-  <id>yt:video:eXwXIkjaMC0</id>
-  <yt:videoId>eXwXIkjaMC0</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>Shenmue and The Fall of Sega</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=eXwXIkjaMC0"/>
+  <id>yt:video:LZKbLPnShxg</id>
+  <yt:videoId>LZKbLPnShxg</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>The Last Of Us 2 Reviews Are... Bizarre - DEEP Problems, Perfect Scores &amp; Content Lockdown</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=LZKbLPnShxg"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2019-06-12T19:00:05+00:00</published>
-  <updated>2020-04-24T13:02:03+00:00</updated>
+  <published>2020-06-12T17:32:34+00:00</published>
+  <updated>2020-06-12T17:41:18+00:00</updated>
   <media:group>
-   <media:title>Shenmue and The Fall of Sega</media:title>
-   <media:content url="https://www.youtube.com/v/eXwXIkjaMC0?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i2.ytimg.com/vi/eXwXIkjaMC0/hqdefault.jpg" width="480" height="360"/>
-   <media:description>My new video about the what the Internet did to Sonic The Hedgehog: https://t.co/mSFl1g6tGZ?amp=1
-
-A long time ago, Sega made Shenmue, a weird forklift simulator, and some people didn’t like it, BUT I DID 
-
-Tshirts: https://www.fangamer.com/collections/super-eyepatch-wolf
-Patreon: https://www.patreon.com/Supereyepatchwolf
-
-Lets Fight a Boss Podcast:
-
-Itunes: https://itunes.apple.com/ie/podcast/lets-fight-a-boss/id1048483221?mt=2
-Sound Cloud: https://soundcloud.com/letsfightaboss
-Youtube: https://www.youtube.com/channel/UCawXJIKUj2o_tFPMZ4xiXBw
-
-Instagram: https://www.instagram.com/super_eyepatch_wolf/
-Twitter: https://twitter.com/EyePatchWolf
-
-
-Sources:
-
-Euro Gamer: The Rise and Fall of Sega
-
-https://www.eurogamer.net/articles/2012-02-22-the-rise-and-fall-of-sega-enterprises
-
-Polygon Yu Suzuki Interview
-https://www.polygon.com/2014/3/19/5527120/yu-suzuki-shenmue-gdc-2014-classic-game-postmortem
-
-Interview where Nagoshi (Yakuza Creator) talks about Shemnue
-https://www.gamesradar.com/from-shenmue-to-yakuza-toshihiro-nagoshi-looks-back-on-an-illustrious-career-of-japanese-game-development/
-
-Gamespot Shenmue Review
-https://www.gamespot.com/reviews/shenmue-review/1900-2540599/
-
-(This article is a wiki as the original live journal is locked)
-https://crappygames.miraheze.org/wiki/Backlash_at_GameSpot%27s_Shenmue_Review
-
-Yu Suzuki talking about Shenmues 16 Chapters:
-http://www.shenmuedojo.net/forum/viewtopic.php?f=5&amp;t=48975
-
-IGN review
-
-https://ie.ign.com/articles/2000/11/04/shenmue
-
-Blogpost from original 6.8 Shenmue Reviewer about his review
-(I could not for the life of me find the original 6.8 review):
-https://lbd-nytetrayn.livejournal.com/1166264.html
-
-
-Dreamcast games on Xbox
-
-&quot;This Month in Gaming History&quot;. Game Informer. Vol. 12 no. 105. GameStop. January 2002. p. 117.
-
-http://archive.videogamesdaily.com/features/sega_yu_suzuki_iv_feb06_p4.asp
-
-Old Article from IGN about Virtua Fighter Quest https://web.archive.org/web/19990218041724/http://dreamcast.ign.com/news/5927.html
-
-Shenmue 2 sales
-https://web.archive.org/web/20060221044930/http://www.ownt.com/qtakes/2003/gamestats/gamestats.shtm
-
-The disappearance of Yu Suzuki:
-
-https://web.archive.org/web/20121107063936/http://www.1up.com/features/disappearance-suzuki-part-1
-
-https://web.archive.org/web/20150629181949/http://www.1up.com/features/disappearance-suzuki-part-2?pager.offset=4
-
-Why Shenmues voice acting was terrible (Archived version for the way back machine): 
-https://web.archive.org/web/20100517092309/http://www.shenmuedojo.net/JeremyBlaustein2.shtml
-
-
-Additional footage from:
-https://www.youtube.com/watch?v=nhIaFY4jVMU
-
-https://www.youtube.com/watch?v=jhbTQo9y6Q8
-
-Song List: 
-https://imgur.com/a/9PaFruX</media:description>
+   <media:title>The Last Of Us 2 Reviews Are... Bizarre - DEEP Problems, Perfect Scores &amp; Content Lockdown</media:title>
+   <media:content url="https://www.youtube.com/v/LZKbLPnShxg?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i1.ytimg.com/vi/LZKbLPnShxg/hqdefault.jpg" width="480" height="360"/>
+   <media:description>The Last of Us Part 2 review embargo reveals it's a masterpiece - 96 on Opencritic! However, that's nowhere near the whole story. Reviewers aren't actually allowed to talk about what really matters.
+Supported by our Patrons: http://www.patreon.com/bellularnews
+Twitter: http://www.twitter.com/bellulargaming
+Join our Discord! https://discord.gg/BNh7bfW
+Our game studio's site: https://www.coffeeboxgames.com/</media:description>
    <media:community>
-    <media:starRating count="23958" average="4.92" min="1" max="5"/>
-    <media:statistics views="540281"/>
+    <media:starRating count="10876" average="4.71" min="1" max="5"/>
+    <media:statistics views="252690"/>
    </media:community>
   </media:group>
  </entry>
  <entry>
-  <id>yt:video:s9xSlZ0iq2k</id>
-  <yt:videoId>s9xSlZ0iq2k</yt:videoId>
-  <yt:channelId>UCtGoikgbxP4F3rgI9PldI9g</yt:channelId>
-  <title>Why You Should Wear The Super Eyepatch Wolf Tshirt</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=s9xSlZ0iq2k"/>
+  <id>yt:video:H1_pzU-WM_4</id>
+  <yt:videoId>H1_pzU-WM_4</yt:videoId>
+  <yt:channelId>UC3nPaf5MeeDTHA2JN7clidg</yt:channelId>
+  <title>Can Bethesda NOT Fail? TES6, Starfield, ES:O, Deathloop… | The Future of Bethesda</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=H1_pzU-WM_4"/>
   <author>
-   <name>Super Eyepatch Wolf</name>
-   <uri>https://www.youtube.com/channel/UCtGoikgbxP4F3rgI9PldI9g</uri>
+   <name>Bellular News</name>
+   <uri>https://www.youtube.com/channel/UC3nPaf5MeeDTHA2JN7clidg</uri>
   </author>
-  <published>2019-05-11T13:00:12+00:00</published>
-  <updated>2020-04-05T15:51:58+00:00</updated>
+  <published>2020-06-11T14:45:01+00:00</published>
+  <updated>2020-06-11T14:45:01+00:00</updated>
   <media:group>
-   <media:title>Why You Should Wear The Super Eyepatch Wolf Tshirt</media:title>
-   <media:content url="https://www.youtube.com/v/s9xSlZ0iq2k?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
-   <media:thumbnail url="https://i4.ytimg.com/vi/s9xSlZ0iq2k/hqdefault.jpg" width="480" height="360"/>
-   <media:description>~ Super Eyepatch Wolf Tshirts Available Now ~ 
-https://www.fangamer.com/collections/super-eyepatch-wolf</media:description>
+   <media:title>Can Bethesda NOT Fail? TES6, Starfield, ES:O, Deathloop… | The Future of Bethesda</media:title>
+   <media:content url="https://www.youtube.com/v/H1_pzU-WM_4?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i1.ytimg.com/vi/H1_pzU-WM_4/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Bethesda have everything to gain in the next while: The Elder Scrolls 6 &amp; Starfield, flanked by the strong ES:O, Deathloop and more. Do we trust them to make these games? What else are they up to?
+For more industry analysis, daily news and loot: Join us! http://www.patreon.com/join/bellularnews
+Twitter: http://www.twitter.com/bellulargaming
+Join our Discord! https://discord.gg/BNh7bfW
+Our game studio's site: https://www.coffeeboxgames.com/</media:description>
    <media:community>
-    <media:starRating count="4576" average="4.84" min="1" max="5"/>
-    <media:statistics views="56175"/>
+    <media:starRating count="4854" average="4.91" min="1" max="5"/>
+    <media:statistics views="56324"/>
    </media:community>
   </media:group>
  </entry>

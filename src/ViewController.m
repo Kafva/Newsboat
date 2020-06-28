@@ -98,7 +98,7 @@
         //----------------------------------------------// 
     
         NSString* home = NSHomeDirectory();
-        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSASCIIStringEncoding];
+        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSUTF8StringEncoding];
         [dbPath insertString: home atIndex:(NSUInteger)0];
 
         self.handler = [[DBHandler alloc] initWithDB: dbPath];
@@ -142,7 +142,7 @@
 
         // Fetch all the videos from the RSS feed for the given channel 
         NSString* home = NSHomeDirectory();
-        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSASCIIStringEncoding];
+        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSUTF8StringEncoding];
         [dbPath insertString: home atIndex:(NSUInteger)0];
 
         DBHandler* handler = [[DBHandler alloc] initWithDB: dbPath];
@@ -151,12 +151,15 @@
         {
             self.videos = [[NSMutableArray alloc] init];
 
-            [handler importRSS: [channel cStringUsingEncoding: NSASCIIStringEncoding]];
-            [handler getVideosFrom: [channel cStringUsingEncoding: NSASCIIStringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
+            // Import videos for the given channel into the database ( implicit calls to addVideo() )
+            [handler importRSS: [channel cStringUsingEncoding: NSUTF8StringEncoding]];
+
+            // Fetch video objects from the given channel from the database
+            [handler getVideosFrom: [channel cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
 
             for (int i=0; i<self.videos.count; i++)
             {
-                NSLog(@"addVideoView(): %@: %@ (%@)", channel , [self.videos[i] title] , [self.videos[i] link]  );
+                NSLog(@"addVideoView() [%d]: %@: %@ (%@)",[self.videos[i] viewed], channel , [self.videos[i] title] , [self.videos[i] link]  );
             }
 
             [handler closeDatabase]; 
@@ -180,7 +183,7 @@
         Cell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
 
         // Set the style value to enable the use of detailTextLabels        
-        [cell initWithStyle: UITableViewCellStyleValue1 reuseIdentifier:cellIdentifier];
+        cell = [cell initWithStyle: UITableViewCellStyleValue1 reuseIdentifier:cellIdentifier];
         
         // Clear background and white text
         cell.backgroundColor = [UIColor clearColor];
@@ -197,23 +200,20 @@
             cell.textLabel.text = [[self.videos objectAtIndex:indexPath.row] title]; 
             cell.link = [[self.videos objectAtIndex:indexPath.row] link];
             
-            // Create the 'viewed' toggle button depending on the viewed attribute from the videos array
             //------------------------------------------//
+            // Create the 'viewed' toggle button depending on the viewed attribute from the videos array
             cell.toggleBtn = [CellButton buttonWithType: UIButtonTypeSystem];
-
-            cell.toggleBtn.tintColor = [UIColor whiteColor];
             [cell.toggleBtn setFrame:CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, CELL_BTN_WIDTH, CELL_BTN_HEIGHT)];
 
-            cell.toggleBtn.title = [cell.textLabel.text cStringUsingEncoding:NSASCIIStringEncoding];
+            cell.toggleBtn.title = cell.textLabel.text;
             cell.toggleBtn.owner_id = [[self.videos objectAtIndex:indexPath.row] owner_id];
             cell.toggleBtn.viewed = [[self.videos objectAtIndex:indexPath.row] viewed];
 
             //**** NOTE **** that the target needs to be the ViewController (self)
             [cell.toggleBtn addTarget:self action:@selector(toggleViewed:) forControlEvents:UIControlEventTouchUpInside ];
-        
+            
             // Set the image depending on the toggleBtn 'viewed' attribute
-            UIImage* btnImage = [cell.toggleBtn getImage];
-            [cell.toggleBtn setImage: btnImage forState:UIControlStateNormal];
+            [cell.toggleBtn setStatusImage];
             //--------------------------------------------//
 
             [cell.contentView addSubview: [cell toggleBtn]];
@@ -274,15 +274,14 @@
         if ( [self.handler openDatabase] == SQLITE_OK )
         {
             // Update the viewed status in the database
-            [self.handler toggleViewedVideos: sender.title owner_id: sender.owner_id];
+            [self.handler toggleViewedVideos: [sender.title cStringUsingEncoding:NSUTF8StringEncoding] owner_id: sender.owner_id];
+            [self.handler queryStmt: "SELECT title,viewed FROM Videos;" ];
             [self.handler closeDatabase]; 
         }
 
         // Update the state of the button in the cell
         sender.viewed = !sender.viewed;
-        [sender setImage: [sender getImage] forState:UIControlStateNormal];
-
-        NSLog(@"Title is now %d", sender.viewed);
+        [sender setStatusImage];
     }
     
     -(void) reloadRSS: (UIButton*)sender
