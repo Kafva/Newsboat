@@ -48,7 +48,7 @@
     -(int) importRSS: (const char*)channel;
     -(int) importRSS;
 
-    -(int) toggleViewedVideos: (const char*)title owner_id:(int)owner_id;
+    -(int) toggleViewedVideos: (NSString*)title owner_id:(int)owner_id;
 
     -(int) handleRSS: (char**)columnValues;
 
@@ -88,7 +88,7 @@
 
 
 
-const char* sanitize(const char* str);
+NSMutableString* sanitize(NSMutableString* str);
 
 //--------------SQLITE CALLBACKS------------------//
 

@@ -119,7 +119,7 @@
     -(int) importRSS: (const char*)channel
     {
         char* stmt = malloc(sizeof(char)*VARCHAR_SIZE); 
-        sprintf(stmt, "SELECT `id`,`rssLink` FROM `Channels` WHERE `name` = '%s';", sanitize(channel) ); 
+        sprintf(stmt, "SELECT `id`,`rssLink` FROM `Channels` WHERE `name` = '%s';", channel ); 
         char* err_msg;
         
         // The callback function works as a lambda function in that each row in
@@ -157,7 +157,7 @@
     {
         char* err_msg;
         char* stmt = malloc(sizeof(char)*VARCHAR_SIZE); 
-        sprintf(stmt, "SELECT * FROM `Videos` WHERE `owner` = (SELECT `id` FROM `Channels` WHERE `name` LIKE '%s') ORDER BY `timestamp` DESC LIMIT %d;", sanitize(channel), count); 
+        sprintf(stmt, "SELECT * FROM `Videos` WHERE `owner` = (SELECT `id` FROM `Channels` WHERE `name` LIKE '%s') ORDER BY `timestamp` DESC LIMIT %d;", channel, count); 
 
         // The callback function prints the result of the query
         int ret = sqlite3_exec( self.db , stmt, callbackPrint, NULL, &err_msg );
@@ -174,7 +174,7 @@
         char* stmt = malloc(sizeof(char)*VARCHAR_SIZE); 
 
         // NOTE that if channels have similar names the wrong vidoes could be returned with a greedy RegEx
-        sprintf(stmt, "SELECT * FROM `Videos` WHERE `owner` = (SELECT `id` FROM `Channels` WHERE `name` LIKE '%s') ORDER BY `timestamp` DESC LIMIT %d;", sanitize(channel), count); 
+        sprintf(stmt, "SELECT * FROM `Videos` WHERE `owner` = (SELECT `id` FROM `Channels` WHERE `name` LIKE \"%s\") ORDER BY `timestamp` DESC LIMIT %d;", channel, count); 
 
         // The callback function creates Video objects which are returned to the paramater passed to the method 
         int ret = sqlite3_exec( self.db , stmt, callbackVideoObjects, (__bridge void*)videos, &err_msg );
@@ -237,11 +237,13 @@
 
     }
 
-    -(int) toggleViewedVideos: (const char*)title owner_id:(int)owner_id
+    -(int) toggleViewedVideos: (NSString*)title owner_id:(int)owner_id
     // Toggle the viewed attribute for the video matching the given title and owner_id
     {
         char* err_msg;
-        const char* stmt = [[NSString stringWithFormat: @"UPDATE `Videos` SET `viewed` = NOT `viewed` WHERE `owner` = %d AND `title` = '%s' ",owner_id, sanitize(title) ] cStringUsingEncoding:NSUTF8StringEncoding];
+
+        // Due to issues with escaping single quotes the name is enclosed in double quotes
+        const char* stmt = [[NSString stringWithFormat: @"UPDATE `Videos` SET `viewed` = NOT `viewed` WHERE `owner` = %d AND `title` = \"%@\" ",owner_id, title ] cStringUsingEncoding:NSUTF8StringEncoding];
         NSLog(@"STATEMENT: %s", stmt);
         
         int ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
@@ -344,20 +346,11 @@
                 // Append a \0 character and add it to the array
                 [tagData_ insertString: [[NSString alloc] initWithCharacters:(const unichar*)"\0" length:1 ] atIndex: dataRange.length ];
                 
-                //NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\[A-Za-z0-9][-^][A-Za-z0-9_@#]" options:NSRegularExpressionCaseInsensitive error:NULL];
-                //NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\M" options:NSRegularExpressionCaseInsensitive error:NULL];
-                //[regex replaceMatchesInString: tagData_ options:0 range:NSMakeRange(0, tagData_.length) withTemplate:@"XD"];
-
-                tagData_ = (NSMutableString*)[tagData_ stringByReplacingOccurrencesOfString: @"&amp;" withString: @"&"];
-                tagData_ = (NSMutableString*)[tagData_ stringByReplacingOccurrencesOfString: @"&qout;" withString: @"\""];
-                tagData_ = (NSMutableString*)[tagData_ stringByReplacingOccurrencesOfString: @"’" withString: @"'"];
-
-                NSLog(@"Tagdata: %@", tagData_);
-
-                [ tagData addObject: tagData_ ];
+                // Add the tagData_ to the array after sanitizing it
+                [tagData addObject: sanitize(tagData_) ];
 
                 // Remove all data in the response up until the end of range2 </tag>
-                [ res deleteCharactersInRange: NSMakeRange(0,range2.location + range2.length) ];
+                [res deleteCharactersInRange: NSMakeRange(0,range2.location + range2.length) ];
             }
         }
     }
@@ -417,18 +410,25 @@
 
     }
 
+
 @end
 
 //---------------MISC---------------------//
 
-const char* sanitize(const char* str)
-// Sanitize input for SQL by escaping qoutes
+NSMutableString* sanitize(NSMutableString* str)
 {
-    NSString* str_ = [[NSString alloc] initWithCString:str encoding:NSUTF8StringEncoding];
-    NSLog(@"str_=%@", str_);
-    str_ = [str_ stringByReplacingOccurrencesOfString:@"'" withString:@"\\"];
-    NSLog(@"str_=%@", str_);
-    return [[str_ stringByReplacingOccurrencesOfString:@"'" withString:@"\\"] cStringUsingEncoding:NSUTF8StringEncoding];
+    //NSLog(@"Before NSsan: %@", str);
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[\"'’“”]" options:NSRegularExpressionCaseInsensitive error:NULL];
+    [regex replaceMatchesInString: str options:0 range:NSMakeRange(0, str.length) withTemplate:@"'"];
+
+    str = (NSMutableString*)[str stringByReplacingOccurrencesOfString: @"&amp;" withString: @"&"];
+    str = (NSMutableString*)[str stringByReplacingOccurrencesOfString: @"&quot;" withString: @"\""];
+    str = (NSMutableString*)[str stringByReplacingOccurrencesOfString: @"…" withString: @"..."];
+
+    // Remove all non standard ASCII characters
+    for (int i=0; i < str.length; i++){  if ([str characterAtIndex:i] > 127 || [str characterAtIndex:i] < 32)  { [str deleteCharactersInRange:NSMakeRange(i,1)]; }  }
+    
+    return str;
 }
 
 //--------------SQLITE CALLBACKS------------------//
@@ -446,10 +446,10 @@ static int callbackVideoObjects(void* context, int columnCount, char** columnVal
     video.viewed = false;
     NSLog(@"Strcmp: %s [ret=%d]", columnValues[2], strcmp("0",columnValues[2]));
     if ( strcmp("0",columnValues[2])!=0 ){ video.viewed = true; }
-    
+
     video.owner_id = atoi(columnValues[3]); 
     video.link = [[ NSString alloc ] initWithCString: columnValues[4] encoding:NSUTF8StringEncoding];  
-    
+
     //NSLog(@"callbackVideo(): %@", video);
     [(__bridge NSMutableArray*)context addObject: video];
     return 0;
@@ -475,7 +475,7 @@ static int callbackColumnValues(void* context, int columnCount, char** columnVal
     { 
         strncpy( ((char**)context)[i], columnValues[i], SQL_ROW_BUFFER );
     } 
-    
+
     return 0; 
 }
 
@@ -498,7 +498,7 @@ static int callbackImportRSS(void* context, int columnCount, char** columnValues
 // https://stackoverflow.com/questions/38825480/c-mfc-sqlite-sqlite3-exec-callback
 {
     DBHandler* handler = (__bridge DBHandler*)context;
-    
+
     // Delegate callback to class member implementation
     return [handler handleRSS: columnValues];
 }

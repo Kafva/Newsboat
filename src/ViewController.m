@@ -1,5 +1,6 @@
 #import "ViewController.h"
 // TODO
+//  Searchbar for channel view
 //  Add switch button in each content view, linking with the tag of each row
 //      https://developer.apple.com/documentation/uikit/uiswitch?language=objc
 //      https://stackoverflow.com/questions/28894765/uibutton-action-in-table-view-cell
@@ -274,7 +275,7 @@
         if ( [self.handler openDatabase] == SQLITE_OK )
         {
             // Update the viewed status in the database
-            [self.handler toggleViewedVideos: [sender.title cStringUsingEncoding:NSUTF8StringEncoding] owner_id: sender.owner_id];
+            [self.handler toggleViewedVideos: sender.title owner_id: sender.owner_id];
             [self.handler queryStmt: "SELECT title,viewed FROM Videos;" ];
             [self.handler closeDatabase]; 
         }

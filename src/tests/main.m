@@ -36,11 +36,11 @@ int main (int argc, char * argv[])
 
             [re httpRequest: url  success: ^(NSString* response) { [re getDataFromTag:tag response:response tagData:tagData  ]; }  failure: ^(NSError* error){ NSLog(@"Error: %@", error); }  ];
 
-            NSLog(@"---- Content of <%@>...</%@>  ----", tag, tag);
-            for ( NSMutableString* str in tagData )
-            {
-                NSLog(@"\t%@",str);
-            }
+            //NSLog(@"---- Content of <%@>...</%@>  ----", tag, tag);
+            //for ( NSMutableString* str in tagData )
+            //{
+            //    NSLog(@"\t%@",str);
+            //}
             
             //NSLog(@"-------------------------");
 
