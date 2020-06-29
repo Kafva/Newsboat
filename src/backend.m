@@ -11,6 +11,7 @@
 
 @implementation Video : NSObject
    -(NSString*) description { return [NSString stringWithFormat:@"<Video:%p> title: %@", self, self.title ]; }
+    -(void)toggleViewedAttr { self.viewed = !self.viewed; }
 @end
 
 //--------------------------------------------------//
@@ -90,7 +91,7 @@
             // "The 4th argument to sqlite3_exec() is relayed as the first argument ot the callback()"
             // Check if the row count for the Channel exceeds VIDEOS_PER_CHANNEL
             {
-                NSLog(@"ROWS: %d , %d", atoi(results[0]), VIDEOS_PER_CHANNEL);
+                //NSLog(@"ROWS: %d , %d", atoi(results[0]), VIDEOS_PER_CHANNEL);
 
                 if ( atoi(results[0]) > VIDEOS_PER_CHANNEL )
                 // If so find the oldest video(s) and delete it/them from the channel in question
@@ -244,7 +245,7 @@
 
         // Due to issues with escaping single quotes the name is enclosed in double quotes
         const char* stmt = [[NSString stringWithFormat: @"UPDATE `Videos` SET `viewed` = NOT `viewed` WHERE `owner` = %d AND `title` = \"%@\" ",owner_id, title ] cStringUsingEncoding:NSUTF8StringEncoding];
-        NSLog(@"STATEMENT: %s", stmt);
+        //NSLog(@"STATEMENT: %s", stmt);
         
         int ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
         
@@ -431,6 +432,18 @@ NSMutableString* sanitize(NSMutableString* str)
     return str;
 }
 
+int getIndexByNameAndOwnerId(NSMutableArray* videos, NSString* title, int owner_id )
+{
+    for (int i=0; i<videos.count; i++)
+    { 
+        if( [ [[videos objectAtIndex:i ] title] isEqual: title] && [[videos objectAtIndex:i ] owner_id] == owner_id  ) 
+        {  
+            return i;  
+        } 
+    } 
+    return -1;
+}
+
 //--------------SQLITE CALLBACKS------------------//
 
 static int callbackVideoObjects(void* context, int columnCount, char** columnValues, char** columnNames)
@@ -444,7 +457,7 @@ static int callbackVideoObjects(void* context, int columnCount, char** columnVal
 
     // Note that the boolean attribute is given as a string and thus can't simply be casted 
     video.viewed = false;
-    NSLog(@"Strcmp: %s [ret=%d]", columnValues[2], strcmp("0",columnValues[2]));
+    //NSLog(@"Strcmp: %s [ret=%d]", columnValues[2], strcmp("0",columnValues[2]));
     if ( strcmp("0",columnValues[2])!=0 ){ video.viewed = true; }
 
     video.owner_id = atoi(columnValues[3]); 

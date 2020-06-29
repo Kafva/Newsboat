@@ -27,6 +27,7 @@
 
    // The function called when printing NSObjects with NSLog()
    -(NSString*) description;
+   -(void) toggleViewedAttr;
 @end
 
 //----------------------------------------------------------//
@@ -89,6 +90,7 @@
 
 
 NSMutableString* sanitize(NSMutableString* str);
+int getIndexByNameAndOwnerId(NSMutableArray* videos, NSString* title, int owner_id );
 
 //--------------SQLITE CALLBACKS------------------//
 

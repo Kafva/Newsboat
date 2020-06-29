@@ -1,14 +1,10 @@
 #import "ViewController.h"
 // TODO
 //  Searchbar for channel view
-//  Add switch button in each content view, linking with the tag of each row
-//      https://developer.apple.com/documentation/uikit/uiswitch?language=objc
-//      https://stackoverflow.com/questions/28894765/uibutton-action-in-table-view-cell
-//        
-//  Move reload to right side (avoid the need to unload it but will require handling on both scenes)
 //  Landscape mode background
+//  Unmark/mark all videos button in place of reload button
 //  Load button
-//  Show new video count on channel view    (emoji on the side of cells?)
+//  Show new video count on channel view
 //  Sort by new
 //  Hide links on video view
 
@@ -35,7 +31,8 @@
         [self addChannelView];
 
         // Positioning of reload button is not well made
-        [self addButtonView: @"reload.png" selector: @selector(reloadRSS:) width: RELOAD_WIDTH height: RELOAD_HEIGHT x_offset: BTN_X_OFFSET y_offset: BTN_Y_OFFSET ];
+        self.reloadBtn = [self getButtonView: @"reload.png" selector: @selector(reloadRSS:) width: RELOAD_WIDTH height: RELOAD_HEIGHT x_offset: BTN_X_OFFSET y_offset: BTN_Y_OFFSET ];
+        [self.view addSubview: [self reloadBtn]];
     }
 
     - (void)viewDidLoad 
@@ -47,24 +44,25 @@
 
     }
 
-    -(void)addButtonView:(NSString*)btn selector:(SEL)selector width:(int)width height:(int)height x_offset:(int)x_offset y_offset:(int)y_offset
+    -(UIButton*)getButtonView:(NSString*)btnStr selector:(SEL)selector width:(int)width height:(int)height x_offset:(int)x_offset y_offset:(int)y_offset
     // To reuset the button function we pass the selector method which defines the
     // action on-tap for the button
     {
-        UIButton *backButton = [UIButton buttonWithType: UIButtonTypeSystem];
-        backButton.tintColor = [UIColor whiteColor];
+        UIButton *btn = [UIButton buttonWithType: UIButtonTypeSystem];
+        btn.tintColor = [UIColor whiteColor];
         
         // Create a UIImage object of the back icon and create a rect with the same dimensions
         // as the smallest version in the imageset
-        UIImage* backImage = [UIImage imageNamed:btn];
+        UIImage* backImage = [UIImage imageNamed:btnStr];
         backImage = imageWithImage(backImage, CGSizeMake(width, height));
         
-        [backButton setFrame:CGRectMake(x_offset, y_offset, width, height)];
-        [backButton setImage: backImage forState:UIControlStateNormal];
-        //[backButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside ];
-        [backButton addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside ];
+        [btn setFrame:CGRectMake(x_offset, y_offset, width, height)];
+        [btn setImage: backImage forState:UIControlStateNormal];
 
-        [self.view addSubview:backButton];
+        // TARGET needs to be the ViewController 
+        [btn addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside ];
+
+        return btn;
     }
 
     -(void)addImageView
@@ -160,11 +158,41 @@
 
             for (int i=0; i<self.videos.count; i++)
             {
-                NSLog(@"addVideoView() [%d]: %@: %@ (%@)",[self.videos[i] viewed], channel , [self.videos[i] title] , [self.videos[i] link]  );
+                //NSLog(@"addVideoView() [%d]: %@: %@ (%@)",[self.videos[i] viewed], channel , [self.videos[i] title] , [self.videos[i] link]  );
             }
 
             [handler closeDatabase]; 
         }
+
+    }
+
+    -(void) addToggleBtn: (Cell*)cell viewed:(bool)viewed owner_id:(int)owner_id
+    {
+        // Create the 'viewed' toggle button depending on the viewed attribute from the videos array
+        if (cell.toggleBtn == nil)
+        // Only create and add a new toggle button to the cells view if the reused cell doesn't have one
+        {
+            NSLog(@"Adding new button: %@", cell.toggleBtn);
+
+            cell.toggleBtn = [CellButton buttonWithType: UIButtonTypeSystem];
+            [cell.toggleBtn setFrame:CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, CELL_BTN_WIDTH, CELL_BTN_HEIGHT)];
+            
+            //**** NOTE **** that the target needs to be the ViewController (self)
+            [cell.toggleBtn addTarget:self action:@selector(toggleViewed:) forControlEvents:UIControlEventTouchUpInside ];
+            
+            [cell.contentView addSubview: [cell toggleBtn]];
+        }
+        
+        NSLog(@"Setting new button: %@ (viewed: %d)", cell.toggleBtn, viewed);
+        
+        cell.toggleBtn.title = cell.title;
+        cell.toggleBtn.owner_id = owner_id;
+        
+        
+        cell.toggleBtn.viewed = viewed;
+
+        // Set the image depending on the toggleBtn 'viewed' attribute
+        [cell.toggleBtn setStatusImage];
 
     }
 
@@ -178,46 +206,50 @@
     
     
     -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-    // Called when adding a new cell to the tableView
+    // Called when adding a new cell to the tableView (i.e. on scrolling the tableview)
     {
         // Deque an unusued cell object based on the static cellIdentifier
+        // Note that after iOS 5 the method will never return nil but we can check wheter or
+        // not a title already exists in which case we DONT want to add more subviews
+        // and instead simply change the text being displayed
         Cell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        
+        NSLog(@"Fetching new cell:  %@",cell);
+        
+        if (cell.title == nil)
+        {
+            // Set the style value to enable the use of detailTextLabels with 'Value1' instead of 'Default' 
+            cell = [cell initWithStyle: UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+            
+            // Clear background and white/pink text
+            cell.backgroundColor = [UIColor clearColor];
+            UIColor* pink = [[UIColor alloc] initWithRed:(CGFloat)RED green:(CGFloat)GREEN blue:(CGFloat)BLUE alpha:(CGFloat)1.0 ];            
+            
+            UIFont* bold = [UIFont fontWithName: @BOLD_FONT size:FONT_SIZE];
+            UIFont* regular = [UIFont fontWithName: @REGULAR_FONT size:FONT_SIZE];
 
-        // Set the style value to enable the use of detailTextLabels        
-        cell = [cell initWithStyle: UITableViewCellStyleValue1 reuseIdentifier:cellIdentifier];
-        
-        // Clear background and white text
-        cell.backgroundColor = [UIColor clearColor];
-        
-        //cell.textLabel.font =   [UIFont fontWithName:@"AppleColorEmoji" size:16.0];
-        cell.textLabel.textColor = [UIColor whiteColor];
-        cell.detailTextLabel.textColor = [UIColor whiteColor];
-        
+            cell.leftLabel = [cell getUnviewedCounter: @"" width: LEFT_LABEL_WIDTH height: LABEL_HEIGHT x_offset: LEFT_LABEL_X_OFFSET y_offset: LABEL_Y_OFFSET textColor:[UIColor whiteColor] font:regular ]; 
+            cell.rightLabel = [cell getUnviewedCounter: @"" width: RIGHT_LABEL_WIDTH height: LABEL_HEIGHT x_offset: RIGHT_LABEL_X_OFFSET y_offset: LABEL_Y_OFFSET textColor:pink font:bold ]; 
+            
+            [cell.contentView addSubview: cell.leftLabel];
+            [cell.contentView addSubview: cell.rightLabel];
+        } 
+
         // Populate with the datasource corresponding to the active tableView
-        if ( self.channelView == tableView ) { cell.textLabel.text = [[self.channels objectAtIndex:indexPath.row] name ]; }
+        if ( self.channelView == tableView ) 
+        { 
+            cell.title = [[self.channels objectAtIndex:indexPath.row] name ]; 
+            cell.leftLabel.text = cell.title;
+            cell.rightLabel.text = @"(1/6)";
+        }
         else 
         { 
             // Set the text of the cell and store the link to the video in a custom property of the cell subclass
-            cell.textLabel.text = [[self.videos objectAtIndex:indexPath.row] title]; 
+            cell.title = [[self.videos objectAtIndex:indexPath.row] title ]; 
             cell.link = [[self.videos objectAtIndex:indexPath.row] link];
-            
-            //------------------------------------------//
-            // Create the 'viewed' toggle button depending on the viewed attribute from the videos array
-            cell.toggleBtn = [CellButton buttonWithType: UIButtonTypeSystem];
-            [cell.toggleBtn setFrame:CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, CELL_BTN_WIDTH, CELL_BTN_HEIGHT)];
+            cell.leftLabel.text = cell.title;
 
-            cell.toggleBtn.title = cell.textLabel.text;
-            cell.toggleBtn.owner_id = [[self.videos objectAtIndex:indexPath.row] owner_id];
-            cell.toggleBtn.viewed = [[self.videos objectAtIndex:indexPath.row] viewed];
-
-            //**** NOTE **** that the target needs to be the ViewController (self)
-            [cell.toggleBtn addTarget:self action:@selector(toggleViewed:) forControlEvents:UIControlEventTouchUpInside ];
-            
-            // Set the image depending on the toggleBtn 'viewed' attribute
-            [cell.toggleBtn setStatusImage];
-            //--------------------------------------------//
-
-            [cell.contentView addSubview: [cell toggleBtn]];
+            [self addToggleBtn: cell viewed:[[self.videos objectAtIndex:indexPath.row] viewed ] owner_id:[[self.videos objectAtIndex:indexPath.row] owner_id ] ];
         }
 
         return cell;
@@ -245,13 +277,14 @@
         if ( self.channelView == tableView )
         // If an entry is tapped from the channel view
         {
-            NSString* channel = [ tableView cellForRowAtIndexPath: indexPath ].textLabel.text;
+            NSString* channel = [[ tableView cellForRowAtIndexPath: indexPath ] title];
             NSLog(@"Tapped entry[%ld]: %@", indexPath.row, channel);
 
             self.channelView.hidden = YES;
-            
+            self.reloadBtn.hidden = YES;
+
             [self addVideoView: channel];
-            [self addButtonView: @"back.png" selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT x_offset:0 y_offset:BTN_Y_OFFSET ];
+            [self.view addSubview: [self getButtonView: @"back.png" selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT x_offset:0 y_offset:BTN_Y_OFFSET ]];
         }
         else
         {
@@ -276,16 +309,21 @@
         {
             // Update the viewed status in the database
             [self.handler toggleViewedVideos: sender.title owner_id: sender.owner_id];
-            [self.handler queryStmt: "SELECT title,viewed FROM Videos;" ];
+            //[self.handler queryStmt: "SELECT title,viewed FROM Videos;" ];
             [self.handler closeDatabase]; 
         }
 
         // Update the state of the button in the cell
         sender.viewed = !sender.viewed;
+
+        // Update the viewed status in the videos array
+        [[self.videos objectAtIndex: getIndexByNameAndOwnerId( self.videos, sender.title, sender.owner_id ) ] toggleViewedAttr];
+        
         [sender setStatusImage];
     }
     
     -(void) reloadRSS: (UIButton*)sender
+    // Hide button on video view
     {
         if ( self.currentViewFlag == CHANNEL_VIEW )
         {
@@ -293,6 +331,7 @@
 
         } else
         { 
+            // Change look and make into mark/unmark all button    
             NSLog(@"vid!"); 
         }
         
@@ -305,6 +344,8 @@
         [self.videoView removeFromSuperview];
         [sender removeFromSuperview];
         self.currentViewFlag = CHANNEL_VIEW;
+        
+        self.reloadBtn.hidden = NO;
         self.channelView.hidden = NO;
     }
 

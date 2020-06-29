@@ -10,6 +10,7 @@ static NSString *cellIdentifier = @"newCell";
     @property (strong,nonatomic) DBHandler* handler;
 
 
+    @property (strong, nonatomic) UIButton *reloadBtn;
     @property (strong, nonatomic) UITableView *channelView;
     @property (nonatomic, strong) NSMutableArray *channels; 
     
@@ -23,7 +24,8 @@ static NSString *cellIdentifier = @"newCell";
     
     -(void)addChannelView;
     -(void)addVideoView: (NSString*) channel;
-    -(void)addButtonView:(NSString*)btn selector:(SEL)selector width:(int)width height:(int)height x_offset:(int)x_offset y_offset:(int)y_offset;
+    -(UIButton*)getButtonView:(NSString*)btnStr selector:(SEL)selector width:(int)width height:(int)height x_offset:(int)x_offset y_offset:(int)y_offset;
+    -(void) addToggleBtn: (Cell*)cell viewed:(bool)viewed owner_id:(int)owner_id;
 
 
     -(void) toggleViewed: (CellButton*)sender;
