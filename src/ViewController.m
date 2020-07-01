@@ -1,12 +1,13 @@
 #import "ViewController.h"
 // TODO
+//  Can't reach last element in tableview
 //  Searchbar for channel view
 //  Landscape mode background
-//  Unmark/mark all videos button in place of reload button
-//  Load button
-//  Show new video count on channel view
-//  Sort by new
-//  Hide links on video view
+
+//  Upon entering the channel view nothing will happen, if we press the reload button
+//  the process of importing RSS from all the entries will start and incrementally update with sorting applied
+//  Every time we enter a certain channels video view that channels content will be updated (this needs to be reflected)
+//  on the channel view as well
 
 @implementation ViewController 
     // The ViewController is respsoible for displaying the different views of the app
@@ -31,7 +32,7 @@
         [self addChannelView];
 
         // Positioning of reload button is not well made
-        self.reloadBtn = [self getButtonView: @"reload.png" selector: @selector(reloadRSS:) width: RELOAD_WIDTH height: RELOAD_HEIGHT x_offset: BTN_X_OFFSET y_offset: BTN_Y_OFFSET ];
+        self.reloadBtn = [self getButtonView: @RELOAD_IMAGE selector: @selector(rightBtn:) width: RELOAD_WIDTH height: RELOAD_HEIGHT x_offset: BTN_X_OFFSET y_offset: BTN_Y_OFFSET ];
         [self.view addSubview: [self reloadBtn]];
     }
 
@@ -50,14 +51,9 @@
     {
         UIButton *btn = [UIButton buttonWithType: UIButtonTypeSystem];
         btn.tintColor = [UIColor whiteColor];
-        
-        // Create a UIImage object of the back icon and create a rect with the same dimensions
-        // as the smallest version in the imageset
-        UIImage* backImage = [UIImage imageNamed:btnStr];
-        backImage = imageWithImage(backImage, CGSizeMake(width, height));
-        
+
         [btn setFrame:CGRectMake(x_offset, y_offset, width, height)];
-        [btn setImage: backImage forState:UIControlStateNormal];
+        [btn setImage: getImage( btnStr, width,height ) forState:UIControlStateNormal];
 
         // TARGET needs to be the ViewController 
         [btn addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside ];
@@ -68,7 +64,7 @@
     -(void)addImageView
     {
         UIImageView *imgview = [[UIImageView alloc] initWithFrame:CGRectMake(0,0,SCREEN_WIDTH,SCREEN_HEIGTH)  ];
-        [imgview setImage:[UIImage imageNamed:@"sea"] ];
+        [imgview setImage:[UIImage imageNamed:@BKG_IMAGE] ];
 
         // AspectFill will ensure that the whole screen is filled
         [imgview setContentMode:UIViewContentModeScaleAspectFill];
@@ -79,9 +75,7 @@
     -(void) addChannelView
     {
         //-----------------------------------------------//
-        CGFloat width = self.view.frame.size.width;
-        CGFloat height = self.view.frame.size.height;
-        CGRect tableFrame = CGRectMake(0, Y_OFFSET, width, height);
+        CGRect tableFrame = CGRectMake(0, Y_OFFSET, self.view.frame.size.width, self.view.frame.size.height);
 
         self.channelView = [[UITableView alloc]initWithFrame:tableFrame style:UITableViewStylePlain];
 
@@ -122,9 +116,7 @@
     -(void) addVideoView: (NSString*) channel
     {
         //-----------------------------------------------//
-        CGFloat width = self.view.frame.size.width;
-        CGFloat height = self.view.frame.size.height;
-        CGRect tableFrame = CGRectMake(0, Y_OFFSET*1.5, width, height);
+        CGRect tableFrame = CGRectMake(0, Y_OFFSET*1.5, self.view.frame.size.width, self.view.frame.size.height);
 
         self.videoView = [[UITableView alloc]initWithFrame:tableFrame style:UITableViewStylePlain];
 
@@ -237,12 +229,25 @@
 
         // Populate with the datasource corresponding to the active tableView
         if ( self.channelView == tableView ) 
+        //*** Cell configuration for channel view ****//
         { 
             cell.title = [[self.channels objectAtIndex:indexPath.row] name ]; 
             cell.leftLabel.text = cell.title;
-            cell.rightLabel.text = @"(1/6)";
+            int unviewedCount = [[self.channels objectAtIndex:indexPath.row] unviewedCount];
+            
+            if ( unviewedCount == -1 )
+            { 
+                cell.rightLabel.text = @"(?)"; 
+                cell.rightLabel.textColor = [[UIColor alloc] initWithWhite:1 alpha:0.6 ]; 
+            }
+            else 
+            {
+                cell.rightLabel.text = [NSString stringWithFormat: @"(%d/%d)", unviewedCount, VIDEOS_PER_CHANNEL];
+                cell.rightLabel.textColor = [[UIColor alloc] initWithRed:(CGFloat)RED green:(CGFloat)GREEN blue:(CGFloat)BLUE alpha:(CGFloat)1.0 ];
+            }
         }
         else 
+        //*** Cell configuration for video view ****//
         { 
             // Set the text of the cell and store the link to the video in a custom property of the cell subclass
             cell.title = [[self.videos objectAtIndex:indexPath.row] title ]; 
@@ -254,8 +259,6 @@
 
         return cell;
     }
-
-
 
     -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
     // Returns the number of sections in the tableView
@@ -281,10 +284,10 @@
             NSLog(@"Tapped entry[%ld]: %@", indexPath.row, channel);
 
             self.channelView.hidden = YES;
-            self.reloadBtn.hidden = YES;
+            [self.reloadBtn setImage: getImage( @OK_IMAGE, RELOAD_WIDTH, RELOAD_HEIGHT ) forState:UIControlStateNormal];
 
             [self addVideoView: channel];
-            [self.view addSubview: [self getButtonView: @"back.png" selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT x_offset:0 y_offset:BTN_Y_OFFSET ]];
+            [self.view addSubview: [self getButtonView: @BACK_IMAGE selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT x_offset:0 y_offset:BTN_Y_OFFSET ]];
         }
         else
         {
@@ -302,37 +305,57 @@
 
     
     //------ BUTTONS -------// 
-    -(void) toggleViewed: (CellButton*)sender
-    // UIButton is still being sent as an argument
+    -(void) toggleViewed: (CellButton*) btn 
     {
         if ( [self.handler openDatabase] == SQLITE_OK )
         {
             // Update the viewed status in the database
-            [self.handler toggleViewedVideos: sender.title owner_id: sender.owner_id];
-            //[self.handler queryStmt: "SELECT title,viewed FROM Videos;" ];
+            [self.handler toggleViewedVideos: btn.title owner_id: btn.owner_id];
             [self.handler closeDatabase]; 
         }
 
         // Update the state of the button in the cell
-        sender.viewed = !sender.viewed;
+        btn.viewed = !btn.viewed;
 
         // Update the viewed status in the videos array
-        [[self.videos objectAtIndex: getIndexByNameAndOwnerId( self.videos, sender.title, sender.owner_id ) ] toggleViewedAttr];
+        [[self.videos objectAtIndex: getIndexByNameAndOwnerId( self.videos, btn.title, btn.owner_id ) ] toggleViewedAttr];
         
-        [sender setStatusImage];
+        [btn setStatusImage];
     }
-    
-    -(void) reloadRSS: (UIButton*)sender
+        
+    -(void) rightBtn: (UIButton*)sender
     // Hide button on video view
     {
+        Cell* cell = nil;
+        
         if ( self.currentViewFlag == CHANNEL_VIEW )
         {
             NSLog(@"chan!");
+            int unviewedCount = 7;
+            for (int i = 0; i < [self.videoView numberOfRowsInSection:0]; i++ )
+            // Fetch the RSS feed for each channel
+            {
+            //    cell = [self.videoView cellForRowAtIndexPath: [NSIndexPath indexPathForRow:i inSection:0] ];
+            //    
+            //    cell.rightLabel.text = [NSString stringWithFormat: @"(%d/%d)", unviewedCount, VIDEOS_PER_CHANNEL];
+            //    cell.rightLabel.textColor = [[UIColor alloc] initWithRed:(CGFloat)RED green:(CGFloat)GREEN blue:(CGFloat)BLUE alpha:(CGFloat)1.0 ];
+            }
+            
+            // Sort the video array based upon the highest number of unviewed videos
+            //https://stackoverflow.com/questions/7255581/sort-the-array-of-objects-in-tableview
+            //NSArray *descriptor = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"unviewedCount" ascending:NO]];
+            //NSArray *sortedArray = [objects sortedArrayUsingDescriptors:descriptor];
 
-        } else
+
+        } 
+        else
         { 
-            // Change look and make into mark/unmark all button    
-            NSLog(@"vid!"); 
+            for (int i = 0; i < [self.videoView numberOfRowsInSection:0]; i++ )
+            // Make the marked videos in the view unmarked and vice versa
+            {
+                cell = [self.videoView cellForRowAtIndexPath: [NSIndexPath indexPathForRow:i inSection:0] ];
+                [self toggleViewed: cell.toggleBtn];
+            }
         }
         
     }
@@ -345,7 +368,7 @@
         [sender removeFromSuperview];
         self.currentViewFlag = CHANNEL_VIEW;
         
-        self.reloadBtn.hidden = NO;
+        [self.reloadBtn setImage: getImage( @RELOAD_IMAGE, RELOAD_WIDTH, RELOAD_HEIGHT ) forState:UIControlStateNormal];
         self.channelView.hidden = NO;
     }
 

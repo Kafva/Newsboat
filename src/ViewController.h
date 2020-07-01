@@ -9,7 +9,6 @@ static NSString *cellIdentifier = @"newCell";
     @property int currentViewFlag;
     @property (strong,nonatomic) DBHandler* handler;
 
-
     @property (strong, nonatomic) UIButton *reloadBtn;
     @property (strong, nonatomic) UITableView *channelView;
     @property (nonatomic, strong) NSMutableArray *channels; 
@@ -30,7 +29,7 @@ static NSString *cellIdentifier = @"newCell";
 
     -(void) toggleViewed: (CellButton*)sender;
     -(void) goBack:(UIButton*) sender; 
-    -(void) reloadRSS: (UIButton*)sender;
+    -(void) rightBtn: (UIButton*)sender;
 
 @end
 

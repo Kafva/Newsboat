@@ -8,32 +8,32 @@ if [ -n "$image" ]; then
   if [ "$2" != "launch" ]; then
     # PLAIN IMAGE SET
     # Create directory for imageset
-    DIR=$(echo $image | sed 's/\.[0-9A-z]\{1,5\}$//').imageset
+    DIR=$(basename $image | sed 's/\.[0-9A-z]\{1,5\}$//').imageset
     mkdir $DIR
     
     # Use magick to identify size and scale 2x and 3x
     width=$(magick identify $image | awk '{print $3}' | grep -o "^[0-9]\{1,\}")
     height=$(magick identify $image | awk '{print $3}' | grep -o "[0-9]\{1,\}$")
 
-    convert $image -resize $(($width*2))x$(($height*2)) $DIR/$(echo $image | sed "s/\./@2x./; s/\.[0-9A-z]\{1,5\}$/.png/") 
-    convert $image -resize $(($width*3))x$(($height*3)) $DIR/$(echo $image | sed "s/\./@3x./; s/\.[0-9A-z]\{1,5\}$/.png/")
-    convert $image $DIR/$(echo $image | sed 's/\.[0-9A-z]\{1,5\}$/.png/')
+    convert $image -resize $(($width*2))x$(($height*2)) $DIR/$(echo $(basename $image) | sed "s/\./@2x./; s/\.[0-9A-z]\{1,5\}$/.png/") 
+    convert $image -resize $(($width*3))x$(($height*3)) $DIR/$(echo $(basename $image) | sed "s/\./@3x./; s/\.[0-9A-z]\{1,5\}$/.png/")
+    convert $image $DIR/$(echo $(basename $image) | sed 's/\.[0-9A-z]\{1,5\}$/.png/')
 
     # Create the Contents.json file for the imageset
     echo "{
   \"images\" : [
     {
-      \"filename\" : \"$image\",
+      \"filename\" : \"$(basename $image)\",
       \"idiom\" : \"universal\",
       \"scale\" : \"1x\"
     },
     {
-      \"filename\" : \"${image//.png/}@2x.png\",
+      \"filename\" : \"$(basename ${image//.png/})@2x.png\",
       \"idiom\" : \"universal\",
       \"scale\" : \"2x\"
     },
     {
-      \"filename\" : \"${image//.png/}@3x.png\",
+      \"filename\" : \"$(basename ${image//.png/})@3x.png\",
       \"idiom\" : \"universal\",
       \"scale\" : \"3x\"
     }

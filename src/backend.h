@@ -11,6 +11,7 @@
 
 @interface Channel : NSObject
    @property (assign,nonatomic) int id;
+   @property (assign,nonatomic) int unviewedCount;
    @property (strong,nonatomic) NSString* name;
    @property (strong,nonatomic) NSString* rssLink;
    @property (strong,nonatomic) NSString* channelLink;

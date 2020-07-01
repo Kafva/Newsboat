@@ -6,6 +6,10 @@
 // Instance methods: -(void) foo {}
 
 @implementation Channel : NSObject
+    
+    // Create a getter/setter for the attributes which don't inherit from NSObject
+    @synthesize unviewedCount;
+   
    -(NSString*) description { return [NSString stringWithFormat:@"<Channel:%p> %@", self, self.name ]; }
 @end
 
@@ -475,6 +479,9 @@ static int callbackChannelObjects(void* context, int columnCount, char** columnV
     channel.name = [[ NSString alloc ] initWithCString: columnValues[1] encoding:NSUTF8StringEncoding];  
     channel.rssLink = [[ NSString alloc ] initWithCString: columnValues[2] encoding:NSUTF8StringEncoding];; 
     channel.channelLink = [[ NSString alloc ] initWithCString: columnValues[3] encoding:NSUTF8StringEncoding];  
+    
+    // Initalise every channel object with -1 viewed videos to indicate that the channel hasn't been updated
+    channel.unviewedCount = -1;
 
     [(__bridge NSMutableArray*)context addObject: channel];
     return 0;

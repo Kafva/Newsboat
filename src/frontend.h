@@ -30,21 +30,24 @@
 #define RELOAD_WIDTH 21
 #define RELOAD_HEIGHT 28
 
+#define OK_WIDTH 42
+#define OK_HEIGHT 56
+
 #define CHANNEL_VIEW 0
 #define VIDEO_VIEW 1
 
+//** IMAGES **//
 #define VIEWED_IMAGE "plus"
 #define UNVIEWED_IMAGE "star"
+#define BACK_IMAGE "back"
+#define RELOAD_IMAGE "refresh"
+#define OK_IMAGE "ok"
+#define BKG_IMAGE "sea"
 
-// COLORS
+//** COLORS **//
 #define RED 1
 #define GREEN 143/255
 #define BLUE 231/255
-
-//#define RED 187/255
-//#define GREEN 146/255
-//#define BLUE 172/255
-
 
 @interface CellButton : UIButton
     // The cell button is made into a seperate class since it needs to
@@ -75,3 +78,4 @@
 @end
 
 UIImage* imageWithImage( UIImage* image, CGSize size); 
+UIImage* getImage(NSString* imageName, int width, int height);

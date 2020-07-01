@@ -11,11 +11,8 @@
     -(void) setStatusImage
     // Set the corresponding image and color based upon the 'viewed' attribute
     {
-        NSString* btnName = [NSString stringWithFormat:@"%s", VIEWED_IMAGE];
-        if (self.viewed == FALSE)
-        {  
-            btnName = [NSString stringWithFormat:@"%s", UNVIEWED_IMAGE]; 
-        } 
+        NSString* btnName = @VIEWED_IMAGE;
+        if (self.viewed == FALSE) {  btnName = @UNVIEWED_IMAGE;  } 
     
         UIImage* btnImage = [UIImage imageNamed:btnName];
         btnImage = imageWithImage( btnImage, CGSizeMake(CELL_BTN_WIDTH, CELL_BTN_HEIGHT));
@@ -33,7 +30,6 @@
 
 @implementation Cell : UITableViewCell
     
-
     -(UILabel*) getUnviewedCounter:(NSString*) str width:(int)width height:(int)height x_offset:(int)x_offset y_offset:(int)y_offset textColor:(UIColor*)textColor font:(UIFont*)font
     {
         // Setting a frame is essential for an element to be displayed
@@ -50,6 +46,7 @@
     {
         return [NSString stringWithFormat:@"<Cell:%p> %@", self, self.title ]; 
     }
+    
 @end
 
 UIImage* imageWithImage(UIImage* image, CGSize size) 
@@ -60,5 +57,13 @@ UIImage* imageWithImage(UIImage* image, CGSize size)
     UIImage *destImage = UIGraphicsGetImageFromCurrentImageContext();    
     UIGraphicsEndImageContext();
     return destImage;
+}
+
+UIImage* getImage(NSString* imageName, int width, int height)
+{
+    // Create a UIImage object of the back icon and create a rect with the same dimensions
+    // as the smallest version in the imageset
+    UIImage* img = [UIImage imageNamed:imageName];
+    return imageWithImage(img, CGSizeMake(width, height));
 }
 
