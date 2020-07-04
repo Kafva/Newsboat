@@ -1,6 +1,5 @@
 #import "frontend.h"
 
-
 @implementation CellButton : UIButton
     
     -(NSString*)description

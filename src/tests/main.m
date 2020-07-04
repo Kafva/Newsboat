@@ -7,6 +7,8 @@ int main (int argc, char * argv[])
 {
     srand(time(NULL));
 
+    NSLog(@"True+1: %d", TRUE +1);
+
     if (argc == 2){ TEST = atoi(argv[1]); }
 
 	@autoreleasepool 
@@ -70,6 +72,32 @@ int main (int argc, char * argv[])
         else if (TEST == 3)
         // Conccurency execution with dispatch queues
         {
+
+            dispatch_group_t group = dispatch_group_create();
+
+            dispatch_group_async(group,dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^ {
+                // block1
+                NSLog(@"Block1");
+                [NSThread sleepForTimeInterval:5.0];
+                NSLog(@"Block1 End");
+            });
+
+
+            dispatch_group_async(group,dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^ {
+                // block2
+                NSLog(@"Block2");
+                [NSThread sleepForTimeInterval:8.0];
+                NSLog(@"Block2 End");
+            });
+
+            dispatch_group_notify(group,dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^ {
+                // block3
+                NSLog(@"Block3");
+            });
+
+            dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+
+
             //NSString* url = @"https://www.youtube.com/feeds/videos.xml?channel_id=UCtGoikgbxP4F3rgI9PldI9g"; 
             //RequestHandler* re = [[RequestHandler alloc] init];
             //NSMutableArray* tagData = [[NSMutableArray alloc] init];

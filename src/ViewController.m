@@ -3,11 +3,7 @@
 //  Can't reach last element in tableview
 //  Searchbar for channel view
 //  Landscape mode background
-
-//  Upon entering the channel view nothing will happen, if we press the reload button
-//  the process of importing RSS from all the entries will start and incrementally update with sorting applied
-//  Every time we enter a certain channels video view that channels content will be updated (this needs to be reflected)
-//  on the channel view as well
+//  https://stackoverflow.com/questions/38261248/how-to-impliment-search-bar-in-table-view-for-contacts-in-ios
 
 @implementation ViewController 
     // The ViewController is respsoible for displaying the different views of the app
@@ -15,7 +11,6 @@
 
     - (void)loadView 
     {
-        
         // Call the mainScreen method of UIScreen
         // NOTE that we need to connect each view with the rectangle created with
         // the application frame
@@ -38,11 +33,9 @@
 
     - (void)viewDidLoad 
     {
-        
         // The super keyword will go up the class hierachy and execute the specified method (viewDidLoad)
         // once a superclass which implements it is encountered
         [super viewDidLoad];
-
     }
 
     -(UIButton*)getButtonView:(NSString*)btnStr selector:(SEL)selector width:(int)width height:(int)height x_offset:(int)x_offset y_offset:(int)y_offset
@@ -79,14 +72,14 @@
 
         self.channelView = [[UITableView alloc]initWithFrame:tableFrame style:UITableViewStylePlain];
 
-        [self.channelView registerClass:[Cell class] forCellReuseIdentifier:cellIdentifier];
+        [self.channelView registerClass:[Cell class] forCellReuseIdentifier:@CELL_IDENTIFIER];
         
         self.channelView.backgroundColor = [UIColor clearColor];
         self.channelView.delegate = self;
         self.channelView.dataSource = self;
         [self.view addSubview: self.channelView];
 
-        self.currentViewFlag = CHANNEL_VIEW;
+        self.currentViewFlag = @CHANNEL_VIEW;
 
         //----------------------------------------------// 
     
@@ -94,7 +87,8 @@
         NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSUTF8StringEncoding];
         [dbPath insertString: home atIndex:(NSUInteger)0];
 
-        self.handler = [[DBHandler alloc] initWithDB: dbPath];
+        //self.handler = [[DBHandler alloc] initWithDB: dbPath];
+        if ( self.handler == nil ){ self.handler = [[DBHandler alloc] initWithDB: dbPath]; }
 
         if ( [self.handler openDatabase] == SQLITE_OK )
         {
@@ -105,7 +99,6 @@
             
             for (int i=0; i<channels.count; i++)
             {
-                //NSLog(@"%@", channels[i]);
                 [self.channels addObject: channels[i] ];
             }
 
@@ -120,14 +113,17 @@
 
         self.videoView = [[UITableView alloc]initWithFrame:tableFrame style:UITableViewStylePlain];
 
-        [self.videoView registerClass:[Cell class] forCellReuseIdentifier:cellIdentifier];
+        [self.videoView registerClass:[Cell class] forCellReuseIdentifier:@CELL_IDENTIFIER];
 
         self.videoView.backgroundColor = [UIColor clearColor];
         self.videoView.delegate = self;
         self.videoView.dataSource = self;
         [self.view addSubview: self.videoView];
 
-        self.currentViewFlag = VIDEO_VIEW;
+        // Use the currentViewFlag to store the channel name for updating the correct datasource
+        // when exiting the video view
+        self.currentViewFlag = channel;
+        //NSLog(@"this:%@", self.currentViewFlag);
 
         //----------------------------------------------// 
 
@@ -136,24 +132,20 @@
         NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSUTF8StringEncoding];
         [dbPath insertString: home atIndex:(NSUInteger)0];
 
-        DBHandler* handler = [[DBHandler alloc] initWithDB: dbPath];
+        if ( self.handler == nil ){ self.handler = [[DBHandler alloc] initWithDB: dbPath]; }
 
-        if ( [handler openDatabase] == SQLITE_OK )
+        if ( [self.handler openDatabase] == SQLITE_OK )
         {
             self.videos = [[NSMutableArray alloc] init];
 
             // Import videos for the given channel into the database ( implicit calls to addVideo() )
-            [handler importRSS: [channel cStringUsingEncoding: NSUTF8StringEncoding]];
+            [self.handler importRSS: [channel cStringUsingEncoding: NSUTF8StringEncoding]];
 
             // Fetch video objects from the given channel from the database
-            [handler getVideosFrom: [channel cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
-
-            for (int i=0; i<self.videos.count; i++)
-            {
-                //NSLog(@"addVideoView() [%d]: %@: %@ (%@)",[self.videos[i] viewed], channel , [self.videos[i] title] , [self.videos[i] link]  );
-            }
-
-            [handler closeDatabase]; 
+            [self.handler getVideosFrom: [channel cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
+            
+            
+            [self.handler closeDatabase]; 
         }
 
     }
@@ -200,18 +192,18 @@
     -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
     // Called when adding a new cell to the tableView (i.e. on scrolling the tableview)
     {
-        // Deque an unusued cell object based on the static cellIdentifier
+        // Deque an unusued cell object based on the static @CELL_IDENTIFIER
         // Note that after iOS 5 the method will never return nil but we can check wheter or
         // not a title already exists in which case we DONT want to add more subviews
         // and instead simply change the text being displayed
-        Cell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        Cell *cell = [tableView dequeueReusableCellWithIdentifier:@CELL_IDENTIFIER];
         
         NSLog(@"Fetching new cell:  %@",cell);
         
         if (cell.title == nil)
         {
             // Set the style value to enable the use of detailTextLabels with 'Value1' instead of 'Default' 
-            cell = [cell initWithStyle: UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+            cell = [cell initWithStyle: UITableViewCellStyleDefault reuseIdentifier:@CELL_IDENTIFIER];
             
             // Clear background and white/pink text
             cell.backgroundColor = [UIColor clearColor];
@@ -234,17 +226,13 @@
             cell.title = [[self.channels objectAtIndex:indexPath.row] name ]; 
             cell.leftLabel.text = cell.title;
             int unviewedCount = [[self.channels objectAtIndex:indexPath.row] unviewedCount];
+            cell.rightLabel.textColor = [[UIColor alloc] initWithWhite:1 alpha:0.6 ]; 
             
-            if ( unviewedCount == -1 )
-            { 
-                cell.rightLabel.text = @"(?)"; 
-                cell.rightLabel.textColor = [[UIColor alloc] initWithWhite:1 alpha:0.6 ]; 
-            }
-            else 
-            {
-                cell.rightLabel.text = [NSString stringWithFormat: @"(%d/%d)", unviewedCount, VIDEOS_PER_CHANNEL];
-                cell.rightLabel.textColor = [[UIColor alloc] initWithRed:(CGFloat)RED green:(CGFloat)GREEN blue:(CGFloat)BLUE alpha:(CGFloat)1.0 ];
-            }
+            if ( unviewedCount == -1 ) { cell.rightLabel.text = @"(?)"; }
+            else { cell.rightLabel.text = [NSString stringWithFormat: @"(%d/%d)", unviewedCount, VIDEOS_PER_CHANNEL]; }
+
+            // Highlight color when there is at least one new video 
+            if ( unviewedCount > 0 )  { cell.rightLabel.textColor = [[UIColor alloc] initWithRed:(CGFloat)RED green:(CGFloat)GREEN blue:(CGFloat)BLUE alpha:(CGFloat)1.0 ]; }
         }
         else 
         //*** Cell configuration for video view ****//
@@ -293,7 +281,7 @@
         {
             NSString* link = [[tableView cellForRowAtIndexPath: indexPath ] link];
             NSLog(@"Tapped entry[%ld]: %@", indexPath.row, link);
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:link] options:NULL completionHandler:^(BOOL success) { NSLog(@"opened url %d", success); } ];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:link] options:NULL completionHandler:^(BOOL success) { NSLog(@"opened URL (%d)", success); } ];
         } 
     }        
 
@@ -304,7 +292,7 @@
     }
 
     
-    //------ BUTTONS -------// 
+    //--------------- BUTTONS --------------------// 
     -(void) toggleViewed: (CellButton*) btn 
     {
         if ( [self.handler openDatabase] == SQLITE_OK )
@@ -326,36 +314,63 @@
     -(void) rightBtn: (UIButton*)sender
     // Hide button on video view
     {
-        Cell* cell = nil;
-        
-        if ( self.currentViewFlag == CHANNEL_VIEW )
+        if ( [self.currentViewFlag isEqual: @CHANNEL_VIEW] )
+        //*** Reload all RSS feeds ***//
         {
-            NSLog(@"chan!");
-            int unviewedCount = 7;
-            for (int i = 0; i < [self.videoView numberOfRowsInSection:0]; i++ )
-            // Fetch the RSS feed for each channel
-            {
-            //    cell = [self.videoView cellForRowAtIndexPath: [NSIndexPath indexPathForRow:i inSection:0] ];
-            //    
-            //    cell.rightLabel.text = [NSString stringWithFormat: @"(%d/%d)", unviewedCount, VIDEOS_PER_CHANNEL];
-            //    cell.rightLabel.textColor = [[UIColor alloc] initWithRed:(CGFloat)RED green:(CGFloat)GREEN blue:(CGFloat)BLUE alpha:(CGFloat)1.0 ];
-            }
             
-            // Sort the video array based upon the highest number of unviewed videos
-            //https://stackoverflow.com/questions/7255581/sort-the-array-of-objects-in-tableview
-            //NSArray *descriptor = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"unviewedCount" ascending:NO]];
-            //NSArray *sortedArray = [objects sortedArrayUsingDescriptors:descriptor];
+            // Begin by either creating the loading spinner from scratch and adding it as a subview
+            // or simply unhide it after hiding the reload button
+            self.reloadBtn.hidden = YES;
+            if(self.spinner == nil)
+            {
+                self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                self.spinner.frame = CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, RELOAD_WIDTH, RELOAD_HEIGHT);
+                self.spinner.color = [UIColor whiteColor];
+                
+                [self.view addSubview: self.spinner];
+                [self.spinner startAnimating];
+            }
+            else { self.spinner.hidden = NO; }
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), 
+            ^{
+                // Dispatch a global thread for the work of fetching data from each feed
+                // UI updates are done in bulk once all the work is done
+                [self fullReload];
 
-
+                // Dispatch back on the main thread (mandatory for UI updates)
+                dispatch_async(dispatch_get_main_queue(), 
+                ^{
+                    // Inside fullReload() the datasource (i.e. the channels array) is updated with the
+                    // appropriate number of unviewed videos, with reloadData() this update is reflected in
+                    // the UI by effectivly calling the tableview cell-adding functions anew
+                    [self.channelView reloadData];
+                    self.reloadBtn.hidden = NO;
+                    self.spinner.hidden = YES;
+                });
+            });
         } 
         else
+        // Make the marked videos in the view unmarked and vice versa
         { 
-            for (int i = 0; i < [self.videoView numberOfRowsInSection:0]; i++ )
-            // Make the marked videos in the view unmarked and vice versa
-            {
-                cell = [self.videoView cellForRowAtIndexPath: [NSIndexPath indexPathForRow:i inSection:0] ];
-                [self toggleViewed: cell.toggleBtn];
-            }
+            if ( [self.handler openDatabase] == SQLITE_OK )
+            {    
+                // Deduce the channel owner_id from the channel name
+                NSUInteger owner_index = [[self.channels valueForKey:@"name"] indexOfObject: self.currentViewFlag];
+                
+                // Update the backend status
+                [self.handler toggleViewedVideos: @ALL_TITLE owner_id:  [[self.channels objectAtIndex: owner_index] id]  ];
+                
+                for (int i = 0; i < self.videos.count; i++)
+                // Update the UI
+                {
+                    [[self.videos objectAtIndex:i] toggleViewedAttr];
+                }
+
+                [self.videoView reloadData];
+            } 
+        
+            [self.handler closeDatabase]; 
         }
         
     }
@@ -364,15 +379,67 @@
     // When the back button is tapped from a video view
     // unhide the channels view and delete the button and video view (for the specific channel)
     {
+        //--- Update the number of unviewed videos for the channel datasource ---//
+        int unviewedCount = VIDEOS_PER_CHANNEL;
+        for (int i=0; i<self.videos.count; i++) { unviewedCount = unviewedCount - [[self.videos objectAtIndex:i] viewed]; }
+
+        NSUInteger channel_index = [  [self.channels valueForKey:@"name"] indexOfObject: self.currentViewFlag];
+        NSLog(@"%@:%lu", self.currentViewFlag, channel_index);
+        [[self.channels objectAtIndex: channel_index] setUnviewedCount: unviewedCount]; 
+        
+        // Sort the datasource
+        NSArray *descriptor = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"unviewedCount" ascending:NO]];
+        self.channels = (NSMutableArray*)[self.channels sortedArrayUsingDescriptors:descriptor];
+        
+        //-----------------------------------------------------------------------//
+
+        // Remove the video view from the View controller 
         [self.videoView removeFromSuperview];
         [sender removeFromSuperview];
-        self.currentViewFlag = CHANNEL_VIEW;
         
+        self.currentViewFlag = @CHANNEL_VIEW;
         [self.reloadBtn setImage: getImage( @RELOAD_IMAGE, RELOAD_WIDTH, RELOAD_HEIGHT ) forState:UIControlStateNormal];
         self.channelView.hidden = NO;
+
+        // Reload the datasource on going back to display potential changes of the number of viewed videos
+        [self.channelView reloadData];
+    }
+
+    -(void) fullReload
+    // Executed as a background task
+    {
+        int unviewedCount = -1;
+        
+        // Descriptor array for sorting purposes
+        NSArray *descriptor = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"unviewedCount" ascending:NO]];
+        
+        if ( [self.handler openDatabase] == SQLITE_OK )
+        {
+            for (int i = 0; i < self.channels.count; i++)
+            {
+                unviewedCount = VIDEOS_PER_CHANNEL; 
+                
+                self.videos = [[NSMutableArray alloc] init];
+
+                // Import videos for the given channel into the database ( implicit calls to addVideo() )
+                [self.handler importRSS: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding]];
+
+                // Fetch video objects from the given channel from the database
+                [self.handler getVideosFrom: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
+
+                // Set the channel objects unviewed count based upon the number derived
+                // after the RSS fetch
+                // True: 1      False: 0
+                for (int i=0; i<self.videos.count; i++) { unviewedCount = unviewedCount - [[self.videos objectAtIndex:i] viewed]; }
+
+                [[self.channels objectAtIndex:i] setUnviewedCount: unviewedCount];
+                
+                // Sort the video array based upon the highest number of unviewed videos
+                self.channels = (NSMutableArray*)[self.channels sortedArrayUsingDescriptors:descriptor];
+            }
+
+            [self.handler closeDatabase]; 
+        }
     }
 
 @end
-
-
-

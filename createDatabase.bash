@@ -5,7 +5,8 @@
 
 [ -n $1 ] && DBNAME=rss.db
 [ -n $1 ] || DBNAME=$1
-[ -n $2 ] && URLS=~/.newsboat/urls
+#[ -n $2 ] && URLS=~/.newsboat/urls
+[ -n $2 ] && URLS=urls
 [ -n $2 ] || URLS=$2
 
 [ -f $DBNAME ] && rm $DBNAME

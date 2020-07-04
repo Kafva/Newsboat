@@ -1,12 +1,13 @@
 #import "backend.h"
 #import "frontend.h"
-
-static NSString *cellIdentifier = @"newCell";
+#define CELL_IDENTIFIER "newCell"
 
 @interface ViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
     // The <...> objects are protocols used for the implementation of the tableView
 
-    @property int currentViewFlag;
+    @property (strong,nonatomic) UIActivityIndicatorView* spinner;
+    
+    @property (strong,nonatomic) NSString* currentViewFlag;
     @property (strong,nonatomic) DBHandler* handler;
 
     @property (strong, nonatomic) UIButton *reloadBtn;
@@ -30,6 +31,7 @@ static NSString *cellIdentifier = @"newCell";
     -(void) toggleViewed: (CellButton*)sender;
     -(void) goBack:(UIButton*) sender; 
     -(void) rightBtn: (UIButton*)sender;
+    -(void) fullReload;
 
 @end
 

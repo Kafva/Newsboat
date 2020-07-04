@@ -33,8 +33,7 @@
 #define OK_WIDTH 42
 #define OK_HEIGHT 56
 
-#define CHANNEL_VIEW 0
-#define VIDEO_VIEW 1
+#define CHANNEL_VIEW "0"
 
 //** IMAGES **//
 #define VIEWED_IMAGE "plus"
@@ -73,7 +72,6 @@
     @property (strong,nonatomic) UILabel* rightLabel;
     
     -(UILabel*) getUnviewedCounter:(NSString*) str width:(int)width height:(int)height x_offset:(int)x_offset y_offset:(int)y_offset textColor:(UIColor*)textColor font:(UIFont*)font;
-
     -(NSString*)description;
 @end
 

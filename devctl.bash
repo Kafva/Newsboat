@@ -40,6 +40,7 @@ elif [ "$1" = deploy ]; then
     ./createDatabase.bash $DBNAME $URLS
 
     #   xcodebuild -showBuildSettings
+    #   Remove unused function warnings since all the sqlite callbacks are listed as unused
     xcodebuild build -destination "id=$iphone_id" -allowProvisioningUpdates OTHER_CFLAGS="-Xclang -Wno-unused-function" && 
     ideviceinstaller -i build/Release-iphoneos/${PROJECT}.app &&
 
