@@ -1,9 +1,9 @@
 #import "ViewController.h"
+
 // TODO
-//  Can't reach last element in tableview
-//  Searchbar for channel view
-//  Landscape mode background
-//  https://stackoverflow.com/questions/38261248/how-to-impliment-search-bar-in-table-view-for-contacts-in-ios
+//  Last entry partially hidden
+//  Caching of viewed
+//  Highlight/animate rows on selection
 
 @implementation ViewController 
     // The ViewController is respsoible for displaying the different views of the app
@@ -19,23 +19,45 @@
         
         self.view = [[UIView alloc] initWithFrame:rect];
         self.view.backgroundColor = [UIColor blackColor];
+        
+        //*** Initialise properties ***//
+        NSString* home = NSHomeDirectory();
+        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSUTF8StringEncoding];
+        [dbPath insertString: home atIndex:(NSUInteger)0];
+        
+        self.handler = [[DBHandler alloc] initWithDB: dbPath];
+        self.videos = [[NSMutableArray alloc] init];
+        self.channels = [[NSMutableArray alloc] init];
 
-        // We can techincally just place all of our views in the same controller and manage them
-        // from here (Bring the "subview" forward on the stack when accessing it and delete it on back press)
+        [self initSpinner];
+        //******************************//
 
+        // Note the order in which the views are added (they stack on top of each other)
         [self addImageView];
         [self addChannelView];
 
-        // Positioning of reload button is not well made
+        // Positioning of the reload button is not well made
         self.reloadBtn = [self getButtonView: @RELOAD_IMAGE selector: @selector(rightBtn:) width: RELOAD_WIDTH height: RELOAD_HEIGHT x_offset: BTN_X_OFFSET y_offset: BTN_Y_OFFSET ];
         [self.view addSubview: [self reloadBtn]];
+
+        [self addSearchBar];
+    
+        self.spinner.hidden = YES;
+        [self.view addSubview: [self spinner]];
     }
 
-    - (void)viewDidLoad 
+    -(void) viewDidLoad 
     {
         // The super keyword will go up the class hierachy and execute the specified method (viewDidLoad)
         // once a superclass which implements it is encountered
         [super viewDidLoad];
+    }
+    
+    -(void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+    {
+        // ViewController method to resign the first responder status of the searchbar
+        // when touching any area of the view which will hide the keyboard
+        [self.searchBar resignFirstResponder];
     }
 
     -(UIButton*)getButtonView:(NSString*)btnStr selector:(SEL)selector width:(int)width height:(int)height x_offset:(int)x_offset y_offset:(int)y_offset
@@ -67,7 +89,6 @@
     
     -(void) addChannelView
     {
-        //-----------------------------------------------//
         CGRect tableFrame = CGRectMake(0, Y_OFFSET, self.view.frame.size.width, self.view.frame.size.height);
 
         self.channelView = [[UITableView alloc]initWithFrame:tableFrame style:UITableViewStylePlain];
@@ -78,37 +99,34 @@
         self.channelView.delegate = self;
         self.channelView.dataSource = self;
         [self.view addSubview: self.channelView];
-
         self.currentViewFlag = @CHANNEL_VIEW;
 
-        //----------------------------------------------// 
-    
-        NSString* home = NSHomeDirectory();
-        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSUTF8StringEncoding];
-        [dbPath insertString: home atIndex:(NSUInteger)0];
+        [self.channelView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
+        
+        // Populate the datasource
+        [self channelSearch: @ALL_TITLE];
+    }
 
-        //self.handler = [[DBHandler alloc] initWithDB: dbPath];
-        if ( self.handler == nil ){ self.handler = [[DBHandler alloc] initWithDB: dbPath]; }
-
-        if ( [self.handler openDatabase] == SQLITE_OK )
-        {
-            self.channels = [[NSMutableArray alloc] init];
-            NSMutableArray* channels = [[NSMutableArray alloc] init];
-            
-            [self.handler getChannels: channels];
-            
-            for (int i=0; i<channels.count; i++)
-            {
-                [self.channels addObject: channels[i] ];
-            }
-
-            [self.handler closeDatabase]; 
-        }
+    -(void) addSearchBar
+    {
+        self.searchBar = [[UISearchBar alloc] init]; 
+        
+        // Minimal style gives transparancy
+        self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+        self.searchBar.barStyle = UIBarStyleBlack;
+        
+        // Without setting the delegate the bar won't call the delegate functions defined
+        // for the <UISearchBarDelegate> protocol
+        self.searchBar.delegate = self;
+        
+        [self.searchBar setFrame: CGRectMake(SEARCH_X_OFFSET,BTN_Y_OFFSET,SEARCH_WIDTH,RELOAD_HEIGHT)];
+        self.searchBar.tintColor = [[UIColor alloc] initWithRed:(CGFloat)RED green:(CGFloat)GREEN blue:(CGFloat)BLUE alpha:(CGFloat)1.0 ];
+        
+        [self.view addSubview: [self searchBar]];
     }
 
     -(void) addVideoView: (NSString*) channel
     {
-        //-----------------------------------------------//
         CGRect tableFrame = CGRectMake(0, Y_OFFSET*1.5, self.view.frame.size.width, self.view.frame.size.height);
 
         self.videoView = [[UITableView alloc]initWithFrame:tableFrame style:UITableViewStylePlain];
@@ -119,31 +137,25 @@
         self.videoView.delegate = self;
         self.videoView.dataSource = self;
         [self.view addSubview: self.videoView];
+        
+        [self.videoView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
 
         // Use the currentViewFlag to store the channel name for updating the correct datasource
         // when exiting the video view
         self.currentViewFlag = channel;
-        //NSLog(@"this:%@", self.currentViewFlag);
+    }
 
-        //----------------------------------------------// 
-
-        // Fetch all the videos from the RSS feed for the given channel 
-        NSString* home = NSHomeDirectory();
-        NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSUTF8StringEncoding];
-        [dbPath insertString: home atIndex:(NSUInteger)0];
-
-        if ( self.handler == nil ){ self.handler = [[DBHandler alloc] initWithDB: dbPath]; }
-
+    -(void) fetchVideos: (NSString*)channel
+    {
         if ( [self.handler openDatabase] == SQLITE_OK )
         {
-            self.videos = [[NSMutableArray alloc] init];
+            [self.videos removeAllObjects];
 
             // Import videos for the given channel into the database ( implicit calls to addVideo() )
             [self.handler importRSS: [channel cStringUsingEncoding: NSUTF8StringEncoding]];
 
             // Fetch video objects from the given channel from the database
             [self.handler getVideosFrom: [channel cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
-            
             
             [self.handler closeDatabase]; 
         }
@@ -180,7 +192,7 @@
 
     }
 
-    //------------ TABLES -------------------//
+    //************ TABLES *******************//
     // https://gist.github.com/keicoder/8682867 
 
     // Required functions for the dataSource and delegate implemntations of the 
@@ -197,6 +209,7 @@
         // not a title already exists in which case we DONT want to add more subviews
         // and instead simply change the text being displayed
         Cell *cell = [tableView dequeueReusableCellWithIdentifier:@CELL_IDENTIFIER];
+        cell.userInteractionEnabled = YES; 
         
         NSLog(@"Fetching new cell:  %@",cell);
         
@@ -204,7 +217,8 @@
         {
             // Set the style value to enable the use of detailTextLabels with 'Value1' instead of 'Default' 
             cell = [cell initWithStyle: UITableViewCellStyleDefault reuseIdentifier:@CELL_IDENTIFIER];
-            
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
             // Clear background and white/pink text
             cell.backgroundColor = [UIColor clearColor];
             UIColor* pink = [[UIColor alloc] initWithRed:(CGFloat)RED green:(CGFloat)GREEN blue:(CGFloat)BLUE alpha:(CGFloat)1.0 ];            
@@ -223,9 +237,12 @@
         if ( self.channelView == tableView ) 
         //*** Cell configuration for channel view ****//
         { 
+            int unviewedCount = -1;
+            
             cell.title = [[self.channels objectAtIndex:indexPath.row] name ]; 
+            unviewedCount = [[self.channels objectAtIndex:indexPath.row] unviewedCount];
+            
             cell.leftLabel.text = cell.title;
-            int unviewedCount = [[self.channels objectAtIndex:indexPath.row] unviewedCount];
             cell.rightLabel.textColor = [[UIColor alloc] initWithWhite:1 alpha:0.6 ]; 
             
             if ( unviewedCount == -1 ) { cell.rightLabel.text = @"(?)"; }
@@ -257,25 +274,63 @@
     -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
     // Returns the number of cells in the tableView section
     {
-        if ( tableView == self.channelView ){ return [self.channels count]; }
+        if ( tableView == self.channelView )
+        { 
+            return [self.channels count];
+        }
         else { return [self.videos count]; }
     }
 
-    -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-    //--- Called when a row is selected ----//
+
+    -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+    // Returns the desired height of each row
     {
-        
+        return ROW_HEIGHT;
+    }
+
+    -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+    //*** Called when a row is selected ***//
+    {
         if ( self.channelView == tableView )
-        // If an entry is tapped from the channel view
+        //*** If an entry is tapped from the channel view ***//
         {
+            // Disable interactions while loading content
+            self.channelView.userInteractionEnabled = NO;
+            self.searchBar.userInteractionEnabled = NO;   
+            
+            // Hide the keyboard if its up
+            if( [self.searchBar isFirstResponder] ) { [self.searchBar resignFirstResponder]; }
+
+            // Display the spinner while waiting to enter the video view
+            self.reloadBtn.hidden = YES;
+            self.spinner.hidden = NO;
+            [self.spinner startAnimating];
+            
             NSString* channel = [[ tableView cellForRowAtIndexPath: indexPath ] title];
             NSLog(@"Tapped entry[%ld]: %@", indexPath.row, channel);
 
-            self.channelView.hidden = YES;
-            [self.reloadBtn setImage: getImage( @OK_IMAGE, RELOAD_WIDTH, RELOAD_HEIGHT ) forState:UIControlStateNormal];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), 
+            ^{
+                // Fetch the RSS data in a background thread
+                [self fetchVideos: channel];
 
-            [self addVideoView: channel];
-            [self.view addSubview: [self getButtonView: @BACK_IMAGE selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT x_offset:0 y_offset:BTN_Y_OFFSET ]];
+                // Dispatch back on the main thread (mandatory for UI updates)
+                dispatch_async(dispatch_get_main_queue(), 
+                ^{
+                    self.channelView.userInteractionEnabled = YES;
+                    self.searchBar.userInteractionEnabled = YES;   
+                    
+                    self.searchBar.hidden = YES;
+                    self.channelView.hidden = YES;
+                    [self.reloadBtn setImage: getImage( @OK_IMAGE, RELOAD_WIDTH, RELOAD_HEIGHT ) forState:UIControlStateNormal];
+                    [self.view addSubview: [self getButtonView: @BACK_IMAGE selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT x_offset:0 y_offset:BTN_Y_OFFSET ]];
+                    
+                    [self addVideoView: channel];
+                    
+                    self.reloadBtn.hidden = NO; 
+                    self.spinner.hidden = YES;
+                });
+            });
         }
         else
         {
@@ -284,17 +339,13 @@
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:link] options:NULL completionHandler:^(BOOL success) { NSLog(@"opened URL (%d)", success); } ];
         } 
     }        
-
-    -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-    // Returns the desired height of each row
-    {
-        return 70;
-    }
-
     
-    //--------------- BUTTONS --------------------// 
+    //*************** BUTTONS ********************// 
     -(void) toggleViewed: (CellButton*) btn 
     {
+        if( [self.searchBar isFirstResponder] ) { [self.searchBar resignFirstResponder]; }
+        
+        
         if ( [self.handler openDatabase] == SQLITE_OK )
         {
             // Update the viewed status in the database
@@ -314,23 +365,20 @@
     -(void) rightBtn: (UIButton*)sender
     // Hide button on video view
     {
+        if( [self.searchBar isFirstResponder] ) { [self.searchBar resignFirstResponder]; }
+        
         if ( [self.currentViewFlag isEqual: @CHANNEL_VIEW] )
         //*** Reload all RSS feeds ***//
         {
+            // Disable interactions while loading content
+            self.channelView.userInteractionEnabled = NO;
+            self.searchBar.userInteractionEnabled = NO;   
             
             // Begin by either creating the loading spinner from scratch and adding it as a subview
             // or simply unhide it after hiding the reload button
             self.reloadBtn.hidden = YES;
-            if(self.spinner == nil)
-            {
-                self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                self.spinner.frame = CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, RELOAD_WIDTH, RELOAD_HEIGHT);
-                self.spinner.color = [UIColor whiteColor];
-                
-                [self.view addSubview: self.spinner];
-                [self.spinner startAnimating];
-            }
-            else { self.spinner.hidden = NO; }
+            self.spinner.hidden = NO;
+            [self.spinner startAnimating];
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), 
             ^{
@@ -347,6 +395,9 @@
                     [self.channelView reloadData];
                     self.reloadBtn.hidden = NO;
                     self.spinner.hidden = YES;
+
+                    self.searchBar.userInteractionEnabled = YES;   
+                    self.channelView.userInteractionEnabled = YES;
                 });
             });
         } 
@@ -379,6 +430,8 @@
     // When the back button is tapped from a video view
     // unhide the channels view and delete the button and video view (for the specific channel)
     {
+        if( [self.searchBar isFirstResponder] ) { [self.searchBar resignFirstResponder]; }
+        
         //--- Update the number of unviewed videos for the channel datasource ---//
         int unviewedCount = VIDEOS_PER_CHANNEL;
         for (int i=0; i<self.videos.count; i++) { unviewedCount = unviewedCount - [[self.videos objectAtIndex:i] viewed]; }
@@ -400,6 +453,7 @@
         self.currentViewFlag = @CHANNEL_VIEW;
         [self.reloadBtn setImage: getImage( @RELOAD_IMAGE, RELOAD_WIDTH, RELOAD_HEIGHT ) forState:UIControlStateNormal];
         self.channelView.hidden = NO;
+        self.searchBar.hidden = NO;
 
         // Reload the datasource on going back to display potential changes of the number of viewed videos
         [self.channelView reloadData];
@@ -439,6 +493,56 @@
             }
 
             [self.handler closeDatabase]; 
+        }
+    }
+
+    -(void) initSpinner
+    {
+        self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        self.spinner.frame = CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, RELOAD_WIDTH, RELOAD_HEIGHT);
+        self.spinner.color = [UIColor whiteColor];
+    }
+
+    //*********** SEARCH BAR **************//
+    // The search functionality doesn't save fetched RSS data, this looks bad when using the app
+    // but also ensures that old reads are never made
+
+    -(void) searchBar:(UISearchBar*) searchBar textDidChange:(NSString*) searchText 
+    {
+        // Empty the datasource before filling it agian
+        self.channels = [[NSMutableArray alloc] init];
+        [self.channelView reloadData];
+
+        [self channelSearch: searchText];
+    }
+
+    -(void) searchBarCancelButtonClicked:(UISearchBar *)searchBar
+    {
+        if( [self.searchBar isFirstResponder] ) { [self.searchBar resignFirstResponder]; }
+        
+        // Query for all the channels when cancelling
+        self.channels = [[NSMutableArray alloc] init]; 
+        [self channelSearch: @ALL_TITLE];
+    }
+
+    -(void) searchBarSearchButtonClicked:(UISearchBar *)searchBar
+    {
+        // Since we issue a search automatically on each new character we don't need to issue one agian
+        // when the searchbutton is pressed
+        if( [self.searchBar isFirstResponder] ) { [self.searchBar resignFirstResponder]; } 
+    }
+    
+    -(void) channelSearch:(NSString*) searchText
+    // Search for the given channel(s) in the database and update the UI accordingly
+    {
+        if ([self.handler openDatabase] == SQLITE_OK)
+        {
+            if ([searchText isEqual: @ALL_TITLE]) { [self.handler getChannels: self.channels]; }
+            else { [self.handler getChannels: self.channels name: searchText]; }
+
+            [self.handler closeDatabase];
+            
+            [self.channelView reloadData];
         }
     }
 

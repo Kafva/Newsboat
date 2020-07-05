@@ -33,13 +33,18 @@
 #define OK_WIDTH 42
 #define OK_HEIGHT 56
 
+#define SEARCH_X_OFFSET 100
+#define SEARCH_WIDTH 200
+
+#define ROW_HEIGHT 70
+
 #define CHANNEL_VIEW "0"
 
 //** IMAGES **//
 #define VIEWED_IMAGE "plus"
 #define UNVIEWED_IMAGE "star"
 #define BACK_IMAGE "back"
-#define RELOAD_IMAGE "refresh"
+#define RELOAD_IMAGE "reload"
 #define OK_IMAGE "ok"
 #define BKG_IMAGE "sea"
 

@@ -47,6 +47,7 @@
     
     //************** Utility *******************//
     -(int) getChannels: (NSMutableArray*)channels;
+    -(int) getChannels: (NSMutableArray*)channels name:(NSString*)name;
     -(int) getVideosFrom: (const char*)channel count:(int)count videos:(NSMutableArray*) videos;
     -(int) toggleViewedVideos: (NSString*)title owner_id:(int)owner_id;
 

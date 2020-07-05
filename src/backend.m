@@ -91,6 +91,24 @@
         return ret;
     }
     
+    -(int) getChannels: (NSMutableArray*)channels name:(NSString*)name
+    // Return all the channel objects from the database
+    {
+        char* err_msg;
+        char* stmt = malloc(sizeof(char)*VARCHAR_SIZE);
+        sprintf(stmt, "SELECT * FROM `Channels` WHERE `name` LIKE \"%%%s%%\" ORDER BY `name` ASC", [name cStringUsingEncoding: NSUTF8StringEncoding]); 
+
+        // The callback function creates Video objects which are returned to the paramater passed to the method 
+        int ret = sqlite3_exec( self.db , stmt, callbackChannelObjects, (__bridge void*)channels, &err_msg );
+        //int ret = sqlite3_exec( self.db , stmt, callbackPrint, (__bridge void*)channels, &err_msg );
+        
+        if ( ret != SQLITE_OK  ){  NSLog(@"%s", err_msg);  }
+        
+        free(stmt);
+        return ret;
+
+    }
+    
     -(int) getChannels: (NSMutableArray*)channels
     // Return all the channel objects from the database
     {
@@ -478,6 +496,7 @@ static int callbackChannelObjects(void* context, int columnCount, char** columnV
     // Initalise every channel object with -1 viewed videos to indicate that the channel hasn't been updated
     channel.unviewedCount = -1;
 
+    NSLog(@"Search found: %@", channel);
     [(__bridge NSMutableArray*)context addObject: channel];
     return 0;
 
