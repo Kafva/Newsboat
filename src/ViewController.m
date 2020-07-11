@@ -2,12 +2,14 @@
 
 // TODO
 //  Last entry partially hidden
-//  Caching of viewed
 //  Highlight/animate rows on selection
+//  toogle all button on main menu
 
 @implementation ViewController 
     // The ViewController is respsoible for displaying the different views of the app
     // (Usually there are several) and inherits from the UIViewController class
+
+    //************* BASICS ******************************//
 
     - (void)loadView 
     {
@@ -41,9 +43,15 @@
         [self.view addSubview: [self reloadBtn]];
 
         [self addSearchBar];
-    
+
+        // Spinner    
         self.spinner.hidden = YES;
         [self.view addSubview: [self spinner]];
+
+        // Back button
+        self.backBtn = [self getButtonView: @BACK_IMAGE selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT x_offset:0 y_offset:BTN_Y_OFFSET ];
+        self.backBtn.hidden = YES; 
+        [self.view addSubview: [self backBtn]];
     }
 
     -(void) viewDidLoad 
@@ -59,6 +67,8 @@
         // when touching any area of the view which will hide the keyboard
         [self.searchBar resignFirstResponder];
     }
+
+    //************* ADDING VIEWS **********************//
 
     -(UIButton*)getButtonView:(NSString*)btnStr selector:(SEL)selector width:(int)width height:(int)height x_offset:(int)x_offset y_offset:(int)y_offset
     // To reuset the button function we pass the selector method which defines the
@@ -106,25 +116,7 @@
         // Populate the datasource
         [self channelSearch: @ALL_TITLE];
     }
-
-    -(void) addSearchBar
-    {
-        self.searchBar = [[UISearchBar alloc] init]; 
-        
-        // Minimal style gives transparancy
-        self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
-        self.searchBar.barStyle = UIBarStyleBlack;
-        
-        // Without setting the delegate the bar won't call the delegate functions defined
-        // for the <UISearchBarDelegate> protocol
-        self.searchBar.delegate = self;
-        
-        [self.searchBar setFrame: CGRectMake(SEARCH_X_OFFSET,BTN_Y_OFFSET,SEARCH_WIDTH,RELOAD_HEIGHT)];
-        self.searchBar.tintColor = [[UIColor alloc] initWithRed:(CGFloat)RED green:(CGFloat)GREEN blue:(CGFloat)BLUE alpha:(CGFloat)1.0 ];
-        
-        [self.view addSubview: [self searchBar]];
-    }
-
+    
     -(void) addVideoView: (NSString*) channel
     {
         CGRect tableFrame = CGRectMake(0, Y_OFFSET*1.5, self.view.frame.size.width, self.view.frame.size.height);
@@ -145,21 +137,22 @@
         self.currentViewFlag = channel;
     }
 
-    -(void) fetchVideos: (NSString*)channel
+    -(void) addSearchBar
     {
-        if ( [self.handler openDatabase] == SQLITE_OK )
-        {
-            [self.videos removeAllObjects];
-
-            // Import videos for the given channel into the database ( implicit calls to addVideo() )
-            [self.handler importRSS: [channel cStringUsingEncoding: NSUTF8StringEncoding]];
-
-            // Fetch video objects from the given channel from the database
-            [self.handler getVideosFrom: [channel cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
-            
-            [self.handler closeDatabase]; 
-        }
-
+        self.searchBar = [[UISearchBar alloc] init]; 
+        
+        // Minimal style gives transparancy
+        self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+        self.searchBar.barStyle = UIBarStyleBlack;
+        
+        // Without setting the delegate the bar won't call the delegate functions defined
+        // for the <UISearchBarDelegate> protocol
+        self.searchBar.delegate = self;
+        
+        [self.searchBar setFrame: CGRectMake(SEARCH_X_OFFSET,BTN_Y_OFFSET,SEARCH_WIDTH,RELOAD_HEIGHT)];
+        self.searchBar.tintColor = [[UIColor alloc] initWithRed:(CGFloat)RED green:(CGFloat)GREEN blue:(CGFloat)BLUE alpha:(CGFloat)1.0 ];
+        
+        [self.view addSubview: [self searchBar]];
     }
 
     -(void) addToggleBtn: (Cell*)cell viewed:(bool)viewed owner_id:(int)owner_id
@@ -192,14 +185,88 @@
 
     }
 
-    //************ TABLES *******************//
-    // https://gist.github.com/keicoder/8682867 
+    //******************** MISC *************************//
 
-    // Required functions for the dataSource and delegate implemntations of the 
-    // <UITableViewDataSource, UITableViewDelegate>  protocols
-    // Note that both the videoView and channelView utilise the same tableView() functions
-    // when adding new cells etc.
+    -(void) fetchVideos: (NSString*)channel
+    {
+        if ( [self.handler openDatabase] == SQLITE_OK )
+        {
+            [self.videos removeAllObjects];
+
+            // Import videos for the given channel into the database ( implicit calls to addVideo() )
+            [self.handler importRSS: [channel cStringUsingEncoding: NSUTF8StringEncoding]];
+
+            // Fetch video objects from the given channel from the database
+            [self.handler getVideosFrom: [channel cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
+            
+            [self.handler closeDatabase]; 
+        }
+
+    }
+
+    -(void) updateCache
+    // Called after setting the currentViewFlag to the corresponding channel name
+    {
+        if ( self.channelsCache == nil )
+        // If the cache hasn't been created yet (i.e. no fullReload() has been done) create it 
+        { 
+            self.channelsCache = [[NSMutableArray alloc] init]; 
+        }
+        
+        NSUInteger index = [[self.channels valueForKey:@"name"] indexOfObject: self.currentViewFlag];
+        NSUInteger cache_index = [[self.channelsCache valueForKey:@"name"] indexOfObject: self.currentViewFlag];
+        
+        if ( cache_index == NSNotFound )
+        // If the channel doesn't exist in the cache add it
+        {
+            [self.channelsCache addObject: self.channels[index] ];
+            //NSLog(@"Added to cache: %@", self.channelsCache);
+        }
+        else if ( index != NSNotFound )
+        // Otherwise use the index of the current channel and update its unviewedCount in the existing cache
+        // provided that the search didn't fail
+        {
+            [self.channelsCache[cache_index] setUnviewedCount: [self.channels[index] unviewedCount] ];
+            //NSLog(@"Update single: channels[%lu] =  %@: cache[%lu] = %@", index, self.channels[index], cache_index , self.channelsCache[cache_index]); 
+
+        }
+    }
+
+    -(void) getUnviewedCountFromCache
+    // Go through each channel object and retain the unviewedCount attribute from the cache if one exists 
+    {
+        if ( self.channelsCache != nil )
+        {
+            NSUInteger cache_index = NSNotFound;
+
+            for (int i=0; i < self.channels.count; i++)
+            {
+                if( [self.channels[i] unviewedCount] == -1)
+                // If the channel object has an unset view count search for the channel with the same name
+                // in the cache and retain the value (if one exists)
+                {
+                    cache_index = [[self.channelsCache valueForKey:@"name"] indexOfObject: [self.channels[i] name]];
+                    NSLog(@"Update all: %@: %lu", [self.channels[i] name], cache_index);
+                    if (cache_index != NSNotFound)
+                    {
+                        [self.channels[i] setUnviewedCount: [self.channelsCache[cache_index] unviewedCount] ];
+                        NSLog(@"Setting count of %@ to %d", [self.channels[i] name], [self.channelsCache[cache_index] unviewedCount] );
+                    }
+                }
+            }
+        }
+    }
     
+    -(void) initSpinner
+    {
+        self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        self.spinner.frame = CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, RELOAD_WIDTH, RELOAD_HEIGHT);
+        self.spinner.color = [UIColor whiteColor];
+    }
+
+    //************** PROTOCOL IMPLEMENTATIONS ****************************//
+
+    //************ TABLES *******************//
     
     -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
     // Called when adding a new cell to the tableView (i.e. on scrolling the tableview)
@@ -323,10 +390,10 @@
                     self.searchBar.hidden = YES;
                     self.channelView.hidden = YES;
                     [self.reloadBtn setImage: getImage( @OK_IMAGE, RELOAD_WIDTH, RELOAD_HEIGHT ) forState:UIControlStateNormal];
-                    [self.view addSubview: [self getButtonView: @BACK_IMAGE selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT x_offset:0 y_offset:BTN_Y_OFFSET ]];
-                    
+
                     [self addVideoView: channel];
                     
+                    self.backBtn.hidden = NO;
                     self.reloadBtn.hidden = NO; 
                     self.spinner.hidden = YES;
                 });
@@ -349,7 +416,7 @@
         if ( [self.handler openDatabase] == SQLITE_OK )
         {
             // Update the viewed status in the database
-            [self.handler toggleViewedVideos: btn.title owner_id: btn.owner_id];
+            [self.handler toggleViewedInDatabase: btn.title owner_id: btn.owner_id];
             [self.handler closeDatabase]; 
         }
 
@@ -357,7 +424,7 @@
         btn.viewed = !btn.viewed;
 
         // Update the viewed status in the videos array
-        [[self.videos objectAtIndex: getIndexByNameAndOwnerId( self.videos, btn.title, btn.owner_id ) ] toggleViewedAttr];
+        [[self.videos objectAtIndex: getIndexByNameAndOwnerId( self.videos, btn.title, btn.owner_id ) ] setAllViewedAttr: btn.viewed];
         
         [btn setStatusImage];
     }
@@ -402,7 +469,7 @@
             });
         } 
         else
-        // Make the marked videos in the view unmarked and vice versa
+        // Mark all videos as viewed
         { 
             if ( [self.handler openDatabase] == SQLITE_OK )
             {    
@@ -410,12 +477,12 @@
                 NSUInteger owner_index = [[self.channels valueForKey:@"name"] indexOfObject: self.currentViewFlag];
                 
                 // Update the backend status
-                [self.handler toggleViewedVideos: @ALL_TITLE owner_id:  [[self.channels objectAtIndex: owner_index] id]  ];
+                [self.handler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
                 
                 for (int i = 0; i < self.videos.count; i++)
                 // Update the UI
                 {
-                    [[self.videos objectAtIndex:i] toggleViewedAttr];
+                    [[self.videos objectAtIndex:i] setAllViewedAttr: YES];
                 }
 
                 [self.videoView reloadData];
@@ -432,23 +499,27 @@
     {
         if( [self.searchBar isFirstResponder] ) { [self.searchBar resignFirstResponder]; }
         
-        //--- Update the number of unviewed videos for the channel datasource ---//
+        //*** Update the number of unviewed videos for the channel datasource ***//
         int unviewedCount = VIDEOS_PER_CHANNEL;
         for (int i=0; i<self.videos.count; i++) { unviewedCount = unviewedCount - [[self.videos objectAtIndex:i] viewed]; }
 
         NSUInteger channel_index = [  [self.channels valueForKey:@"name"] indexOfObject: self.currentViewFlag];
-        NSLog(@"%@:%lu", self.currentViewFlag, channel_index);
+        //NSLog(@"currentView:channel_index - %@:%lu", self.currentViewFlag, channel_index);
+        
         [[self.channels objectAtIndex: channel_index] setUnviewedCount: unviewedCount]; 
         
+        // Update the channels cache with unviewedCount information
+        [self updateCache];
+
         // Sort the datasource
         NSArray *descriptor = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"unviewedCount" ascending:NO]];
         self.channels = (NSMutableArray*)[self.channels sortedArrayUsingDescriptors:descriptor];
         
-        //-----------------------------------------------------------------------//
+        //***********************************************************************//
 
         // Remove the video view from the View controller 
         [self.videoView removeFromSuperview];
-        [sender removeFromSuperview];
+        sender.hidden = YES;
         
         self.currentViewFlag = @CHANNEL_VIEW;
         [self.reloadBtn setImage: getImage( @RELOAD_IMAGE, RELOAD_WIDTH, RELOAD_HEIGHT ) forState:UIControlStateNormal];
@@ -492,15 +563,12 @@
                 self.channels = (NSMutableArray*)[self.channels sortedArrayUsingDescriptors:descriptor];
             }
 
+            // Lastly, save the results of the RSS fetch in the channels cache memory
+            self.channelsCache = [NSMutableArray arrayWithArray:self.channels];
+            //NSLog(@"CACHE: %@", self.channelsCache);
+
             [self.handler closeDatabase]; 
         }
-    }
-
-    -(void) initSpinner
-    {
-        self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        self.spinner.frame = CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, RELOAD_WIDTH, RELOAD_HEIGHT);
-        self.spinner.color = [UIColor whiteColor];
     }
 
     //*********** SEARCH BAR **************//
@@ -513,7 +581,8 @@
         self.channels = [[NSMutableArray alloc] init];
         [self.channelView reloadData];
 
-        [self channelSearch: searchText];
+        // Sanitize input before issuing the database query
+        [self channelSearch: sanitize( (NSMutableString*)searchText) ];
     }
 
     -(void) searchBarCancelButtonClicked:(UISearchBar *)searchBar
@@ -542,8 +611,14 @@
 
             [self.handler closeDatabase];
             
+            // Update the newly fetched channels with the unviewedCount attributes from the cache
+            [self getUnviewedCountFromCache];
+            
+            // Sort the datasource
+            NSArray *descriptor = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"unviewedCount" ascending:NO]];
+            self.channels = (NSMutableArray*)[self.channels sortedArrayUsingDescriptors:descriptor];
+            
             [self.channelView reloadData];
         }
     }
-
 @end

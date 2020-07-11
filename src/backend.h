@@ -29,7 +29,7 @@
 
    // The function called when printing NSObjects with NSLog()
    -(NSString*) description;
-   -(void) toggleViewedAttr;
+   -(void) setAllViewedAttr: (BOOL) viewed;
 @end
 
 //**********************************************************//
@@ -49,7 +49,8 @@
     -(int) getChannels: (NSMutableArray*)channels;
     -(int) getChannels: (NSMutableArray*)channels name:(NSString*)name;
     -(int) getVideosFrom: (const char*)channel count:(int)count videos:(NSMutableArray*) videos;
-    -(int) toggleViewedVideos: (NSString*)title owner_id:(int)owner_id;
+    -(int) setAllViewedInDatabase: (int)owner_id;
+    -(int) toggleViewedInDatabase: (NSString*)title owner_id:(int)owner_id;
 
     //*************** Adding Videos ****************//
     -(int) importRSS: (const char*)channel;

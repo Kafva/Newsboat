@@ -17,7 +17,7 @@
     @synthesize viewed;
     
     -(NSString*) description { return [NSString stringWithFormat:@"<Video:%p> title: %@", self, self.title ]; }
-    -(void)toggleViewedAttr { self.viewed = !self.viewed; }
+    -(void)setAllViewedAttr: (BOOL) viewed { self.viewed = viewed; }
 @end
 
 //--------------------------------------------------//
@@ -108,7 +108,7 @@
         return ret;
 
     }
-    
+
     -(int) getChannels: (NSMutableArray*)channels
     // Return all the channel objects from the database
     {
@@ -124,8 +124,22 @@
         return ret;
 
     }
+    
+    -(int) setAllViewedInDatabase: (int)owner_id
+    {
+        char* err_msg;
+        char* stmt = malloc(sizeof(char)*SQL_ROW_BUFFER); 
+        strncpy(stmt, [[NSString stringWithFormat: @"UPDATE `Videos` SET `viewed` = TRUE WHERE `owner` = %d ;",owner_id] cStringUsingEncoding:NSUTF8StringEncoding], SQL_ROW_BUFFER );
+        
+        
+        int ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
+        if (ret != SQLITE_OK) {  NSLog(@"%s", err_msg);  }
+        
+        free(stmt);
+        return ret;
+    }
 
-    -(int) toggleViewedVideos: (NSString*)title owner_id:(int)owner_id
+    -(int) toggleViewedInDatabase: (NSString*)title owner_id:(int)owner_id
     // Toggle the viewed attribute for the video matching the given title and owner_id
     {
         char* err_msg;
@@ -494,6 +508,8 @@ static int callbackChannelObjects(void* context, int columnCount, char** columnV
     channel.channelLink = [[ NSString alloc ] initWithCString: columnValues[3] encoding:NSUTF8StringEncoding];  
     
     // Initalise every channel object with -1 viewed videos to indicate that the channel hasn't been updated
+    // This attribute isn't saved in the database and is kept in sync with the most recent RSS update which
+    // is saved in the channelCache attribute in the ViewController
     channel.unviewedCount = -1;
 
     NSLog(@"Search found: %@", channel);
@@ -501,6 +517,7 @@ static int callbackChannelObjects(void* context, int columnCount, char** columnV
     return 0;
 
 }
+
 static int callbackColumnValues(void* context, int columnCount, char** columnValues, char** columnNames)
 // COPYS the columnValues into the result paramater in sqlite3_exec()
 // We can't simply reassign the pointer since the columnValues object gets freed after exiting the handler
