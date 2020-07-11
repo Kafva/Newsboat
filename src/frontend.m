@@ -25,6 +25,17 @@
         else { self.tintColor = [[UIColor alloc] initWithWhite:1 alpha:0.6 ]; }
     }
     
+    -(void) setChannelImage
+    // Set the corresponding image and color based upon the 'viewed' attribute
+    {
+        NSString* btnName = @OK_IMAGE;
+    
+        UIImage* btnImage = [UIImage imageNamed:btnName];
+        btnImage = imageWithImage( btnImage, CGSizeMake(CELL_BTN_WIDTH, CELL_BTN_HEIGHT));
+        self.tintColor = [[UIColor alloc] initWithWhite:1 alpha:0.6 ];
+        [self setImage: btnImage forState:UIControlStateNormal];
+    }
+    
 @end
 
 @implementation Cell : UITableViewCell

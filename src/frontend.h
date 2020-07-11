@@ -62,8 +62,9 @@
     @property int owner_id;
 
     // Set the status image of the cell button in accordance with the 'viewed' attribute
-    -(void)setStatusImage;
-    -(NSString*)description;
+    -(void) setStatusImage;
+    -(void) setChannelImage;
+    -(NSString*) description;
 
 @end
 
@@ -71,7 +72,9 @@
     // Create a subclass of the table cell elements to store additional information
     @property (strong,nonatomic) NSString* title;
     @property (strong,nonatomic) NSString* link;
-    @property (strong,nonatomic) CellButton* toggleBtn;
+    
+    @property (strong,nonatomic) CellButton* videoBtn;
+    @property (strong,nonatomic) CellButton* channelBtn;
 
     @property (strong,nonatomic) UILabel* leftLabel;
     @property (strong,nonatomic) UILabel* rightLabel;

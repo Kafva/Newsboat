@@ -35,13 +35,15 @@
     -(void) addChannelView;
     -(void) addVideoView: (NSString*) channel;
     -(void) addSearchBar;
-    -(void) addToggleBtn: (Cell*)cell viewed:(bool)viewed owner_id:(int)owner_id;
+    -(void) addVideoBtn: (Cell*)cell viewed:(bool)viewed owner_id:(int)owner_id;
+    -(void) addChannelBtn: (Cell*)cell;
 
     //************* MISC ********************//
     -(void) fetchVideos: (NSString*)channel;
-    -(void) updateCache;
+    -(void) updateCache: (NSString*)name;
     -(void) getUnviewedCountFromCache;
     -(void) initSpinner;
+    -(void) markAllViewed: (NSString*)name;
     
     //************ TABLES *******************//
     // https://gist.github.com/keicoder/8682867 
@@ -52,7 +54,8 @@
     // when adding new cells etc.
 
     //********** BUTTONS ******************//
-    -(void) toggleViewed: (CellButton*)sender;
+    -(void) toggleViewed: (CellButton*)btn;
+    -(void) channelRightBtn: (CellButton*)btn;
     -(void) rightBtn: (UIButton*)sender;
     -(void) goBack:(UIButton*) sender; 
     -(void) fullReload;

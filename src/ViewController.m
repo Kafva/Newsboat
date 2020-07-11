@@ -1,10 +1,5 @@
 #import "ViewController.h"
 
-// TODO
-//  Last entry partially hidden
-//  Highlight/animate rows on selection
-//  toogle all button on main menu
-
 @implementation ViewController 
     // The ViewController is respsoible for displaying the different views of the app
     // (Usually there are several) and inherits from the UIViewController class
@@ -16,7 +11,6 @@
         // Call the mainScreen method of UIScreen
         // NOTE that we need to connect each view with the rectangle created with
         // the application frame
-        //CGRect rect = [UIScreen mainScreen].applicationFrame;
         CGRect rect = [UIScreen mainScreen].bounds;
         
         self.view = [[UIView alloc] initWithFrame:rect];
@@ -99,7 +93,8 @@
     
     -(void) addChannelView
     {
-        CGRect tableFrame = CGRectMake(0, Y_OFFSET, self.view.frame.size.width, self.view.frame.size.height);
+        // Decrement the tableframe slightly to avoid having the last entry partially obscured
+        CGRect tableFrame = CGRectMake(0, Y_OFFSET, self.view.frame.size.width, self.view.frame.size.height - 50);
 
         self.channelView = [[UITableView alloc]initWithFrame:tableFrame style:UITableViewStylePlain];
 
@@ -155,34 +150,55 @@
         [self.view addSubview: [self searchBar]];
     }
 
-    -(void) addToggleBtn: (Cell*)cell viewed:(bool)viewed owner_id:(int)owner_id
+    -(void) addVideoBtn: (Cell*)cell viewed:(bool)viewed owner_id:(int)owner_id
     {
         // Create the 'viewed' toggle button depending on the viewed attribute from the videos array
-        if (cell.toggleBtn == nil)
+        if (cell.videoBtn == nil)
         // Only create and add a new toggle button to the cells view if the reused cell doesn't have one
         {
-            NSLog(@"Adding new button: %@", cell.toggleBtn);
+            NSLog(@"Adding new button: %@", cell.videoBtn);
 
-            cell.toggleBtn = [CellButton buttonWithType: UIButtonTypeSystem];
-            [cell.toggleBtn setFrame:CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, CELL_BTN_WIDTH, CELL_BTN_HEIGHT)];
+            cell.videoBtn = [CellButton buttonWithType: UIButtonTypeSystem];
+            [cell.videoBtn setFrame:CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, CELL_BTN_WIDTH, CELL_BTN_HEIGHT)];
             
             //**** NOTE **** that the target needs to be the ViewController (self)
-            [cell.toggleBtn addTarget:self action:@selector(toggleViewed:) forControlEvents:UIControlEventTouchUpInside ];
+            [cell.videoBtn addTarget:self action:@selector(toggleViewed:) forControlEvents:UIControlEventTouchUpInside ];
             
-            [cell.contentView addSubview: [cell toggleBtn]];
+            [cell.contentView addSubview: [cell videoBtn]];
         }
         
-        NSLog(@"Setting new button: %@ (viewed: %d)", cell.toggleBtn, viewed);
+        NSLog(@"Setting new button: %@ (viewed: %d)", cell.videoBtn, viewed);
         
-        cell.toggleBtn.title = cell.title;
-        cell.toggleBtn.owner_id = owner_id;
+        cell.videoBtn.title = cell.title;
+        cell.videoBtn.owner_id = owner_id;
         
         
-        cell.toggleBtn.viewed = viewed;
+        cell.videoBtn.viewed = viewed;
 
-        // Set the image depending on the toggleBtn 'viewed' attribute
-        [cell.toggleBtn setStatusImage];
+        // Set the image depending on the videoBtn 'viewed' attribute
+        [cell.videoBtn setStatusImage];
 
+    }
+    
+    -(void) addChannelBtn: (Cell*)cell
+    {
+        if (cell.channelBtn == nil)
+        // Only create and add a new toggle button to the cells view if the reused cell doesn't have one
+        {
+            NSLog(@"Adding new button: %@", cell.channelBtn);
+
+            cell.channelBtn = [CellButton buttonWithType: UIButtonTypeSystem];
+            [cell.channelBtn setFrame:CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, CELL_BTN_WIDTH, CELL_BTN_HEIGHT)];
+            
+            //**** NOTE **** that the target needs to be the ViewController (self)
+            [cell.channelBtn addTarget:self action:@selector(channelRightBtn:) forControlEvents:UIControlEventTouchUpInside ];
+            [cell.contentView addSubview: [cell channelBtn]];
+        }
+        
+        NSLog(@"Setting new button: %@", cell.channelBtn);
+        
+        cell.channelBtn.title = cell.title;
+        [cell.channelBtn setChannelImage];
     }
 
     //******************** MISC *************************//
@@ -204,8 +220,8 @@
 
     }
 
-    -(void) updateCache
-    // Called after setting the currentViewFlag to the corresponding channel name
+    -(void) updateCache: (NSString*)name
+    // Called after setting the currentViewFlag to the corresponding channel name and passing it as an argument
     {
         if ( self.channelsCache == nil )
         // If the cache hasn't been created yet (i.e. no fullReload() has been done) create it 
@@ -213,8 +229,8 @@
             self.channelsCache = [[NSMutableArray alloc] init]; 
         }
         
-        NSUInteger index = [[self.channels valueForKey:@"name"] indexOfObject: self.currentViewFlag];
-        NSUInteger cache_index = [[self.channelsCache valueForKey:@"name"] indexOfObject: self.currentViewFlag];
+        NSUInteger index = [[self.channels valueForKey:@"name"] indexOfObject: name];
+        NSUInteger cache_index = [[self.channelsCache valueForKey:@"name"] indexOfObject: name];
         
         if ( cache_index == NSNotFound )
         // If the channel doesn't exist in the cache add it
@@ -262,6 +278,53 @@
         self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         self.spinner.frame = CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, RELOAD_WIDTH, RELOAD_HEIGHT);
         self.spinner.color = [UIColor whiteColor];
+    }
+    
+    -(void) markAllViewed: (NSString*)name
+    {
+        if ( [self.handler openDatabase] == SQLITE_OK )
+        {    
+            // Deduce the channel owner_id from the channel name
+            NSUInteger owner_index = [[self.channels valueForKey:@"name"] indexOfObject: name];
+
+            if ( [self.currentViewFlag isEqual: @CHANNEL_VIEW] )
+            //*** CHANNEL VIEW ***//
+            {
+                if ( [[self.channels objectAtIndex: owner_index] unviewedCount] != -1 )
+                // Only mark videos as unviewed in the channel interface when a remote fetch has been issued
+                // i.e. do nothing on '(?)' entries
+                {
+                    // Update the backend status
+                    [self.handler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
+                    
+                    // Change the unviewedCount attribute to zero in the datasource
+                    // provided that the number of viewed videos is known
+                    // and reload the channel view
+                    [[self.channels objectAtIndex: owner_index] setUnviewedCount: 0 ];
+                    
+                    // Update the cached channel entry
+                    [self updateCache: name];
+
+                    [self.channelView reloadData];
+                }
+            }
+            else
+            //*** VIDEO VIEW ***//
+            {
+                // Update the backend status
+                [self.handler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
+                
+                for (int i = 0; i < self.videos.count; i++)
+                // Update the UI
+                {
+                    [[self.videos objectAtIndex:i] setAllViewedAttr: YES];
+                }
+
+                [self.videoView reloadData];
+            }
+        } 
+    
+        [self.handler closeDatabase]; 
     }
 
     //************** PROTOCOL IMPLEMENTATIONS ****************************//
@@ -317,6 +380,10 @@
 
             // Highlight color when there is at least one new video 
             if ( unviewedCount > 0 )  { cell.rightLabel.textColor = [[UIColor alloc] initWithRed:(CGFloat)RED green:(CGFloat)GREEN blue:(CGFloat)BLUE alpha:(CGFloat)1.0 ]; }
+
+            // Add the 'viewToggle' button for each channel
+            [self addChannelBtn: cell];
+
         }
         else 
         //*** Cell configuration for video view ****//
@@ -326,7 +393,7 @@
             cell.link = [[self.videos objectAtIndex:indexPath.row] link];
             cell.leftLabel.text = cell.title;
 
-            [self addToggleBtn: cell viewed:[[self.videos objectAtIndex:indexPath.row] viewed ] owner_id:[[self.videos objectAtIndex:indexPath.row] owner_id ] ];
+            [self addVideoBtn: cell viewed:[[self.videos objectAtIndex:indexPath.row] viewed ] owner_id:[[self.videos objectAtIndex:indexPath.row] owner_id ] ];
         }
 
         return cell;
@@ -428,6 +495,11 @@
         
         [btn setStatusImage];
     }
+    
+    -(void) channelRightBtn: (CellButton*) btn
+    {
+        [self markAllViewed: btn.title];
+    }
         
     -(void) rightBtn: (UIButton*)sender
     // Hide button on video view
@@ -471,24 +543,7 @@
         else
         // Mark all videos as viewed
         { 
-            if ( [self.handler openDatabase] == SQLITE_OK )
-            {    
-                // Deduce the channel owner_id from the channel name
-                NSUInteger owner_index = [[self.channels valueForKey:@"name"] indexOfObject: self.currentViewFlag];
-                
-                // Update the backend status
-                [self.handler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
-                
-                for (int i = 0; i < self.videos.count; i++)
-                // Update the UI
-                {
-                    [[self.videos objectAtIndex:i] setAllViewedAttr: YES];
-                }
-
-                [self.videoView reloadData];
-            } 
-        
-            [self.handler closeDatabase]; 
+            [self markAllViewed: self.currentViewFlag];
         }
         
     }
@@ -509,7 +564,7 @@
         [[self.channels objectAtIndex: channel_index] setUnviewedCount: unviewedCount]; 
         
         // Update the channels cache with unviewedCount information
-        [self updateCache];
+        [self updateCache: self.currentViewFlag];
 
         // Sort the datasource
         NSArray *descriptor = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"unviewedCount" ascending:NO]];

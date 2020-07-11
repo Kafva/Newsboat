@@ -30,6 +30,9 @@ elif [ "$1" = clean ]; then
 elif [ "$1" = download ]; then
     [ -z $(system_profiler SPUSBDataType | sed -n 's/^[ ]\{1,\}Serial Number: \(.*\)/\1/p') ] && echo "No iOS device connected" && exit 1
     ios-deploy --bundle_id $BUNDLE_ID --download=/Documents/$DBNAME --to . && mv Documents/$DBNAME ./$DBNAME && rmdir Documents
+elif [ "$1" = upload ]; then
+    [ -z $(system_profiler SPUSBDataType | sed -n 's/^[ ]\{1,\}Serial Number: \(.*\)/\1/p') ] && echo "No iOS device connected" && exit 1
+    ios-deploy --bundle_id $BUNDLE_ID --upload $DBNAME --to /Documents/$DBNAME
 elif [ "$1" = deploy ]; then
     
     # Same as `idevice_id`
