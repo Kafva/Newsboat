@@ -50,5 +50,20 @@ elif [ "$1" = deploy ]; then
     # Upload the sqlite database to NSHomeDirectory()/Documents/
     ios-deploy --bundle_id $BUNDLE_ID --upload $DBNAME --to /Documents/$DBNAME
 
+elif [ "$1" = run ]; then
+    
+    iphone_id=$(system_profiler SPUSBDataType | sed -n 's/^[ ]\{1,\}Serial Number: \(.*\)/\1/p')
+    [ -z $iphone_id ] && echo "No iOS device connected" && exit 1
+
+    # Create the database anew
+    ./createDatabase.bash $DBNAME $URLS
+
+    xcodebuild build -destination "id=$iphone_id" -allowProvisioningUpdates OTHER_CFLAGS="-Xclang -Wno-unused-function" && 
+    ideviceinstaller -i build/Release-iphoneos/${PROJECT}.app &&
+
+    # Upload the sqlite database to NSHomeDirectory()/Documents/
+    ios-deploy --bundle_id $BUNDLE_ID --upload $DBNAME --to /Documents/$DBNAME
+
+    idevicedebug run $BUNDLE_ID
 fi
 

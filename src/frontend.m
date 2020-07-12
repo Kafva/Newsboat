@@ -59,6 +59,18 @@
     
 @end
 
+UILabel* getLabel(NSString* str, int width, int height, int x_offset, int y_offset, UIColor* textColor,  UIFont* font)
+{
+    // Setting a frame is essential for an element to be displayed
+    UILabel* label = [[UILabel alloc] init];
+    [label setFrame:CGRectMake(x_offset, y_offset, width, height)];
+
+    label.textColor = textColor;
+    label.text = str;
+    [label setFont:font];
+    return label; 
+}
+
 UIImage* imageWithImage(UIImage* image, CGSize size) 
 // Helper to scale UIImage objects
 {

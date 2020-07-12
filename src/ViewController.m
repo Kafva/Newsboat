@@ -1,9 +1,13 @@
 #import "ViewController.h"
 
-@implementation ViewController 
-    // The ViewController is respsoible for displaying the different views of the app
-    // (Usually there are several) and inherits from the UIViewController class
+// BUGS
+// Doing several full reloads will sometimes make a channels videos appear as unviewed agian
+// may be releated to OK button on channel view, but its not the one that was pressed that gets re-enabeld
 
+// FEATURES
+//  Real time updates on loading Label
+
+@implementation ViewController 
     //************* BASICS ******************************//
 
     - (void)loadView 
@@ -21,12 +25,18 @@
         NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSUTF8StringEncoding];
         [dbPath insertString: home atIndex:(NSUInteger)0];
         
-        self.handler = [[DBHandler alloc] initWithDB: dbPath];
+        self.dbHandler = [[Handler alloc] initWithDB: dbPath];
         self.videos = [[NSMutableArray alloc] init];
         self.channels = [[NSMutableArray alloc] init];
 
         [self initSpinner];
         //******************************//
+
+        // Register the ViewController as an observer for notifcations with the name in SINGLE_NOTE, thanks to this
+        // we can send out a notification from the Handler after an RSS fetch completes and the datasource 
+        // has become populated, letting the ViewController take care of the corresponding UI changes 
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(presentVideos:) name:@SINGLE_NOTE object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishFullReload:) name:@FULL_NOTE object:nil];
 
         // Note the order in which the views are added (they stack on top of each other)
         [self addImageView];
@@ -38,6 +48,11 @@
 
         [self addSearchBar];
 
+        // Loading label
+        self.loadingLabel = getLabel(@"(?)", LOADING_WIDTH, LABEL_HEIGHT, LOADING_LABEL_X, BTN_Y_OFFSET, [[UIColor alloc] initWithWhite:1 alpha:0.6 ], [UIFont fontWithName: @BOLD_FONT size:FONT_SIZE]  );
+        self.loadingLabel.hidden = YES;
+        [self.view addSubview: [self loadingLabel]];
+
         // Spinner    
         self.spinner.hidden = YES;
         [self.view addSubview: [self spinner]];
@@ -47,7 +62,7 @@
         self.backBtn.hidden = YES; 
         [self.view addSubview: [self backBtn]];
     }
-
+    
     -(void) viewDidLoad 
     {
         // The super keyword will go up the class hierachy and execute the specified method (viewDidLoad)
@@ -61,10 +76,58 @@
         // when touching any area of the view which will hide the keyboard
         [self.searchBar resignFirstResponder];
     }
+    
+    //************ NOTIFICATIONS *****************//
+
+    -(void) finishFullReload: (NSNotification*)notification
+    {
+        self.loadingLabel.text = [NSString stringWithFormat: @"(%d/%lu)", self.dbHandler.channelCnt, self.channels.count];
+        //[self.loadingLabel setNeedsDisplay];
+
+        NSLog(@"Reload: (%d / %lu)", self.dbHandler.channelCnt, self.channels.count);
+        
+        if ( self.dbHandler.channelCnt == self.channels.count )
+        {
+            NSLog(@"Finished full reload!");
+            [self.channelView reloadData];
+
+            self.loadingLabel.hidden = YES;
+            self.reloadBtn.hidden = NO;
+            self.spinner.hidden = YES;
+
+            self.searchBar.userInteractionEnabled = YES;   
+            self.channelView.userInteractionEnabled = YES;
+        }
+    }
+
+    -(void) presentVideos:(NSNotification*)notification
+    {
+        if ( [self.dbHandler openDatabase] == SQLITE_OK )
+        {
+            // Fetch video objects from the given channel from the database
+            [self.dbHandler getVideosFrom: [self.currentViewFlag cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
+            
+            [self.dbHandler closeDatabase]; 
+        }
+        
+        self.channelView.userInteractionEnabled = YES;
+        self.searchBar.userInteractionEnabled = YES;   
+        
+        self.searchBar.hidden = YES;
+        self.channelView.hidden = YES;
+        [self.reloadBtn setImage: getImage( @OK_IMAGE, RELOAD_WIDTH, RELOAD_HEIGHT ) forState:UIControlStateNormal];
+
+        [self addVideoView: self.currentViewFlag];
+        
+        self.backBtn.hidden = NO;
+        self.reloadBtn.hidden = NO; 
+        self.spinner.hidden = YES;
+
+    }
 
     //************* ADDING VIEWS **********************//
 
-    -(UIButton*)getButtonView:(NSString*)btnStr selector:(SEL)selector width:(int)width height:(int)height x_offset:(int)x_offset y_offset:(int)y_offset
+    -(UIButton*) getButtonView:(NSString*)btnStr selector:(SEL)selector width:(int)width height:(int)height x_offset:(int)x_offset y_offset:(int)y_offset
     // To reuset the button function we pass the selector method which defines the
     // action on-tap for the button
     {
@@ -126,10 +189,6 @@
         [self.view addSubview: self.videoView];
         
         [self.videoView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
-
-        // Use the currentViewFlag to store the channel name for updating the correct datasource
-        // when exiting the video view
-        self.currentViewFlag = channel;
     }
 
     -(void) addSearchBar
@@ -200,24 +259,21 @@
         cell.channelBtn.title = cell.title;
         [cell.channelBtn setChannelImage];
     }
-
+    
     //******************** MISC *************************//
 
     -(void) fetchVideos: (NSString*)channel
     {
-        if ( [self.handler openDatabase] == SQLITE_OK )
+        if ( [self.dbHandler openDatabase] == SQLITE_OK )
         {
             [self.videos removeAllObjects];
+            
+            self.dbHandler.noteFlag = SINGLE_FLAG;
 
             // Import videos for the given channel into the database ( implicit calls to addVideo() )
-            [self.handler importRSS: [channel cStringUsingEncoding: NSUTF8StringEncoding]];
-
-            // Fetch video objects from the given channel from the database
-            [self.handler getVideosFrom: [channel cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
-            
-            [self.handler closeDatabase]; 
+            [self.dbHandler importRSS: [channel cStringUsingEncoding: NSUTF8StringEncoding]];
+            [self.dbHandler closeDatabase]; 
         }
-
     }
 
     -(void) updateCache: (NSString*)name
@@ -282,7 +338,7 @@
     
     -(void) markAllViewed: (NSString*)name
     {
-        if ( [self.handler openDatabase] == SQLITE_OK )
+        if ( [self.dbHandler openDatabase] == SQLITE_OK )
         {    
             // Deduce the channel owner_id from the channel name
             NSUInteger owner_index = [[self.channels valueForKey:@"name"] indexOfObject: name];
@@ -295,7 +351,7 @@
                 // i.e. do nothing on '(?)' entries
                 {
                     // Update the backend status
-                    [self.handler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
+                    [self.dbHandler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
                     
                     // Change the unviewedCount attribute to zero in the datasource
                     // provided that the number of viewed videos is known
@@ -312,7 +368,7 @@
             //*** VIDEO VIEW ***//
             {
                 // Update the backend status
-                [self.handler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
+                [self.dbHandler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
                 
                 for (int i = 0; i < self.videos.count; i++)
                 // Update the UI
@@ -324,14 +380,14 @@
             }
         } 
     
-        [self.handler closeDatabase]; 
+        [self.dbHandler closeDatabase]; 
     }
 
     //************** PROTOCOL IMPLEMENTATIONS ****************************//
 
     //************ TABLES *******************//
     
-    -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+    -(UITableViewCell*) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
     // Called when adding a new cell to the tableView (i.e. on scrolling the tableview)
     {
         // Deque an unusued cell object based on the static @CELL_IDENTIFIER
@@ -399,13 +455,13 @@
         return cell;
     }
 
-    -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+    -(NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
     // Returns the number of sections in the tableView
     {
         return 1;
     }
     
-    -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+    -(NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
     // Returns the number of cells in the tableView section
     {
         if ( tableView == self.channelView )
@@ -416,14 +472,14 @@
     }
 
 
-    -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+    -(CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
     // Returns the desired height of each row
     {
         return ROW_HEIGHT;
     }
 
-    -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-    //*** Called when a row is selected ***//
+    -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+    //****** Called when a row is selected *******//
     {
         if ( self.channelView == tableView )
         //*** If an entry is tapped from the channel view ***//
@@ -443,28 +499,12 @@
             NSString* channel = [[ tableView cellForRowAtIndexPath: indexPath ] title];
             NSLog(@"Tapped entry[%ld]: %@", indexPath.row, channel);
 
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), 
-            ^{
-                // Fetch the RSS data in a background thread
-                [self fetchVideos: channel];
+            // Set the currentViewFlag before entering the view since it is required
+            // by the noftication handler. It is also used on exit from a Video view
+            // to update the cache
+            self.currentViewFlag = channel;
 
-                // Dispatch back on the main thread (mandatory for UI updates)
-                dispatch_async(dispatch_get_main_queue(), 
-                ^{
-                    self.channelView.userInteractionEnabled = YES;
-                    self.searchBar.userInteractionEnabled = YES;   
-                    
-                    self.searchBar.hidden = YES;
-                    self.channelView.hidden = YES;
-                    [self.reloadBtn setImage: getImage( @OK_IMAGE, RELOAD_WIDTH, RELOAD_HEIGHT ) forState:UIControlStateNormal];
-
-                    [self addVideoView: channel];
-                    
-                    self.backBtn.hidden = NO;
-                    self.reloadBtn.hidden = NO; 
-                    self.spinner.hidden = YES;
-                });
-            });
+            [self fetchVideos: channel];
         }
         else
         {
@@ -480,11 +520,11 @@
         if( [self.searchBar isFirstResponder] ) { [self.searchBar resignFirstResponder]; }
         
         
-        if ( [self.handler openDatabase] == SQLITE_OK )
+        if ( [self.dbHandler openDatabase] == SQLITE_OK )
         {
             // Update the viewed status in the database
-            [self.handler toggleViewedInDatabase: btn.title owner_id: btn.owner_id];
-            [self.handler closeDatabase]; 
+            [self.dbHandler toggleViewedInDatabase: btn.title owner_id: btn.owner_id];
+            [self.dbHandler closeDatabase]; 
         }
 
         // Update the state of the button in the cell
@@ -513,32 +553,15 @@
             self.channelView.userInteractionEnabled = NO;
             self.searchBar.userInteractionEnabled = NO;   
             
-            // Begin by either creating the loading spinner from scratch and adding it as a subview
-            // or simply unhide it after hiding the reload button
+            // Unhide the spinner and hide the reload button
+            self.loadingLabel.text = [NSString stringWithFormat: @"(0/%lu)", self.channels.count];
+            self.loadingLabel.hidden = NO;
+
             self.reloadBtn.hidden = YES;
             self.spinner.hidden = NO;
             [self.spinner startAnimating];
             
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), 
-            ^{
-                // Dispatch a global thread for the work of fetching data from each feed
-                // UI updates are done in bulk once all the work is done
-                [self fullReload];
-
-                // Dispatch back on the main thread (mandatory for UI updates)
-                dispatch_async(dispatch_get_main_queue(), 
-                ^{
-                    // Inside fullReload() the datasource (i.e. the channels array) is updated with the
-                    // appropriate number of unviewed videos, with reloadData() this update is reflected in
-                    // the UI by effectivly calling the tableview cell-adding functions anew
-                    [self.channelView reloadData];
-                    self.reloadBtn.hidden = NO;
-                    self.spinner.hidden = YES;
-
-                    self.searchBar.userInteractionEnabled = YES;   
-                    self.channelView.userInteractionEnabled = YES;
-                });
-            });
+            [self fullReload];
         } 
         else
         // Mark all videos as viewed
@@ -588,12 +611,17 @@
     -(void) fullReload
     // Executed as a background task
     {
+        // Set the channel count and dbHandler notifcation flag
+        // to update the UI only when neccessary
+        self.dbHandler.channelCnt = 0;
+        self.dbHandler.noteFlag = FULL_FLAG;
+
         int unviewedCount = -1;
         
         // Descriptor array for sorting purposes
         NSArray *descriptor = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"unviewedCount" ascending:NO]];
         
-        if ( [self.handler openDatabase] == SQLITE_OK )
+        if ( [self.dbHandler openDatabase] == SQLITE_OK )
         {
             for (int i = 0; i < self.channels.count; i++)
             {
@@ -602,10 +630,10 @@
                 self.videos = [[NSMutableArray alloc] init];
 
                 // Import videos for the given channel into the database ( implicit calls to addVideo() )
-                [self.handler importRSS: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding]];
+                [self.dbHandler importRSS: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding]];
 
                 // Fetch video objects from the given channel from the database
-                [self.handler getVideosFrom: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
+                [self.dbHandler getVideosFrom: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
 
                 // Set the channel objects unviewed count based upon the number derived
                 // after the RSS fetch
@@ -622,7 +650,7 @@
             self.channelsCache = [NSMutableArray arrayWithArray:self.channels];
             //NSLog(@"CACHE: %@", self.channelsCache);
 
-            [self.handler closeDatabase]; 
+            [self.dbHandler closeDatabase]; 
         }
     }
 
@@ -659,12 +687,12 @@
     -(void) channelSearch:(NSString*) searchText
     // Search for the given channel(s) in the database and update the UI accordingly
     {
-        if ([self.handler openDatabase] == SQLITE_OK)
+        if ([self.dbHandler openDatabase] == SQLITE_OK)
         {
-            if ([searchText isEqual: @ALL_TITLE]) { [self.handler getChannels: self.channels]; }
-            else { [self.handler getChannels: self.channels name: searchText]; }
+            if ([searchText isEqual: @ALL_TITLE]) { [self.dbHandler getChannels: self.channels]; }
+            else { [self.dbHandler getChannels: self.channels name: searchText]; }
 
-            [self.handler closeDatabase];
+            [self.dbHandler closeDatabase];
             
             // Update the newly fetched channels with the unviewedCount attributes from the cache
             [self getUnviewedCountFromCache];
@@ -676,4 +704,5 @@
             [self.channelView reloadData];
         }
     }
+
 @end

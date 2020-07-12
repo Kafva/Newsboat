@@ -7,7 +7,12 @@
 #define SQL_ROW_BUFFER 400
 #define ALL_TITLE "*"
 
-#define TEST_DB_PATH "/Users/jonas/XcodeX/iPK/Newsboat/rss.db"
+#define FULL_FLAG 1
+#define SINGLE_FLAG 0
+
+#define SINGLE_NOTE "Video"
+#define FULL_NOTE "Channel"
+
 #define DB_PATH "/Documents/rss.db"
 
 @interface Channel : NSObject
@@ -29,15 +34,21 @@
 
    // The function called when printing NSObjects with NSLog()
    -(NSString*) description;
-   -(void) setAllViewedAttr: (BOOL) viewed;
+   -(void) setAllViewedAttr: (BOOL) newState;
 @end
 
 //**********************************************************//
 
-@interface DBHandler : NSObject
+@interface Handler : NSObject <NSURLSessionDataDelegate,NSURLSessionTaskDelegate>
     
+    //***** DB *****// 
     @property (strong, nonatomic) NSString* dbPath;
     @property (nonatomic) sqlite3* db;
+
+    //**** WEB FETCHES ****//
+    @property (nonatomic) int noteFlag;
+    @property (nonatomic) int channelCnt;
+    @property (strong,nonatomic) NSString* channelId;
 
     //*************** BASIC ****************//
     -(id) initWithDB: (NSString*)dbPath;
@@ -59,36 +70,15 @@
 
 @end
 
-@interface RequestHandler : NSObject
-
-    // https://medium.com/@dsrijan/objective-c-properties-901e8a1f82ac
-    // The 'nonatomic' keyword denotes that we do not need to worry about race condition ('atomic' is default)
-    // The 'assign'/'weak' keyword creates a mutator (setName) and getter (name) for the property
-    // The 'retain'/'strong' keyword avoids the attribute being deallocated until the parent object is
-
-    // (Methods in ObjC are public by default but instance variables are private)
-    // NOTE that we still need to give a @synthesize decleration for the attribute
-    // in the implementation for the methods to get the names described above
-
-    // We utilise 'strong' to keep the data recieved from the request(s)    
-    //@property (strong,nonatomic) NSString* response;
-    
-    // NOTE that ObjC doesn't have named parameters, success: and failure: simply extend the function name
-    // with additional parameters
-    -(void) httpRequest: (NSString*) url success:(void (^)(NSString *response)) success failure:(void (^)(NSError* error)) failure; 
-    -(void) getDataFromTag: (NSString*) tag  response: (NSString*) response  tagData: (NSMutableArray*)tagData;
-    -(void) getHrefFromTag: (NSString*) tag response: (NSString*) response tagData: (NSMutableArray*)tagData;
-
-@end
-
+//*************** XML PARSING *******************//
+void getDataFromTag( NSString* tag, NSString* response, NSMutableArray* tagData);
+void getHrefFromTag( NSString* tag, NSString* response, NSMutableArray* tagData);
 
 //*************** MISC *********************//
-
 NSMutableString* sanitize(NSMutableString* str);
 int getIndexByNameAndOwnerId(NSMutableArray* videos, NSString* title, int owner_id );
 
 //*************** SQLITE CALLBACKS ********************//
-
 static int callbackVideoObjects(void* context, int columnCount, char** columnValues, char** columnNames);
 static int callbackGetTitle(void* context, int columnCount, char** columnValues, char** columnNames);
 static int callbackChannelObjects(void* context, int columnCount, char** columnValues, char** columnNames);

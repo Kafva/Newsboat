@@ -42,12 +42,15 @@ if [ -f $URLS ]; then
     while IFS= read -r line; do
         
         if $(echo $line | grep -q "^https://www.you"); then
-            #name=$(echo $line | sed 's/.*"[~!]\{1\}\([-_.,0-9A-Za-z ]\{1,\}\)"$/\1/g' | tr -d '"')
-            name=$(echo $line | sed 's/.*"[~]\{1\}\([-_.,0-9A-Za-z ]\{1,\}\)"$/\1/g' | tr -d '"')
-            rssLink=$(echo $line | awk '{print $1}')
-            channelLink=$(echo $line | awk '{print $2}')
-
-            cmd="$cmd INSERT INTO main.\`Channels\` (\`name\`,\`rssLink\`,\`channelLink\`) VALUES (\"$name\",\"$rssLink\",$channelLink);" 
+            
+            # Only names prepended with ~ get added to the database
+            name=$(echo $line | sed 's/.*"\([~!][-_.,0-9A-Za-z ]\{1,\}\)"$/\1/g' | tr -d '"')
+            
+            if $(echo $name | grep -q "^~"); then
+                rssLink=$(echo $line | awk '{print $1}')
+                channelLink=$(echo $line | awk '{print $2}')
+                cmd="$cmd INSERT INTO main.\`Channels\` (\`name\`,\`rssLink\`,\`channelLink\`) VALUES (\"${name##\~}\",\"$rssLink\",$channelLink);" 
+            fi
         fi
 
     done < $URLS

@@ -17,12 +17,12 @@
     @synthesize viewed;
     
     -(NSString*) description { return [NSString stringWithFormat:@"<Video:%p> title: %@", self, self.title ]; }
-    -(void)setAllViewedAttr: (BOOL) viewed { self.viewed = viewed; }
+    -(void)setAllViewedAttr: (BOOL)newState { self.viewed = newState; }
 @end
 
 //--------------------------------------------------//
 
-@implementation DBHandler : NSObject
+@implementation Handler : NSObject
 
     //*************** BASIC ****************//
     
@@ -51,7 +51,11 @@
         {
             NSLog(@"Error opening database: %d", ret);
         }
-        else { self.db = db_; }
+        else
+        { 
+            //NSLog(@"Database open!"); 
+            self.db = db_; 
+        }
 
         return ret;
     }
@@ -166,8 +170,9 @@
     
     //*************** Adding Videos ****************//
     
-    -(int) importRSS: (const char*)channel
+    -(int) importRSS: (const char*)channel 
     {
+        int ret = -1; 
         char* stmt = malloc(sizeof(char)*VARCHAR_SIZE); 
         sprintf(stmt, "SELECT `id`,`rssLink` FROM `Channels` WHERE `name` = '%s';", channel ); 
         char* err_msg;
@@ -177,8 +182,8 @@
         
         // Fetch each channelId and its corresponding RSS link with the callback function
         // handling the addition of videos via a request for the RSS Feed for each channel
-        // Note that the callback in turn calls a member function of the DBHandler (possible by passing self as result)
-        int ret = sqlite3_exec( self.db , stmt, callbackImportRSS,  (__bridge void *)self, &err_msg );
+        // Note that the callback in turn calls a member function of the Handler (possible by passing self as result)
+        ret = sqlite3_exec( self.db , stmt, callbackImportRSS,  (__bridge void *)self, &err_msg );
         
         if ( ret != SQLITE_OK  ){  NSLog(@"%s", err_msg);  }
         
@@ -190,33 +195,14 @@
     // Import the most recent videos (not already in the database) from each channel given from the RSS feed
     // The function is ran once per output row from the sqlite3_exec() statement
     {
-        RequestHandler* re = [[RequestHandler alloc] init];
-        char* channelId = columnValues[0];
+        // Set the channelId of the Handler so that we can pass the correct ID to the database in addVideo() 
+        self.channelId = [[NSString alloc] initWithCString: columnValues[0] encoding: NSUTF8StringEncoding];
+        NSString* rssLink = @(columnValues[1]);
 
-        NSString* rssLink = [[NSString alloc] initWithCString: columnValues[1] encoding:NSUTF8StringEncoding];
-                
-        [re httpRequest: rssLink  success: ^(NSString* response) 
-            { 
-                // Fetch the titles and timestamps for the perticular feed
-                // the first entry will be the channel name and its creation date
-                NSMutableArray* titles = [[NSMutableArray alloc] init];
-                NSMutableArray* timestamps = [[NSMutableArray alloc] init];
-                NSMutableArray* links = [[NSMutableArray alloc] init];
-                
-                [re getDataFromTag:@"title" response:response tagData:titles  ];
-                [re getDataFromTag:@"published" response:response tagData:timestamps  ];
-                [re getHrefFromTag:@"link" response:response tagData:links  ];
-
-                for (int i=1; i < titles.count; i++)
-                {
-                    [self addVideo: [ timestamps[i] cStringUsingEncoding:NSUTF8StringEncoding ] title: [titles[i] cStringUsingEncoding:NSUTF8StringEncoding] owner_id:channelId link: [links[i] cStringUsingEncoding:NSUTF8StringEncoding]];
-                }
-
-            }  
-            failure: ^(NSError* error)
-            { NSLog(@"Error: %@", error); }  
-        ];
-
+        // Call the downloadVideos() function to download the RSS document using the 
+        // methods required for the <NSURLSessionDataDelegate> protocol
+        [self downloadVideos: rssLink];
+        
         return 0;
     }
 
@@ -226,6 +212,7 @@
         // The method will throw an error when encountering already added videos due to the UNIQUE
         // constraint. When adding new videos the oldest one should be deleted if the count exceeds VIDEOS_PER_CHANNEL
 
+        int ret = -1;
         char* err_msg;
         char* delete_title = malloc(sizeof(char)*SQL_ROW_BUFFER);
 
@@ -235,40 +222,41 @@
         // The IGNORE keyword will inhibit errors from not adhearing to the UNIQUE constraints
         // and instead simply ignore the perticular INSERT statement
         const char* stmt = [[NSString stringWithFormat: @"INSERT OR IGNORE INTO `Videos` (`timestamp`, `title`, `viewed`, `owner`, `link`) VALUES (DATE(\"%s\"), \"%s\", FALSE , %s, \"%s\"); ",timestamp, title, owner_id, link ] cStringUsingEncoding:NSUTF8StringEncoding];
-        //NSLog(@"INSERT::: %s", stmt);
 
-        int ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
-        
-        if ( ret == SQLITE_OK  )
-        // Only go through the process of potentially removing an old video if the insertion was successful
+        //NSLog(@"STMT: %s", stmt);
+        if ( [self openDatabase] == SQLITE_OK )
         {
-            stmt = [[NSString stringWithFormat: @"SELECT COUNT(*) FROM `Videos` WHERE owner = %s; ",owner_id] cStringUsingEncoding:NSUTF8StringEncoding];
-
-            if ( sqlite3_exec( self.db , stmt, callbackColumnValues, (void*)results, &err_msg ) == SQLITE_OK )
-            // "The 4th argument to sqlite3_exec() is relayed as the first argument ot the callback()"
-            // Check if the row count for the Channel exceeds VIDEOS_PER_CHANNEL
+            ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
+            
+            if ( ret == SQLITE_OK  )
+            // Only go through the process of potentially removing an old video if the insertion was successful
             {
-                //NSLog(@"ROWS: %d , %d", atoi(results[0]), VIDEOS_PER_CHANNEL);
+                stmt = [[NSString stringWithFormat: @"SELECT COUNT(*) FROM `Videos` WHERE owner = %s; ",owner_id] cStringUsingEncoding:NSUTF8StringEncoding];
 
-                if ( atoi(results[0]) > VIDEOS_PER_CHANNEL )
-                // If so find the oldest video(s) and delete it/them from the channel in question
+                if ( sqlite3_exec( self.db , stmt, callbackColumnValues, (void*)results, &err_msg ) == SQLITE_OK )
+                // "The 4th argument to sqlite3_exec() is relayed as the first argument ot the callback()"
+                // Check if the row count for the Channel exceeds VIDEOS_PER_CHANNEL
                 {
-                    stmt = [[NSString stringWithFormat: @"SELECT `title` FROM `Videos` WHERE (`title`,`owner`) IN (SELECT `title`,`owner` FROM `Videos` WHERE `owner` = %s ORDER BY `timestamp` ASC LIMIT %d);", owner_id,  atoi(results[0]) - VIDEOS_PER_CHANNEL ] cStringUsingEncoding:NSUTF8StringEncoding];
-                    if ( sqlite3_exec(self.db, stmt, callbackGetTitle, (void*)delete_title, &err_msg) != SQLITE_OK ) {  NSLog(@"%s", err_msg);  }
-                    
-                    stmt = [[NSString stringWithFormat: @"DELETE FROM `Videos` WHERE (`title`,`owner`) IN (SELECT `title`,`owner` FROM `Videos` WHERE `owner` = %s ORDER BY `timestamp` ASC LIMIT %d);", owner_id,  atoi(results[0]) - VIDEOS_PER_CHANNEL ] cStringUsingEncoding:NSUTF8StringEncoding];
-                    if ( sqlite3_exec(self.db, stmt, NULL,NULL, &err_msg) == SQLITE_OK )
-                    { 
-                        //NSLog(@"Successfully deleted: \"%s\" from owner_id:%s", delete_title, owner_id  ); 
-                    }
-                    else {  NSLog(@"%s", err_msg);  }
+                    //NSLog(@"ROWS: %d , %d", atoi(results[0]), VIDEOS_PER_CHANNEL);
 
+                    if ( atoi(results[0]) > VIDEOS_PER_CHANNEL )
+                    // If so find the oldest video(s) and delete it/them from the channel in question
+                    {
+                        stmt = [[NSString stringWithFormat: @"SELECT `title` FROM `Videos` WHERE (`title`,`owner`) IN (SELECT `title`,`owner` FROM `Videos` WHERE `owner` = %s ORDER BY `timestamp` ASC LIMIT %d);", owner_id,  atoi(results[0]) - VIDEOS_PER_CHANNEL ] cStringUsingEncoding:NSUTF8StringEncoding];
+                        if ( sqlite3_exec(self.db, stmt, callbackGetTitle, (void*)delete_title, &err_msg) != SQLITE_OK ) {  NSLog(@"%s", err_msg);  }
+                        
+                        stmt = [[NSString stringWithFormat: @"DELETE FROM `Videos` WHERE (`title`,`owner`) IN (SELECT `title`,`owner` FROM `Videos` WHERE `owner` = %s ORDER BY `timestamp` ASC LIMIT %d);", owner_id,  atoi(results[0]) - VIDEOS_PER_CHANNEL ] cStringUsingEncoding:NSUTF8StringEncoding];
+                        if ( sqlite3_exec(self.db, stmt, NULL,NULL, &err_msg) == SQLITE_OK )
+                        { 
+                            //NSLog(@"Successfully deleted: \"%s\" from owner_id:%s", delete_title, owner_id  ); 
+                        }
+                        else {  NSLog(@"%s", err_msg);  }
+                    }
                 }
-                
+                else {  NSLog(@"%s", err_msg);  }    
             }
-            else {  NSLog(@"%s", err_msg);  }    
+            else {  NSLog(@"%s", err_msg);  }
         }
-        else {  NSLog(@"%s", err_msg);  }
         
         for (int i=0; i < VIDEOS_PER_CHANNEL+1; i++) { free(results[i]); }
         free(results);
@@ -276,166 +264,176 @@
 
         return ret;
     }
-    
-@end
 
-@implementation RequestHandler
 
-    -(void) httpRequest: (NSString*) url  success: (void (^)(NSString *response)) success failure: (void(^)(NSError* error)) failure
-    // The function takes two blocks of code as input arguments
-    // The success() argument takes the response as an argument and enables us to access the
-    // reply outside of the completionHandler().
-    
-    // Async https://stackoverflow.com/questions/26174692/how-to-get-data-from-blocks-using-nsurlsession
-    // Blocks: https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/WorkingwithBlocks/WorkingwithBlocks.html
-    // Web requests: https://developer.apple.com/documentation/foundation/url_loading_system/fetching_website_data_into_memory?language=objc
+    -(void)downloadVideos: (NSString*) url
     {
-        // Create a sharedSession object
-        NSURLSession *session = [NSURLSession sharedSession];
-        
-        // Call the 'dataTaskWithURL' method of the session object ot fetch data
-        // the 'resume' is called on the dataTaskWithURL output to start the task
-        // '^' denotes a block, a portion of code that can be treated as a value
-        // similiar to the use of 'lambda'
-        
-        NSURLSessionDataTask* task = [session dataTaskWithURL:[NSURL URLWithString:url] 
-        completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error)
-        {
-            if (error.code == 0)
-            {
-                // Call the success block with the reply in string format as an argument
-                success( [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]  ); 
-            }
-            else {  failure( error ); }
-        }];
+        NSLog(@"Begin download of: %@", url);
+        // Create a session with the default configuration and download the data from the given URL
+        NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
+        NSURLSessionDownloadTask *downloadTask = [session downloadTaskWithURL:[NSURL URLWithString: url]];
+        [downloadTask resume];
+    
+    }
 
-        [task resume];
+    //******* SESSION DELEGATE PROTOCOL ***********//
 
-        while (task.state == 0)
-        // Ugly hack to wait for request to complete
-        {
-            // NSURLSessionTaskStateRunning = 0,                     /* The task is currently being serviced by the session */
-            // NSURLSessionTaskStateCanceling = 2,                   /* The task has been told to cancel.  The session will receive a URLSession:task:didCompleteWithError: message. */
-            // NSURLSessionTaskStateCompleted = 3,                   /* The task has completed and the session will receive no more delegate notifications */
+    -(void) URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
+    {
+        // Important assignment
+        NSData* data = [NSData dataWithContentsOfURL:location];
+        
+        // Dispatch to the main thread when handling the response
+        dispatch_async(dispatch_get_main_queue(), 
+        ^{
+            // All the UI updates inisde the ViewController would need to go here instead
+            NSString* response = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+
+            // Fetch the titles and timestamps for the perticular feed
+            // the first entry will be the channel name and its creation date
+            NSMutableArray* titles = [[NSMutableArray alloc] init];
+            NSMutableArray* timestamps = [[NSMutableArray alloc] init];
+            NSMutableArray* links = [[NSMutableArray alloc] init];
             
-            usleep(1000000);
-            //NSLog(@"State: %ld", task.state);
-        }
+            getDataFromTag(@"title", response, titles);
+            getDataFromTag(@"published", response, timestamps);
+            getHrefFromTag(@"link", response, links);
 
-    }
-
-    -(void) getDataFromTag: (NSString*)tag response:(NSString*)response tagData:(NSMutableArray*)tagData
-    {
-        if (response != nil)
-        {
-            // Init the neccessary variables
-            NSMutableString* fullTag = [[NSMutableString alloc] init];
-            NSRange range1;
-            NSRange range2;
-
-            // Copy the response into a mutable string 
-            NSMutableString* res = [[NSMutableString alloc] init ];
-            [res setString: response];
-
-            while (true)
+            for (int i=1; i < titles.count; i++)
             {
-                // Create the full tag: <tag>
-                [fullTag setString:@"<>"];
-                [fullTag insertString: tag atIndex:(NSUInteger)1 ];
-
-                // Find the first occurence of the fullTag in the response and exit if non exist
-                range1 = [res rangeOfString: fullTag ];
-                if ( range1.location == NSNotFound ) { break; }
-                
-                // Create the full closing tag: </tag>
-                [fullTag setString:@"</>"];
-                [fullTag insertString: tag atIndex:(NSUInteger)2 ];
-
-                // Find the first occurence of the closing tag in the response
-                range2 = [res rangeOfString: fullTag ];
-                
-                // Get number of characters in selection from vi: <g ctrl-g>
-                // The location refers to the first character of the match, we want to extract the
-                // data in between [ location1+length, location2 ] 
-                
-                // Note: NSMakeRange(start,length)
-                NSRange dataRange = NSMakeRange( range1.location + range1.length , range2.location - (range1.location + range1.length)  );
-                
-                // Allocate a new object for each string
-                NSMutableString* tagData_ = [[NSMutableString alloc] init];
-                
-                // Insert the data substring into tagData_
-                [tagData_  insertString: [res substringWithRange: dataRange ] atIndex:0  ];
-                
-                // Append a \0 character and add it to the array
-                [tagData_ insertString: [[NSString alloc] initWithCharacters:(const unichar*)"\0" length:1 ] atIndex: dataRange.length ];
-                
-                // Add the tagData_ to the array after sanitizing it
-                [tagData addObject: sanitize(tagData_) ];
-
-                // Remove all data in the response up until the end of range2 </tag>
-                [res deleteCharactersInRange: NSMakeRange(0,range2.location + range2.length) ];
+                //NSLog(@"%@", titles[i]);
+                [self addVideo: [ timestamps[i] cStringUsingEncoding:NSUTF8StringEncoding ] title: [titles[i] cStringUsingEncoding:NSUTF8StringEncoding] owner_id: [self.channelId cStringUsingEncoding: NSUTF8StringEncoding] link: [links[i] cStringUsingEncoding:NSUTF8StringEncoding]];
             }
-        }
-    }
 
-    -(void) getHrefFromTag: (NSString*) tag response: (NSString*) response tagData: (NSMutableArray*)tagData;
-    {
-        // <link rel="alternate" href="https://www.youtube.com/watch?v=hVYzc2Xpup0"/>
-        // ==> https://www.youtube.com/watch?v=hVYzc2Xpup0 
-        
-        if (response != nil)
-        {
-            // Init the neccessary variables
-            NSMutableString* search = [[NSMutableString alloc] init];
-            NSRange range1;
-            NSRange range2;
-
-            // Copy the response into a mutable string 
-            NSMutableString* res = [[NSMutableString alloc] init ];
-            [res setString: response];
-
-            while (true)
+            // Use seperate notication handlers for clicking an entry and pressing the full reload button
+            if ( self.noteFlag == SINGLE_FLAG )
             {
-                // Set the search string for the start of the URL
-                [search setString:@"<link rel=\"alternate\" href=\""];
-
-                // Find the first occurence of the search string
-                range1 = [res rangeOfString: search ];
-                if ( range1.location == NSNotFound ) { break; }
-                
-                // Set the search string for the closing part of the <link/>
-                [search setString:@"\"/>"];
-
-                // Find the first occurence of the closing tag in the response AFTER the first range
-                range2 = [res rangeOfString: search options:(NSStringCompareOptions)0 range: NSMakeRange( range1.location +  range1.length, SQL_ROW_BUFFER ) ];
-                
-                // Get number of characters in selection from vi: <g ctrl-g>
-                // The location refers to the first character of the match, we want to extract the
-                // data in between [ location1+length, location2 ] 
-                
-                // Note: NSMakeRange(start,length)
-                NSRange dataRange = NSMakeRange( range1.location + range1.length , range2.location - (range1.location + range1.length)  );
-                
-                // Allocate a new object for each string
-                NSMutableString* tagData_ = [[NSMutableString alloc] init];
-                
-                // Insert the data substring into tagData_
-                [tagData_  insertString: [res substringWithRange: dataRange ] atIndex:0  ];
-                
-                // Append a \0 character and add it to the array
-                [tagData_ insertString: [[NSString alloc] initWithCharacters:(const unichar*)"\0" length:1 ] atIndex: dataRange.length ];
-                [ tagData addObject: tagData_ ];
-
-                // Remove all data in the response up until the end of range2 </tag>
-                [ res deleteCharactersInRange: NSMakeRange(0,range2.location + range2.length) ];
+                [[NSNotificationCenter defaultCenter] postNotificationName: @SINGLE_NOTE object:self];
             }
-        }
+            else if ( self.noteFlag == FULL_FLAG )
+            {
+                self.channelCnt++;
+                [[NSNotificationCenter defaultCenter] postNotificationName: @FULL_NOTE object:self];
+            }
 
+        });
     }
-
 
 @end
+
+
+//*************** XML PARSING *******************//
+
+void getDataFromTag( NSString* tag, NSString* response, NSMutableArray* tagData)
+{
+    if (response != nil)
+    {
+        // Init the neccessary variables
+        NSMutableString* fullTag = [[NSMutableString alloc] init];
+        NSRange range1;
+        NSRange range2;
+
+        // Copy the response into a mutable string 
+        NSMutableString* res = [[NSMutableString alloc] init ];
+        [res setString: response];
+
+        while (true)
+        {
+            // Create the full tag: <tag>
+            [fullTag setString:@"<>"];
+            [fullTag insertString: tag atIndex:(NSUInteger)1 ];
+
+            // Find the first occurence of the fullTag in the response and exit if non exist
+            range1 = [res rangeOfString: fullTag ];
+            if ( range1.location == NSNotFound ) { break; }
+            
+            // Create the full closing tag: </tag>
+            [fullTag setString:@"</>"];
+            [fullTag insertString: tag atIndex:(NSUInteger)2 ];
+
+            // Find the first occurence of the closing tag in the response
+            range2 = [res rangeOfString: fullTag ];
+            
+            // Get number of characters in selection from vi: <g ctrl-g>
+            // The location refers to the first character of the match, we want to extract the
+            // data in between [ location1+length, location2 ] 
+            
+            // Note: NSMakeRange(start,length)
+            NSRange dataRange = NSMakeRange( range1.location + range1.length , range2.location - (range1.location + range1.length)  );
+            
+            // Allocate a new object for each string
+            NSMutableString* tagData_ = [[NSMutableString alloc] init];
+            
+            // Insert the data substring into tagData_
+            [tagData_  insertString: [res substringWithRange: dataRange ] atIndex:0  ];
+            
+            // Append a \0 character and add it to the array
+            [tagData_ insertString: [[NSString alloc] initWithCharacters:(const unichar*)"\0" length:1 ] atIndex: dataRange.length ];
+            
+            // Add the tagData_ to the array after sanitizing it
+            [tagData addObject: sanitize(tagData_) ];
+
+            // Remove all data in the response up until the end of range2 </tag>
+            [res deleteCharactersInRange: NSMakeRange(0,range2.location + range2.length) ];
+        }
+    }
+}
+
+void getHrefFromTag( NSString* tag, NSString* response, NSMutableArray* tagData)
+{
+    // <link rel="alternate" href="https://www.youtube.com/watch?v=hVYzc2Xpup0"/>
+    // ==> https://www.youtube.com/watch?v=hVYzc2Xpup0 
+    
+    if (response != nil)
+    {
+        // Init the neccessary variables
+        NSMutableString* search = [[NSMutableString alloc] init];
+        NSRange range1;
+        NSRange range2;
+
+        // Copy the response into a mutable string 
+        NSMutableString* res = [[NSMutableString alloc] init ];
+        [res setString: response];
+
+        while (true)
+        {
+            // Set the search string for the start of the URL
+            [search setString:@"<link rel=\"alternate\" href=\""];
+
+            // Find the first occurence of the search string
+            range1 = [res rangeOfString: search ];
+            if ( range1.location == NSNotFound ) { break; }
+            
+            // Set the search string for the closing part of the <link/>
+            [search setString:@"\"/>"];
+
+            // Find the first occurence of the closing tag in the response AFTER the first range
+            range2 = [res rangeOfString: search options:(NSStringCompareOptions)0 range: NSMakeRange( range1.location +  range1.length, SQL_ROW_BUFFER ) ];
+            
+            // Get number of characters in selection from vi: <g ctrl-g>
+            // The location refers to the first character of the match, we want to extract the
+            // data in between [ location1+length, location2 ] 
+            
+            // Note: NSMakeRange(start,length)
+            NSRange dataRange = NSMakeRange( range1.location + range1.length , range2.location - (range1.location + range1.length)  );
+            
+            // Allocate a new object for each string
+            NSMutableString* tagData_ = [[NSMutableString alloc] init];
+            
+            // Insert the data substring into tagData_
+            [tagData_  insertString: [res substringWithRange: dataRange ] atIndex:0  ];
+            
+            // Append a \0 character and add it to the array
+            [tagData_ insertString: [[NSString alloc] initWithCharacters:(const unichar*)"\0" length:1 ] atIndex: dataRange.length ];
+            [ tagData addObject: tagData_ ];
+
+            // Remove all data in the response up until the end of range2 </tag>
+            [ res deleteCharactersInRange: NSMakeRange(0,range2.location + range2.length) ];
+        }
+    }
+
+}
 
 //*************** MISC *********************//
 
@@ -474,6 +472,7 @@ int getIndexByNameAndOwnerId(NSMutableArray* videos, NSString* title, int owner_
     } 
     return -1;
 }
+
 
 //*************** SQLITE CALLBACKS ********************//
 
@@ -520,7 +519,7 @@ static int callbackChannelObjects(void* context, int columnCount, char** columnV
 
 static int callbackColumnValues(void* context, int columnCount, char** columnValues, char** columnNames)
 // COPYS the columnValues into the result paramater in sqlite3_exec()
-// We can't simply reassign the pointer since the columnValues object gets freed after exiting the handler
+// We can't simply reassign the pointer since the columnValues object gets freed after exiting the dbHandler
 {
     for (int i=0; i < columnCount; i++)
     { 
@@ -548,8 +547,8 @@ static int callbackPrint(void* context, int columnCount, char** columnValues, ch
 static int callbackImportRSS(void* context, int columnCount, char** columnValues, char** columnNames) 
 // https://stackoverflow.com/questions/38825480/c-mfc-sqlite-sqlite3-exec-callback
 {
-    DBHandler* handler = (__bridge DBHandler*)context;
+    Handler* dbHandler = (__bridge Handler*)context;
 
     // Delegate callback to class member implementation
-    return [handler handleRSS: columnValues];
+    return [dbHandler handleRSS: columnValues];
 }

@@ -16,6 +16,9 @@
 #define BACK_WIDTH 21
 #define BACK_HEIGHT 28
 
+#define LOADING_LABEL_X 10
+#define LOADING_WIDTH 70
+
 #define RIGHT_LABEL_X_OFFSET 300
 #define LEFT_LABEL_X_OFFSET 16
 #define LABEL_Y_OFFSET 15
@@ -83,5 +86,6 @@
     -(NSString*)description;
 @end
 
+UILabel* getLabel(NSString* str, int width, int height, int x_offset, int y_offset, UIColor* textColor,  UIFont* font);
 UIImage* imageWithImage( UIImage* image, CGSize size); 
 UIImage* getImage(NSString* imageName, int width, int height);

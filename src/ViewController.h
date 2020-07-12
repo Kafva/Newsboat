@@ -5,30 +5,37 @@
 @interface ViewController : UIViewController <UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate>
     // The <...> objects are protocols used for the implementation of the tableView and the searchbar
 
+    //*********** UI ELEMENTS **************//
     @property (strong,nonatomic) UIActivityIndicatorView* spinner;
-    
-    @property (strong,nonatomic) NSString* currentViewFlag;
-    @property (strong,nonatomic) DBHandler* handler;
-
+    @property (strong, nonatomic) UILabel *loadingLabel;
     @property (strong, nonatomic) UIButton *backBtn;
     @property (strong, nonatomic) UIButton *reloadBtn;
+    @property (strong, nonatomic) UISearchBar *searchBar;
+    
+    //********** CORE VIEWS *************//
+    @property (strong, nonatomic) UITableView *videoView;
     @property (strong, nonatomic) UITableView *channelView;
-    @property (strong, nonatomic) NSMutableArray *channels; 
+    
+    //*********** BACK END ***************//
+    @property (strong,nonatomic) Handler* dbHandler;
+    @property (strong,nonatomic) NSString* currentViewFlag;
     
     // The cache is updated when pressing the backButton and when pressing the fullReload button
     @property (strong, nonatomic) NSMutableArray *channelsCache; 
-    
-    @property (strong, nonatomic) UITableView *videoView;
+    @property (strong, nonatomic) NSMutableArray *channels; 
     @property (strong, nonatomic) NSMutableArray *videos; 
 
-    @property (strong, nonatomic) UISearchBar *searchBar;
 
     //************* BASICS ******************************//
 
     -(void) loadView;
     -(void) viewDidLoad;
     -(void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event;
-    
+
+    //************ NOTIFICATIONS *****************//
+    -(void) presentVideos: (NSNotification*)notification;
+    -(void) finishFullReload: (NSNotification*)notification;
+
     //************* ADDING VIEWS **********************//
     -(UIButton*)getButtonView:(NSString*)btnStr selector:(SEL)selector width:(int)width height:(int)height x_offset:(int)x_offset y_offset:(int)y_offset;
     -(void) addImageView;
@@ -46,8 +53,6 @@
     -(void) markAllViewed: (NSString*)name;
     
     //************ TABLES *******************//
-    // https://gist.github.com/keicoder/8682867 
-
     // Required functions for the dataSource and delegate implemntations of the 
     // <UITableViewDataSource, UITableViewDelegate>  protocols
     // Note that both the videoView and channelView utilise the same tableView() functions
