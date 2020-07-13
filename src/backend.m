@@ -53,7 +53,7 @@
         }
         else
         { 
-            //NSLog(@"Database open!"); 
+            NSLog(@"Database open!"); 
             self.db = db_; 
         }
 
@@ -84,6 +84,8 @@
 
         // NOTE that if channels have similar names the wrong vidoes could be returned with a greedy RegEx
         sprintf(stmt, "SELECT * FROM `Videos` WHERE `owner` = (SELECT `id` FROM `Channels` WHERE `name` LIKE \"%s\") ORDER BY `timestamp` DESC LIMIT %d;", channel, count); 
+
+        NSLog(@"Video FETCH STMT: %s", stmt);
 
         // The callback function creates Video objects which are returned to the paramater passed to the method 
         int ret = sqlite3_exec( self.db , stmt, callbackVideoObjects, (__bridge void*)videos, &err_msg );
@@ -134,7 +136,7 @@
         char* err_msg;
         char* stmt = malloc(sizeof(char)*SQL_ROW_BUFFER); 
         strncpy(stmt, [[NSString stringWithFormat: @"UPDATE `Videos` SET `viewed` = TRUE WHERE `owner` = %d ;",owner_id] cStringUsingEncoding:NSUTF8StringEncoding], SQL_ROW_BUFFER );
-        
+        NSLog(@"Set all STMT: %s", stmt); 
         
         int ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
         if (ret != SQLITE_OK) {  NSLog(@"%s", err_msg);  }
@@ -169,7 +171,10 @@
     }
     
     //*************** Adding Videos ****************//
-    
+    // rightBtn() --> fullReload() --> importRSS() --> callbackImportRSS --> 
+    // handleRSS() --> downloadVideos() --> addVideo()
+
+
     -(int) importRSS: (const char*)channel 
     {
         int ret = -1; 
@@ -207,7 +212,6 @@
     }
 
     -(int) addVideo: (const char* )timestamp title:(const char* )title owner_id:(const char*)owner_id link:(const char*) link
-    // Called in `handleRSS()`
     {
         // The method will throw an error when encountering already added videos due to the UNIQUE
         // constraint. When adding new videos the oldest one should be deleted if the count exceeds VIDEOS_PER_CHANNEL
@@ -224,8 +228,8 @@
         const char* stmt = [[NSString stringWithFormat: @"INSERT OR IGNORE INTO `Videos` (`timestamp`, `title`, `viewed`, `owner`, `link`) VALUES (DATE(\"%s\"), \"%s\", FALSE , %s, \"%s\"); ",timestamp, title, owner_id, link ] cStringUsingEncoding:NSUTF8StringEncoding];
 
         //NSLog(@"STMT: %s", stmt);
-        if ( [self openDatabase] == SQLITE_OK )
-        {
+        //if ( [self openDatabase] == SQLITE_OK )
+        //{
             ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
             
             if ( ret == SQLITE_OK  )
@@ -256,7 +260,7 @@
                 else {  NSLog(@"%s", err_msg);  }    
             }
             else {  NSLog(@"%s", err_msg);  }
-        }
+        //}
         
         for (int i=0; i < VIDEOS_PER_CHANNEL+1; i++) { free(results[i]); }
         free(results);
@@ -302,7 +306,11 @@
 
             for (int i=1; i < titles.count; i++)
             {
-                //NSLog(@"%@", titles[i]);
+                // We are getting the correct videos fetched but others are being displayed
+                // since they for some reason bear the channels owner_id
+
+                // addVideo() adds to the database not to the videos datasource
+                if ( self.noteFlag == SINGLE_FLAG ){ NSLog(@"SINGLE: %@", titles[i]); }
                 [self addVideo: [ timestamps[i] cStringUsingEncoding:NSUTF8StringEncoding ] title: [titles[i] cStringUsingEncoding:NSUTF8StringEncoding] owner_id: [self.channelId cStringUsingEncoding: NSUTF8StringEncoding] link: [links[i] cStringUsingEncoding:NSUTF8StringEncoding]];
             }
 
@@ -484,6 +492,7 @@ static int callbackVideoObjects(void* context, int columnCount, char** columnVal
 
     Video* video = [[Video alloc] init];
     video.title = [[ NSString alloc ] initWithCString: columnValues[1] encoding:NSUTF8StringEncoding];  
+    NSLog(@"callbackVideo(): %@", video.title);
 
     // Note that the boolean attribute is given as a string and thus can't simply be casted 
     video.viewed = false;
@@ -493,6 +502,7 @@ static int callbackVideoObjects(void* context, int columnCount, char** columnVal
     video.owner_id = atoi(columnValues[3]); 
     video.link = [[ NSString alloc ] initWithCString: columnValues[4] encoding:NSUTF8StringEncoding];  
 
+    // Wrong here when viewing last video
     //NSLog(@"callbackVideo(): %@", video);
     [(__bridge NSMutableArray*)context addObject: video];
     return 0;
