@@ -24,6 +24,7 @@ function deploy()
 
     # Upload the sqlite database to NSHomeDirectory()/Documents/
     ios-deploy --bundle_id $BUNDLE_ID --upload $DBNAME --to /Documents/$DBNAME
+    return $?
 }
 
 
@@ -55,10 +56,10 @@ elif [ "$1" = upload ]; then
 elif [ "$1" = deploy ]; then
     deploy 
 elif [ "$1" = run ]; then
-    deploy
+    deploy &&
     idevicedebug run $BUNDLE_ID
 elif [ "$1" = debug ]; then
-    deploy
+    deploy && 
     ios-deploy -d -b build/Release-iphoneos/${PROJECT}.app 
 
     ### Debug commands ###

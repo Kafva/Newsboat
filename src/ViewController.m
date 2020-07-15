@@ -1,17 +1,10 @@
 #import "ViewController.h"
 
 // BUGS
-// Doing several full reloads will sometimes make a channels videos appear as unviewed agian
+// * Doing several full reloads will sometimes make a channels videos appear as unviewed agian
 // (Not releated to OK button in channel view)
 
 
-// LAST Channel is getting fcked up on call to fullReload()
-// Triggered in doing a fullReload
-
-
-
-// FEATURES
-//  Real time updates on loading Label
 
 @implementation ViewController 
     //************* BASICS ******************************//
@@ -114,14 +107,10 @@
 
     -(void) presentVideos:(NSNotification*)notification
     {
-        //if ( [self.dbHandler openDatabase] == SQLITE_OK )
-        //{
-            // Fetch video objects from the given channel from the database
-            NSLog(@"BEFORE FETCH VIDS: %@", self.videos);
-            [self.dbHandler getVideosFrom: [self.currentViewFlag cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
-            NSLog(@"AFTER VIDS: %@", self.videos);
-        //    [self.dbHandler closeDatabase]; 
-        //}
+        // Fetch video objects from the given channel from the database
+        NSLog(@"BEFORE FETCH VIDS: %@", self.videos);
+        [self.dbHandler getVideosFrom: [self.currentViewFlag cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
+        NSLog(@"AFTER VIDS: %@", self.videos);
         
         self.channelView.userInteractionEnabled = YES;
         self.searchBar.userInteractionEnabled = YES;   
@@ -277,16 +266,12 @@
 
     -(void) fetchVideos: (NSString*)channel
     {
-        //if ( [self.dbHandler openDatabase] == SQLITE_OK )
-        //{
-            [self.videos removeAllObjects];
-            
-            self.dbHandler.noteFlag = SINGLE_FLAG;
+        [self.videos removeAllObjects];
+        
+        self.dbHandler.noteFlag = SINGLE_FLAG;
 
-            // Import videos for the given channel into the database ( implicit calls to addVideo() )
-            [self.dbHandler importRSS: [channel cStringUsingEncoding: NSUTF8StringEncoding]];
-        //    [self.dbHandler closeDatabase]; 
-        //}
+        // Import videos for the given channel into the database ( implicit calls to addVideo() )
+        [self.dbHandler importRSS: [channel cStringUsingEncoding: NSUTF8StringEncoding]];
     }
 
     -(void) updateCache: (NSString*)name
@@ -351,48 +336,44 @@
     
     -(void) markAllViewed: (NSString*)name
     {
-        //if ( [self.dbHandler openDatabase] == SQLITE_OK )
-        //{    
-            // Deduce the channel owner_id from the channel name
-            NSUInteger owner_index = [[self.channels valueForKey:@"name"] indexOfObject: name];
+        // Deduce the channel owner_id from the channel name
+        NSUInteger owner_index = [[self.channels valueForKey:@"name"] indexOfObject: name];
 
-            if ( [self.currentViewFlag isEqual: @CHANNEL_VIEW] )
-            //*** CHANNEL VIEW ***//
-            {
-                if ( [[self.channels objectAtIndex: owner_index] unviewedCount] != -1 )
-                // Only mark videos as unviewed in the channel interface when a remote fetch has been issued
-                // i.e. do nothing on '(?)' entries
-                {
-                    // Update the backend status
-                    [self.dbHandler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
-                    
-                    // Change the unviewedCount attribute to zero in the datasource
-                    // provided that the number of viewed videos is known
-                    // and reload the channel view
-                    [[self.channels objectAtIndex: owner_index] setUnviewedCount: 0 ];
-                    
-                    // Update the cached channel entry
-                    [self updateCache: name];
-
-                    [self.channelView reloadData];
-                }
-            }
-            else
-            //*** VIDEO VIEW ***//
+        if ( [self.currentViewFlag isEqual: @CHANNEL_VIEW] )
+        //*** CHANNEL VIEW ***//
+        {
+            if ( [[self.channels objectAtIndex: owner_index] unviewedCount] != -1 )
+            // Only mark videos as unviewed in the channel interface when a remote fetch has been issued
+            // i.e. do nothing on '(?)' entries
             {
                 // Update the backend status
                 [self.dbHandler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
                 
-                for (int i = 0; i < self.videos.count; i++)
-                // Update the UI
-                {
-                    [[self.videos objectAtIndex:i] setAllViewedAttr: YES];
-                }
+                // Change the unviewedCount attribute to zero in the datasource
+                // provided that the number of viewed videos is known
+                // and reload the channel view
+                [[self.channels objectAtIndex: owner_index] setUnviewedCount: 0 ];
+                
+                // Update the cached channel entry
+                [self updateCache: name];
 
-                [self.videoView reloadData];
+                [self.channelView reloadData];
             }
-        //} 
-        //[self.dbHandler closeDatabase]; 
+        }
+        else
+        //*** VIDEO VIEW ***//
+        {
+            // Update the backend status
+            [self.dbHandler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
+            
+            for (int i = 0; i < self.videos.count; i++)
+            // Update the UI
+            {
+                [[self.videos objectAtIndex:i] setAllViewedAttr: YES];
+            }
+
+            [self.videoView reloadData];
+        }
     }
 
     //************** PROTOCOL IMPLEMENTATIONS ****************************//
@@ -531,13 +512,8 @@
     {
         if( [self.searchBar isFirstResponder] ) { [self.searchBar resignFirstResponder]; }
         
-        
-        //if ( [self.dbHandler openDatabase] == SQLITE_OK )
-        //{
-            // Update the viewed status in the database
-            [self.dbHandler toggleViewedInDatabase: btn.title owner_id: btn.owner_id];
-        //    [self.dbHandler closeDatabase]; 
-        //}
+        // Update the viewed status in the database
+        [self.dbHandler toggleViewedInDatabase: btn.title owner_id: btn.owner_id];
 
         // Update the state of the button in the cell
         btn.viewed = !btn.viewed;
@@ -633,36 +609,32 @@
         // Descriptor array for sorting purposes
         NSArray *descriptor = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"unviewedCount" ascending:NO]];
         
-        //if ( [self.dbHandler openDatabase] == SQLITE_OK )
-        //{
-            for (int i = 0; i < self.channels.count; i++)
-            {
-                unviewedCount = VIDEOS_PER_CHANNEL; 
-                
-                self.videos = [[NSMutableArray alloc] init];
+        for (int i = 0; i < self.channels.count; i++)
+        {
+            unviewedCount = VIDEOS_PER_CHANNEL; 
+            
+            self.videos = [[NSMutableArray alloc] init];
 
-                // Import videos for the given channel into the database ( implicit calls to addVideo() )
-                [self.dbHandler importRSS: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding]];
+            // Import videos for the given channel into the database ( implicit calls to addVideo() )
+            [self.dbHandler importRSS: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding]];
 
-                // Fetch video objects from the given channel from the database
-                [self.dbHandler getVideosFrom: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
+            // Fetch video objects from the given channel from the database
+            [self.dbHandler getVideosFrom: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
 
-                // Set the channel objects unviewed count based upon the number derived
-                // after the RSS fetch
-                // True: 1      False: 0
-                for (int i=0; i<self.videos.count; i++) { unviewedCount = unviewedCount - [[self.videos objectAtIndex:i] viewed]; }
+            // Set the channel objects unviewed count based upon the number derived
+            // after the RSS fetch
+            // True: 1      False: 0
+            for (int j=0; j<self.videos.count; j++) { unviewedCount = unviewedCount - [[self.videos objectAtIndex:j] viewed]; }
 
-                [[self.channels objectAtIndex:i] setUnviewedCount: unviewedCount];
-                
-                // Sort the video array based upon the highest number of unviewed videos
-                self.channels = (NSMutableArray*)[self.channels sortedArrayUsingDescriptors:descriptor];
-            }
+            [[self.channels objectAtIndex:i] setUnviewedCount: unviewedCount];
+            
+        }
+        
+        // Sort the video array based upon the highest number of unviewed videos
+        self.channels = (NSMutableArray*)[self.channels sortedArrayUsingDescriptors:descriptor];
 
-            // Lastly, save the results of the RSS fetch in the channels cache memory
-            self.channelsCache = [NSMutableArray arrayWithArray:self.channels];
-
-        //    [self.dbHandler closeDatabase]; 
-        //}
+        // Lastly, save the results of the RSS fetch in the channels cache memory
+        self.channelsCache = [NSMutableArray arrayWithArray:self.channels];
     }
 
     //*********** SEARCH BAR **************//
@@ -698,22 +670,19 @@
     -(void) channelSearch:(NSString*) searchText
     // Search for the given channel(s) in the database and update the UI accordingly
     {
-        //if ([self.dbHandler openDatabase] == SQLITE_OK)
-        //{
-            if ([searchText isEqual: @ALL_TITLE]) { [self.dbHandler getChannels: self.channels]; }
-            else { [self.dbHandler getChannels: self.channels name: searchText]; }
+        if ([searchText isEqual: @ALL_TITLE]) { [self.dbHandler getChannels: self.channels]; }
+        else { [self.dbHandler getChannels: self.channels name: searchText]; }
 
-            //[self.dbHandler closeDatabase];
-            
-            // Update the newly fetched channels with the unviewedCount attributes from the cache
-            [self getUnviewedCountFromCache];
-            
-            // Sort the datasource
-            NSArray *descriptor = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"unviewedCount" ascending:NO]];
-            self.channels = (NSMutableArray*)[self.channels sortedArrayUsingDescriptors:descriptor];
-            
-            [self.channelView reloadData];
-        //}
+        //[self.dbHandler closeDatabase];
+        
+        // Update the newly fetched channels with the unviewedCount attributes from the cache
+        [self getUnviewedCountFromCache];
+        
+        // Sort the datasource
+        NSArray *descriptor = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"unviewedCount" ascending:NO]];
+        self.channels = (NSMutableArray*)[self.channels sortedArrayUsingDescriptors:descriptor];
+        
+        [self.channelView reloadData];
     }
 
 @end

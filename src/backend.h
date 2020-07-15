@@ -47,12 +47,12 @@
     //**** WEB FETCHES ****//
     @property (nonatomic) int noteFlag;
     @property (nonatomic) int channelCnt;
-    @property (strong,nonatomic) NSString* channelId;
 
     //*************** BASIC ****************//
     -(id) initWithDB: (NSString*)dbPath;
     -(int) openDatabase;
     -(int) closeDatabase;
+    -(int) channelIdFromName: (const char*)name;
     -(int) queryStmt: (const char*)stmt;
     
     //************** Utility *******************//
