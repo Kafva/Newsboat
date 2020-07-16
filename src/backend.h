@@ -59,6 +59,7 @@
     -(int) getChannels: (NSMutableArray*)channels;
     -(int) getChannels: (NSMutableArray*)channels name:(NSString*)name;
     -(int) getVideosFrom: (const char*)channel count:(int)count videos:(NSMutableArray*) videos;
+    -(int) setAllViewedInDatabase;
     -(int) setAllViewedInDatabase: (int)owner_id;
     -(int) toggleViewedInDatabase: (NSString*)title owner_id:(int)owner_id;
 

@@ -1,9 +1,8 @@
 #import "ViewController.h"
 
 // BUGS
-// * Doing several full reloads will sometimes make a channels videos appear as unviewed agian
-// (Not releated to OK button in channel view)
-
+// The last (least recent) video in certain feeds becomes unviewed after reloads due to it being deleted
+// and re-added
 
 
 @implementation ViewController 
@@ -80,14 +79,8 @@
 
     -(void) finishFullReload: (NSNotification*)notification
     {
-        
-        //dispatch_async(dispatch_get_main_queue(), 
-        //^{
-        //}); 
         NSLog(@"Reload: (%d / %lu)", self.dbHandler.channelCnt, self.channels.count);
         self.loadingLabel.text = [NSString stringWithFormat: @"(%d/%lu)", self.dbHandler.channelCnt, self.channels.count];
-        //[self.loadingLabel setNeedsDisplay];
-
         
         if ( self.dbHandler.channelCnt == self.channels.count )
         {
@@ -108,9 +101,9 @@
     -(void) presentVideos:(NSNotification*)notification
     {
         // Fetch video objects from the given channel from the database
-        NSLog(@"BEFORE FETCH VIDS: %@", self.videos);
+        //NSLog(@"BEFORE FETCH VIDS: %@", self.videos);
         [self.dbHandler getVideosFrom: [self.currentViewFlag cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
-        NSLog(@"AFTER VIDS: %@", self.videos);
+        NSLog(@"AFTER getVideosFrom() VIDS: %@", self.videos);
         
         self.channelView.userInteractionEnabled = YES;
         self.searchBar.userInteractionEnabled = YES;   
@@ -670,11 +663,13 @@
     -(void) channelSearch:(NSString*) searchText
     // Search for the given channel(s) in the database and update the UI accordingly
     {
-        if ([searchText isEqual: @ALL_TITLE]) { [self.dbHandler getChannels: self.channels]; }
-        else { [self.dbHandler getChannels: self.channels name: searchText]; }
-
-        //[self.dbHandler closeDatabase];
         
+        if ([searchText isEqual: @ALL_TITLE]) { [self.dbHandler getChannels: self.channels]; }
+        else
+        { 
+            [self.dbHandler getChannels: self.channels name: searchText]; 
+        }
+
         // Update the newly fetched channels with the unviewedCount attributes from the cache
         [self getUnviewedCountFromCache];
         
