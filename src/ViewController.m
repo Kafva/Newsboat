@@ -1,10 +1,5 @@
 #import "ViewController.h"
 
-// BUGS
-// The last (least recent) video in certain feeds becomes unviewed after reloads due to it being deleted
-// and re-added
-
-
 @implementation ViewController 
     //************* BASICS ******************************//
 
