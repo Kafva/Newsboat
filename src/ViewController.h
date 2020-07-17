@@ -10,6 +10,7 @@
     @property (strong, nonatomic) UILabel *loadingLabel;
     @property (strong, nonatomic) UIButton *backBtn;
     @property (strong, nonatomic) UIButton *reloadBtn;
+    @property (strong, nonatomic) UIButton *debugBtn;
     @property (strong, nonatomic) UISearchBar *searchBar;
     
     //********** CORE VIEWS *************//
@@ -17,9 +18,9 @@
     @property (strong, nonatomic) UITableView *channelView;
     
     //*********** BACK END ***************//
-    @property (strong, nonatomic) Handler* dbHandler;
+    @property (strong, nonatomic) Handler* handler;
     @property (strong, nonatomic) NSString* currentViewFlag;
-    
+
     // The cache is updated when pressing the backButton and when pressing the fullReload button
     @property (strong, nonatomic) NSMutableArray *channelsCache; 
     @property (strong, nonatomic) NSMutableArray *channels; 

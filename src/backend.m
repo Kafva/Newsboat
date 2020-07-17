@@ -20,8 +20,6 @@
     -(void)setAllViewedAttr: (BOOL)newState { self.viewed = newState; }
 @end
 
-//--------------------------------------------------//
-
 @implementation Handler : NSObject
 
     //*************** BASIC ****************//
@@ -99,7 +97,7 @@
         if ( ret != SQLITE_OK  ){  NSLog(@"%s", err_msg);  }
         return ret;
     }
-    
+
     //************** Utility *******************//
 
 
@@ -159,8 +157,8 @@
     {
         char* err_msg;
         char* stmt = malloc(sizeof(char)*SQL_ROW_BUFFER); 
-        stmt = "UPDATE `Videos` SET `viewed` = TRUE ;";
-        //NSLog(@"Set all STMT: %s", stmt); 
+        strcpy(stmt,"UPDATE `Videos` SET `viewed` = TRUE ;");
+        NSLog(@"Set all STMT: %s", stmt); 
         
         int ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
         if (ret != SQLITE_OK) {  NSLog(@"%s", err_msg);  }
@@ -269,20 +267,21 @@
         // and instead simply ignore the perticular INSERT statement
         const char* stmt = [[NSString stringWithFormat: @"INSERT OR IGNORE INTO `Videos` (`timestamp`, `title`, `viewed`, `owner`, `link`) VALUES (DATE(\"%s\"), \"%s\", FALSE , %s, \"%s\"); ",timestamp, title, owner_id, link ] cStringUsingEncoding:NSUTF8StringEncoding];
 
-        //if ( self.noteFlag == SINGLE_FLAG ) { NSLog(@"addVideo() STMT: %s", stmt); }
+        if ( self.noteFlag == SINGLE_FLAG ) { NSLog(@"addVideo() STMT: %s", stmt); }
         
         ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
         
         if ( ret == SQLITE_OK  )
         // Only go through the process of potentially removing an old video if the insertion was successful
+        // (the return value will always be OK if an error beyond an ignored insertion didn't occur)
         {
             stmt = [[NSString stringWithFormat: @"SELECT COUNT(*) FROM `Videos` WHERE owner = %s; ",owner_id] cStringUsingEncoding:NSUTF8StringEncoding];
 
             if ( sqlite3_exec( self.db , stmt, callbackColumnValues, (void*)results, &err_msg ) == SQLITE_OK )
-            // "The 4th argument to sqlite3_exec() is relayed as the first argument ot the callback()"
+            // "The 4th argument to sqlite3_exec() is relayed as the first argument to the callback()"
             // Check if the row count for the Channel exceeds VIDEOS_PER_CHANNEL
             {
-                //if ( self.noteFlag == SINGLE_FLAG ) { NSLog(@"ROWS: %d < %d", atoi(results[0]), VIDEOS_PER_CHANNEL); }
+                if ( self.noteFlag == SINGLE_FLAG ) { NSLog(@"ROWS: %d < %d", atoi(results[0]), VIDEOS_PER_CHANNEL); }
 
                 if ( atoi(results[0]) > VIDEOS_PER_CHANNEL )
                 // If so find the oldest video(s) and delete it/them from the channel in question
@@ -294,7 +293,7 @@
                     if ( sqlite3_exec(self.db, stmt, callbackGetTitle, (void*)delete_title, &err_msg) != SQLITE_OK ) {  NSLog(@"%s", err_msg);  }
 
                     if ( strcmp(delete_title,"") == 0  )
-                    // If the video to remove was never than the video that would be added remove
+                    // If the video to remove was newer than the video that would be added remove
                     // the current video that was inserted instead
                     // TODO maintain unviewed status if set
                     { 
@@ -305,7 +304,7 @@
                     
                     if ( sqlite3_exec(self.db, stmt, NULL,NULL, &err_msg) == SQLITE_OK )
                     { 
-                        //if ( self.noteFlag == SINGLE_FLAG  ) { NSLog(@"Successfully deleted: \"%s\" from owner_id:%s", delete_title, owner_id  ); }
+                        if ( self.noteFlag == SINGLE_FLAG  ) { NSLog(@"Successfully deleted: \"%s\" from owner_id:%s", delete_title, owner_id  ); }
                     }
                     else {  NSLog(@"%s", err_msg);  }
                 }
@@ -590,7 +589,7 @@ static int callbackChannelObjects(void* context, int columnCount, char** columnV
 
 static int callbackColumnValues(void* context, int columnCount, char** columnValues, char** columnNames)
 // COPYS the columnValues into the result paramater in sqlite3_exec()
-// We can't simply reassign the pointer since the columnValues object gets freed after exiting the dbHandler
+// We can't simply reassign the pointer since the columnValues object gets freed after exiting the handler
 {
     for (int i=0; i < columnCount; i++)
     { 
@@ -618,8 +617,8 @@ static int callbackPrint(void* context, int columnCount, char** columnValues, ch
 static int callbackImportRSS(void* context, int columnCount, char** columnValues, char** columnNames) 
 // https://stackoverflow.com/questions/38825480/c-mfc-sqlite-sqlite3-exec-callback
 {
-    Handler* dbHandler = (__bridge Handler*)context;
+    Handler* handler = (__bridge Handler*)context;
 
     // Delegate callback to class member implementation
-    return [dbHandler handleRSS: columnValues];
+    return [handler handleRSS: columnValues];
 }

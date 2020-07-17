@@ -1,5 +1,11 @@
 #import "ViewController.h"
 
+// Note that the <published> and <updated> fields in RSS may differ
+// Bug: When a new video is added the oldest video becomes unviewed (potentially) (maybe because its removed
+// when the new video is added)
+// The first reload will show all videos as viewed 
+
+
 @implementation ViewController 
     //************* BASICS ******************************//
 
@@ -18,7 +24,7 @@
         NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSUTF8StringEncoding];
         [dbPath insertString: home atIndex:(NSUInteger)0];
         
-        self.dbHandler = [[Handler alloc] initWithDB: dbPath];
+        self.handler = [[Handler alloc] initWithDB: dbPath];
         self.videos = [[NSMutableArray alloc] init];
         self.channels = [[NSMutableArray alloc] init];
 
@@ -38,6 +44,9 @@
         // Positioning of the reload button is not well made
         self.reloadBtn = [self getButtonView: @RELOAD_IMAGE selector: @selector(rightBtn:) width: RELOAD_WIDTH height: RELOAD_HEIGHT x_offset: BTN_X_OFFSET y_offset: BTN_Y_OFFSET ];
         [self.view addSubview: [self reloadBtn]];
+        
+        self.debugBtn = [self getButtonView: @OK_IMAGE selector: @selector(debugBtn:) width: RELOAD_WIDTH height: RELOAD_HEIGHT x_offset: BTN_X_OFFSET - RELOAD_WIDTH*1.5 y_offset: BTN_Y_OFFSET ];
+        [self.view addSubview: [self debugBtn]];
 
         [self addSearchBar];
 
@@ -74,14 +83,14 @@
 
     -(void) finishFullReload: (NSNotification*)notification
     {
-        NSLog(@"Reload: (%d / %lu)", self.dbHandler.channelCnt, self.channels.count);
-        self.loadingLabel.text = [NSString stringWithFormat: @"(%d/%lu)", self.dbHandler.channelCnt, self.channels.count];
+        NSLog(@"Reload: (%d / %lu)", self.handler.channelCnt, self.channels.count);
+        self.loadingLabel.text = [NSString stringWithFormat: @"(%d/%lu)", self.handler.channelCnt, self.channels.count];
         
-        if ( self.dbHandler.channelCnt == self.channels.count )
+        if ( self.handler.channelCnt == self.channels.count )
         {
             NSLog(@"Finished full reload!");
             NSLog(@"CACHE: %@\nCount: %lu", self.channelsCache, self.channelsCache.count);
-            
+
             [self.channelView reloadData];
 
             self.loadingLabel.hidden = YES;
@@ -97,7 +106,7 @@
     {
         // Fetch video objects from the given channel from the database
         //NSLog(@"BEFORE FETCH VIDS: %@", self.videos);
-        [self.dbHandler getVideosFrom: [self.currentViewFlag cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
+        [self.handler getVideosFrom: [self.currentViewFlag cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
         NSLog(@"AFTER getVideosFrom() VIDS: %@", self.videos);
         
         self.channelView.userInteractionEnabled = YES;
@@ -256,10 +265,10 @@
     {
         [self.videos removeAllObjects];
         
-        self.dbHandler.noteFlag = SINGLE_FLAG;
+        self.handler.noteFlag = SINGLE_FLAG;
 
         // Import videos for the given channel into the database ( implicit calls to addVideo() )
-        [self.dbHandler importRSS: [channel cStringUsingEncoding: NSUTF8StringEncoding]];
+        [self.handler importRSS: [channel cStringUsingEncoding: NSUTF8StringEncoding]];
     }
 
     -(void) updateCache: (NSString*)name
@@ -335,7 +344,7 @@
             // i.e. do nothing on '(?)' entries
             {
                 // Update the backend status
-                [self.dbHandler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
+                [self.handler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
                 
                 // Change the unviewedCount attribute to zero in the datasource
                 // provided that the number of viewed videos is known
@@ -352,7 +361,7 @@
         //*** VIDEO VIEW ***//
         {
             // Update the backend status
-            [self.dbHandler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
+            [self.handler setAllViewedInDatabase: [[self.channels objectAtIndex: owner_index] id] ];
             
             for (int i = 0; i < self.videos.count; i++)
             // Update the UI
@@ -474,6 +483,7 @@
 
             // Display the spinner while waiting to enter the video view
             self.reloadBtn.hidden = YES;
+            self.debugBtn.hidden = YES;
             self.spinner.hidden = NO;
             [self.spinner startAnimating];
             
@@ -501,7 +511,7 @@
         if( [self.searchBar isFirstResponder] ) { [self.searchBar resignFirstResponder]; }
         
         // Update the viewed status in the database
-        [self.dbHandler toggleViewedInDatabase: btn.title owner_id: btn.owner_id];
+        [self.handler toggleViewedInDatabase: btn.title owner_id: btn.owner_id];
 
         // Update the state of the button in the cell
         btn.viewed = !btn.viewed;
@@ -547,6 +557,13 @@
         
     }
 
+    -(void) debugBtn: (UIButton*)sender
+    {
+        [self.handler setAllViewedInDatabase];
+        for (int i = 0; i < self.channels.count; i++) { [[self.channels objectAtIndex:i] setUnviewedCount: 0]; }
+        [self.channelView reloadData];
+    }
+
     -(void) goBack: (UIButton*)sender 
     // When the back button is tapped from a video view
     // unhide the channels view and delete the button and video view (for the specific channel)
@@ -555,6 +572,10 @@
         
         //*** Update the number of unviewed videos for the channel datasource ***//
         int unviewedCount = VIDEOS_PER_CHANNEL;
+        
+        // Edge case if the channel has less than the limit uploaded
+        if (self.videos.count < unviewedCount) {  unviewedCount = (int)self.videos.count; }
+
         for (int i=0; i<self.videos.count; i++) { unviewedCount = unviewedCount - [[self.videos objectAtIndex:i] viewed]; }
 
         NSUInteger channel_index = [  [self.channels valueForKey:@"name"] indexOfObject: self.currentViewFlag];
@@ -579,6 +600,7 @@
         [self.reloadBtn setImage: getImage( @RELOAD_IMAGE, RELOAD_WIDTH, RELOAD_HEIGHT ) forState:UIControlStateNormal];
         self.channelView.hidden = NO;
         self.searchBar.hidden = NO;
+        self.debugBtn.hidden = NO;
 
         // Reload the datasource on going back to display potential changes of the number of viewed videos
         [self.channelView reloadData];
@@ -587,10 +609,10 @@
     -(void) fullReload
     // Executed as a background task
     {
-        // Set the channel count and dbHandler notifcation flag
+        // Set the channel count and handler notifcation flag
         // to update the UI only when neccessary
-        self.dbHandler.channelCnt = 0;
-        self.dbHandler.noteFlag = FULL_FLAG;
+        self.handler.channelCnt = 0;
+        self.handler.noteFlag = FULL_FLAG;
 
         int unviewedCount = -1;
         
@@ -604,14 +626,23 @@
             self.videos = [[NSMutableArray alloc] init];
 
             // Import videos for the given channel into the database ( implicit calls to addVideo() )
-            [self.dbHandler importRSS: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding]];
+            [self.handler importRSS: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding]];
 
             // Fetch video objects from the given channel from the database
-            [self.dbHandler getVideosFrom: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
+            [self.handler getVideosFrom: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
 
             // Set the channel objects unviewed count based upon the number derived
             // after the RSS fetch
             // True: 1      False: 0
+
+            //NSLog(@"-------------------Unviewed: %d < %d---------------------", (int)self.videos.count, unviewedCount); 
+            if (self.videos.count < unviewedCount)
+            // Edge case if the channel has less than the limit uploaded
+            // The first reload will show every channel as having zero videos due to self.videos.count == 0
+            {
+                unviewedCount = (int)self.videos.count;
+            }
+            
             for (int j=0; j<self.videos.count; j++) { unviewedCount = unviewedCount - [[self.videos objectAtIndex:j] viewed]; }
 
             [[self.channels objectAtIndex:i] setUnviewedCount: unviewedCount];
@@ -659,10 +690,10 @@
     // Search for the given channel(s) in the database and update the UI accordingly
     {
         
-        if ([searchText isEqual: @ALL_TITLE]) { [self.dbHandler getChannels: self.channels]; }
+        if ([searchText isEqual: @ALL_TITLE]) { [self.handler getChannels: self.channels]; }
         else
         { 
-            [self.dbHandler getChannels: self.channels name: searchText]; 
+            [self.handler getChannels: self.channels name: searchText]; 
         }
 
         // Update the newly fetched channels with the unviewedCount attributes from the cache
