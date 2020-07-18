@@ -10,7 +10,7 @@
     // Create a getter/setter for the attributes which don't inherit from NSObject
     @synthesize unviewedCount;
    
-   -(NSString*) description { return [NSString stringWithFormat:@"<Channel:%p> %@", self, self.name ]; }
+   -(NSString*) description { return [NSString stringWithFormat:@"<Channel:%p> %@ (%d)", self, self.name, self.unviewedCount ]; }
 @end
 
 @implementation Video : NSObject
@@ -100,6 +100,22 @@
 
     //************** Utility *******************//
 
+    -(int) getUnviewedCount: (const char*)title count:(int)count
+    {
+        int unviewedCount = VIDEOS_PER_CHANNEL;
+        NSMutableArray* vids = [[NSMutableArray alloc] init];
+        [self getVideosFrom: title count:count videos: vids];
+
+        // Edge case if the channel has less than the limit uploaded
+        if (vids.count < unviewedCount) { unviewedCount = (int)vids.count; }
+
+        // Set the channel objects unviewed count based upon the number derived after the RSS fetch
+        // True: 1      False: 0
+        for (int i=0; i<vids.count; i++) { unviewedCount = unviewedCount - [[vids objectAtIndex:i] viewed]; }
+
+        return unviewedCount;
+    }
+
 
     -(int) getVideosFrom: (const char*)channel count:(int)count videos:(NSMutableArray*) videos
     {
@@ -115,8 +131,10 @@
         //ret = sqlite3_exec( self.db , stmt, callbackPrint, NULL, &err_msg );
         
         if ( ret != SQLITE_OK  ){  NSLog(@"%s", err_msg);  }
-        
+        //else { self.channelCnt++; }
+
         free(stmt);
+
         return ret;
     }
     
@@ -158,7 +176,7 @@
         char* err_msg;
         char* stmt = malloc(sizeof(char)*SQL_ROW_BUFFER); 
         strcpy(stmt,"UPDATE `Videos` SET `viewed` = TRUE ;");
-        NSLog(@"Set all STMT: %s", stmt); 
+        //NSLog(@"Set all STMT: %s", stmt); 
         
         int ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
         if (ret != SQLITE_OK) {  NSLog(@"%s", err_msg);  }
@@ -207,8 +225,14 @@
     }
     
     //*************** Adding Videos ****************//
+    // Note that addVideo() adds to the database and getVideosFrom() fetches from the database
+    // when used inside the ViewController
+
     // rightBtn() --> fullReload() --> importRSS() --> callbackImportRSS --> 
-    // handleRSS() --> downloadVideos() --> addVideo()
+    // handleRSS() --> downloadVideos() --> [async] --> addVideo()
+
+    // tableView() --> fetchVideos() --> importRSS() --> callbackImportRSS -->
+    // handleRSS() --> downloadVideos() --> [async] --> addVideo()
 
 
     -(int) importRSS: (const char*)channel 
@@ -249,75 +273,70 @@
         return 0;
     }
 
-    -(int) addVideo: (const char* )timestamp title:(const char* )title owner_id:(const char*)owner_id link:(const char*) link
+    -(void) addVideo: (const char* )timestamp title:(const char* )title owner_id:(const char*)owner_id link:(const char*) link
     {
-        // The method will throw an error when encountering already added videos due to the UNIQUE
-        // constraint. When adding new videos the oldest one should be deleted if the count exceeds VIDEOS_PER_CHANNEL
-
-        int ret = -1;
+        int currentCnt = -1;
         char* err_msg;
-        
-        char* delete_title = malloc(sizeof(char)*SQL_ROW_BUFFER);
-        strncpy(delete_title, "", 1);
 
         char** results = malloc(sizeof(char*)*(VIDEOS_PER_CHANNEL+1));
         for (int i=0; i < VIDEOS_PER_CHANNEL+1; i++) { results[i] = malloc(sizeof(char)*SQL_ROW_BUFFER); }
 
-        // The IGNORE keyword will inhibit errors from not adhearing to the UNIQUE constraints
-        // and instead simply ignore the perticular INSERT statement
-        const char* stmt = [[NSString stringWithFormat: @"INSERT OR IGNORE INTO `Videos` (`timestamp`, `title`, `viewed`, `owner`, `link`) VALUES (DATE(\"%s\"), \"%s\", FALSE , %s, \"%s\"); ",timestamp, title, owner_id, link ] cStringUsingEncoding:NSUTF8StringEncoding];
+        char* title_ = malloc(sizeof(char)*SQL_ROW_BUFFER);
+        strncpy(title_, "", 1);
+        
+        // 1. Check if the video already exists
+        const char* stmt = [[NSString stringWithFormat: @"SELECT `title` FROM `Videos` WHERE `title` = \"%s\" AND `owner` = %s ;", title, owner_id] cStringUsingEncoding:NSUTF8StringEncoding];
+        
+        if ( sqlite3_exec(self.db, stmt, callbackGetTitle, (void*)title_, &err_msg) != SQLITE_OK ) {  NSLog(@"%s", err_msg);  }
 
-        if ( self.noteFlag == SINGLE_FLAG ) { NSLog(@"addVideo() STMT: %s", stmt); }
-        
-        ret = sqlite3_exec( self.db , stmt, NULL, NULL, &err_msg );
-        
-        if ( ret == SQLITE_OK  )
-        // Only go through the process of potentially removing an old video if the insertion was successful
-        // (the return value will always be OK if an error beyond an ignored insertion didn't occur)
+        if ( strcmp(title_,"") == 0 )
+        // If the title_ variable is empty the video doesn't exist
+        // and we therefore check if any videos need to be removed before adding it
         {
-            stmt = [[NSString stringWithFormat: @"SELECT COUNT(*) FROM `Videos` WHERE owner = %s; ",owner_id] cStringUsingEncoding:NSUTF8StringEncoding];
+            // 2. Check if the number of videos exceed the VIDEOS_PER_CHANNEL value
+            // By fetching the number of videos owned by the channel
+            stmt = [[NSString stringWithFormat: @"SELECT COUNT(*) FROM `Videos` WHERE owner = %s ; ", owner_id] cStringUsingEncoding:NSUTF8StringEncoding];
 
-            if ( sqlite3_exec( self.db , stmt, callbackColumnValues, (void*)results, &err_msg ) == SQLITE_OK )
-            // "The 4th argument to sqlite3_exec() is relayed as the first argument to the callback()"
-            // Check if the row count for the Channel exceeds VIDEOS_PER_CHANNEL
+            if ( sqlite3_exec(self.db, stmt, callbackColumnValues, (void*)results, &err_msg) != SQLITE_OK ) {  NSLog(@"%s", err_msg);  }
+            
+            // Holds the number of videos for the current channel
+            currentCnt = atoi(results[0]);
+
+            if ( currentCnt == VIDEOS_PER_CHANNEL )
+            // 3. If the current number of videos is equal to the limit we need to remove a video,
+            // provided that the oldest video is older than the new video            
             {
-                if ( self.noteFlag == SINGLE_FLAG ) { NSLog(@"ROWS: %d < %d", atoi(results[0]), VIDEOS_PER_CHANNEL); }
-
-                if ( atoi(results[0]) > VIDEOS_PER_CHANNEL )
-                // If so find the oldest video(s) and delete it/them from the channel in question
-                // PROVIDED that the video to add is newer than the current oldest video, we ensure this
-                // by only querying for videos older than the current video's timestamp in the statement
+                // Issue a select statement for videos older than the current video
+                stmt = [[NSString stringWithFormat: @"SELECT COUNT(*) FROM `Videos` WHERE owner = %s AND `timestamp` < DATETIME(\"%s\"); ", owner_id, timestamp] cStringUsingEncoding:NSUTF8StringEncoding];
+                if ( sqlite3_exec(self.db, stmt, callbackColumnValues, (void*)results, &err_msg) != SQLITE_OK ) {  NSLog(@"%s", err_msg);  }
+                
+                if ( atoi(results[0]) > 0 )
+                // 4. If at least one video older than the current video to add exists delete the oldest video
                 {
-                    stmt = [[NSString stringWithFormat: @"SELECT `title` FROM `Videos` WHERE (`title`,`owner`) IN (SELECT `title`,`owner` FROM `Videos` WHERE `owner` = %s AND `timestamp` < DATE(\"%s\") ORDER BY `timestamp` ASC LIMIT %d);", owner_id, timestamp,  atoi(results[0]) - VIDEOS_PER_CHANNEL ] cStringUsingEncoding:NSUTF8StringEncoding];
-                    
-                    if ( sqlite3_exec(self.db, stmt, callbackGetTitle, (void*)delete_title, &err_msg) != SQLITE_OK ) {  NSLog(@"%s", err_msg);  }
+                    stmt = [[NSString stringWithFormat: @"DELETE FROM `Videos` WHERE owner = %s ORDER BY `timestamp` ASC LIMIT 1);", owner_id] cStringUsingEncoding:NSUTF8StringEncoding];
+                    if (self.noteFlag == SINGLE_FLAG) { NSLog(@"addVideo() DEL: %s", stmt); }
+                    if ( sqlite3_exec(self.db, stmt, NULL,NULL, &err_msg) == SQLITE_OK ) {  NSLog(@"%s", err_msg); }
 
-                    if ( strcmp(delete_title,"") == 0  )
-                    // If the video to remove was newer than the video that would be added remove
-                    // the current video that was inserted instead
-                    // TODO maintain unviewed status if set
-                    { 
-                        strncpy(delete_title, title, VARCHAR_SIZE);  
-                    }
-
-                    stmt = [[NSString stringWithFormat: @"DELETE FROM `Videos` WHERE (`title`,`owner`) IN (SELECT `title`,`owner` FROM `Videos` WHERE `owner` = %s AND `timestamp` < DATE(\"%s\") ORDER BY `timestamp` ASC LIMIT %d);", owner_id, timestamp,  atoi(results[0]) - VIDEOS_PER_CHANNEL ] cStringUsingEncoding:NSUTF8StringEncoding];
-                    
-                    if ( sqlite3_exec(self.db, stmt, NULL,NULL, &err_msg) == SQLITE_OK )
-                    { 
-                        if ( self.noteFlag == SINGLE_FLAG  ) { NSLog(@"Successfully deleted: \"%s\" from owner_id:%s", delete_title, owner_id  ); }
-                    }
-                    else {  NSLog(@"%s", err_msg);  }
+                    // 5. And add the new video
+                    stmt = [[NSString stringWithFormat: @"INSERT INTO `Videos` (`timestamp`, `title`, `viewed`, `owner`, `link`) VALUES (DATETIME(\"%s\"), \"%s\", FALSE , %s, \"%s\"); ",timestamp, title, owner_id, link ] cStringUsingEncoding:NSUTF8StringEncoding];
+                    if (self.noteFlag == SINGLE_FLAG) { NSLog(@"addVideo() INS: %s", stmt); }
+                    if ( sqlite3_exec(self.db, stmt, NULL,NULL, &err_msg) == SQLITE_OK ) {  NSLog(@"%s", err_msg); }
                 }
+                else { NSLog(@"No video older than \"%s\" to delete exists", title); }
             }
-            else {  NSLog(@"%s", err_msg);  }    
+            else
+            // If the limit hasn't been reached simply add the new video
+            {
+                stmt = [[NSString stringWithFormat: @"INSERT INTO `Videos` (`timestamp`, `title`, `viewed`, `owner`, `link`) VALUES (DATETIME(\"%s\"), \"%s\", FALSE , %s, \"%s\"); ",timestamp, title, owner_id, link ] cStringUsingEncoding:NSUTF8StringEncoding];
+                if (self.noteFlag == SINGLE_FLAG) { NSLog(@"addVideo() INS: %s", stmt); }
+                if ( sqlite3_exec(self.db, stmt, NULL,NULL, &err_msg) == SQLITE_OK ) {  NSLog(@"%s", err_msg); }
+            }
         }
-        else {  NSLog(@"%s", err_msg);  }
-        
+        else { NSLog(@"The video: \"%s\" already exists", title); }
+
+        free(title_);
         for (int i=0; i < VIDEOS_PER_CHANNEL+1; i++) { free(results[i]); }
         free(results);
-        free(delete_title);
-
-        return ret;
     }
 
 
@@ -380,9 +399,15 @@
                 }
                 else if ( self.noteFlag == FULL_FLAG )
                 {
-                    //NSLog(@"ID: %d (cnt: %d)", channelId, self.channelCnt);
-                    self.channelCnt++;
-                    [[NSNotificationCenter defaultCenter] postNotificationName: @FULL_NOTE object:self];
+                    // For all the fetches to get the correct number of unviewed videos we need to fetch
+                    // the 'viewed' status of each video from the database BEFORE sending the notification
+                    
+                    int unviewedCount = [self getUnviewedCount: [titles[0] cStringUsingEncoding: NSUTF8StringEncoding] count:cnt];
+                    
+                    // Send the unviewedCount with the notification inisde the 'userInfo' dict
+                    NSDictionary* dict = @{@"unviewedCount": [NSNumber numberWithInt: unviewedCount]};
+                    
+                    [[NSNotificationCenter defaultCenter] postNotificationName: @FULL_NOTE object:self userInfo:dict];
                 }
             }
             else { NSLog(@"No response data extracted"); }
@@ -574,7 +599,6 @@ static int callbackChannelObjects(void* context, int columnCount, char** columnV
     channel.id = atoi(columnValues[0]); 
     channel.name = [[ NSString alloc ] initWithCString: columnValues[1] encoding:NSUTF8StringEncoding];  
     channel.rssLink = [[ NSString alloc ] initWithCString: columnValues[2] encoding:NSUTF8StringEncoding];; 
-    channel.channelLink = [[ NSString alloc ] initWithCString: columnValues[3] encoding:NSUTF8StringEncoding];  
     
     // Initalise every channel object with -1 viewed videos to indicate that the channel hasn't been updated
     // This attribute isn't saved in the database and is kept in sync with the most recent RSS update which

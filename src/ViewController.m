@@ -1,10 +1,7 @@
 #import "ViewController.h"
 
 // Note that the <published> and <updated> fields in RSS may differ
-// Bug: When a new video is added the oldest video becomes unviewed (potentially) (maybe because its removed
-// when the new video is added)
-// The first reload will show all videos as viewed 
-
+// Possible bug: Old videos sometimes become unviewed
 
 @implementation ViewController 
     //************* BASICS ******************************//
@@ -45,7 +42,7 @@
         self.reloadBtn = [self getButtonView: @RELOAD_IMAGE selector: @selector(rightBtn:) width: RELOAD_WIDTH height: RELOAD_HEIGHT x_offset: BTN_X_OFFSET y_offset: BTN_Y_OFFSET ];
         [self.view addSubview: [self reloadBtn]];
         
-        self.debugBtn = [self getButtonView: @OK_IMAGE selector: @selector(debugBtn:) width: RELOAD_WIDTH height: RELOAD_HEIGHT x_offset: BTN_X_OFFSET - RELOAD_WIDTH*1.5 y_offset: BTN_Y_OFFSET ];
+        self.debugBtn = [self getButtonView: @CHECK_IMAGE selector: @selector(debugBtn:) width: DEBUG_WIDTH height: RELOAD_HEIGHT x_offset: BTN_X_OFFSET - RELOAD_WIDTH*1.5 y_offset: BTN_Y_OFFSET ];
         [self.view addSubview: [self debugBtn]];
 
         [self addSearchBar];
@@ -83,11 +80,26 @@
 
     -(void) finishFullReload: (NSNotification*)notification
     {
+        int unviewedCount = [notification.userInfo[@"unviewedCount"] intValue]; 
+
+        // Set the unviewedCount for the channel that was pre-calculated and included in the notification
+        [[self.channels objectAtIndex: self.handler.channelCnt ] setUnviewedCount: unviewedCount];
+        self.handler.channelCnt++;
+        
         NSLog(@"Reload: (%d / %lu)", self.handler.channelCnt, self.channels.count);
         self.loadingLabel.text = [NSString stringWithFormat: @"(%d/%lu)", self.handler.channelCnt, self.channels.count];
-        
+
         if ( self.handler.channelCnt == self.channels.count )
         {
+            // Descriptor array for sorting purposes
+            NSArray *descriptor = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"unviewedCount" ascending:NO]];
+
+            // Sort the video array based upon the highest number of unviewed videos
+            self.channels = (NSMutableArray*)[self.channels sortedArrayUsingDescriptors:descriptor];
+
+            // Lastly, save the results of the RSS fetch in the channels cache memory
+            self.channelsCache = [NSMutableArray arrayWithArray:self.channels];
+
             NSLog(@"Finished full reload!");
             NSLog(@"CACHE: %@\nCount: %lu", self.channelsCache, self.channelsCache.count);
 
@@ -105,7 +117,6 @@
     -(void) presentVideos:(NSNotification*)notification
     {
         // Fetch video objects from the given channel from the database
-        //NSLog(@"BEFORE FETCH VIDS: %@", self.videos);
         [self.handler getVideosFrom: [self.currentViewFlag cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
         NSLog(@"AFTER getVideosFrom() VIDS: %@", self.videos);
         
@@ -253,7 +264,7 @@
             [cell.contentView addSubview: [cell channelBtn]];
         }
         
-        NSLog(@"Setting new button: %@", cell.channelBtn);
+        //NSLog(@"Setting new button: %@", cell.channelBtn);
         
         cell.channelBtn.title = cell.title;
         [cell.channelBtn setChannelImage];
@@ -387,7 +398,7 @@
         Cell *cell = [tableView dequeueReusableCellWithIdentifier:@CELL_IDENTIFIER];
         cell.userInteractionEnabled = YES; 
         
-        NSLog(@"Fetching new cell:  %@",cell);
+        //NSLog(@"Fetching new cell:  %@",cell);
         
         if (cell.title == nil)
         {
@@ -614,46 +625,11 @@
         self.handler.channelCnt = 0;
         self.handler.noteFlag = FULL_FLAG;
 
-        int unviewedCount = -1;
-        
-        // Descriptor array for sorting purposes
-        NSArray *descriptor = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"unviewedCount" ascending:NO]];
-        
         for (int i = 0; i < self.channels.count; i++)
         {
-            unviewedCount = VIDEOS_PER_CHANNEL; 
-            
-            self.videos = [[NSMutableArray alloc] init];
-
             // Import videos for the given channel into the database ( implicit calls to addVideo() )
             [self.handler importRSS: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding]];
-
-            // Fetch video objects from the given channel from the database
-            [self.handler getVideosFrom: [ [[self.channels objectAtIndex:i] name] cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
-
-            // Set the channel objects unviewed count based upon the number derived
-            // after the RSS fetch
-            // True: 1      False: 0
-
-            //NSLog(@"-------------------Unviewed: %d < %d---------------------", (int)self.videos.count, unviewedCount); 
-            if (self.videos.count < unviewedCount)
-            // Edge case if the channel has less than the limit uploaded
-            // The first reload will show every channel as having zero videos due to self.videos.count == 0
-            {
-                unviewedCount = (int)self.videos.count;
-            }
-            
-            for (int j=0; j<self.videos.count; j++) { unviewedCount = unviewedCount - [[self.videos objectAtIndex:j] viewed]; }
-
-            [[self.channels objectAtIndex:i] setUnviewedCount: unviewedCount];
-            
         }
-        
-        // Sort the video array based upon the highest number of unviewed videos
-        self.channels = (NSMutableArray*)[self.channels sortedArrayUsingDescriptors:descriptor];
-
-        // Lastly, save the results of the RSS fetch in the channels cache memory
-        self.channelsCache = [NSMutableArray arrayWithArray:self.channels];
     }
 
     //*********** SEARCH BAR **************//

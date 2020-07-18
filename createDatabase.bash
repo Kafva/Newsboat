@@ -21,8 +21,7 @@ if [ -f $URLS ]; then
     ( 
         `id` INTEGER PRIMARY KEY AUTOINCREMENT, 
         `name` VARCHAR(255) UNIQUE, 
-        `rssLink` VARCHAR(255),
-        `channelLink` VARCHAR(255) 
+        `rssLink` VARCHAR(255)
     );
     
     CREATE TABLE IF NOT EXISTS main.`Videos`
@@ -48,8 +47,7 @@ if [ -f $URLS ]; then
             
             if $(echo $name | grep -q "^~"); then
                 rssLink=$(echo $line | awk '{print $1}')
-                channelLink=$(echo $line | awk '{print $2}')
-                cmd="$cmd INSERT INTO main.\`Channels\` (\`name\`,\`rssLink\`,\`channelLink\`) VALUES (\"${name##\~}\",\"$rssLink\",$channelLink);" 
+                cmd="$cmd INSERT INTO main.\`Channels\` (\`name\`,\`rssLink\`) VALUES (\"${name##\~}\",\"$rssLink\");" 
             fi
         fi
 

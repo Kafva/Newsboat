@@ -19,7 +19,6 @@
    @property (assign,nonatomic) int unviewedCount;
    @property (strong,nonatomic) NSString* name;
    @property (strong,nonatomic) NSString* rssLink;
-   @property (strong,nonatomic) NSString* channelLink;
    -(NSString*) description;
 
 @end
@@ -56,9 +55,10 @@
     -(int) queryStmt: (const char*)stmt;
     
     //************** Utility *******************//
+    -(int) getUnviewedCount: (const char*)title count:(int)count;
+    -(int) getVideosFrom: (const char*)channel count:(int)count videos:(NSMutableArray*) videos;
     -(int) getChannels: (NSMutableArray*)channels;
     -(int) getChannels: (NSMutableArray*)channels name:(NSString*)name;
-    -(int) getVideosFrom: (const char*)channel count:(int)count videos:(NSMutableArray*) videos;
     -(int) setAllViewedInDatabase;
     -(int) setAllViewedInDatabase: (int)owner_id;
     -(int) toggleViewedInDatabase: (NSString*)title owner_id:(int)owner_id;
@@ -66,7 +66,7 @@
     //*************** Adding Videos ****************//
     -(int) importRSS: (const char*)channel;
     -(int) handleRSS: (char**)columnValues;
-    -(int) addVideo: (const char* )timestamp title:(const char* )title owner_id:(const char*)owner_id link:(const char*) link;
+    -(void) addVideo: (const char* )timestamp title:(const char* )title owner_id:(const char*)owner_id link:(const char*) link;
 
 @end
 

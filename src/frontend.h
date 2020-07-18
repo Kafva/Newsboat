@@ -30,6 +30,8 @@
 #define RIGHT_LABEL_WIDTH 50
 #define LABEL_HEIGHT 20
 
+#define DEBUG_WIDTH 28
+
 #define RELOAD_WIDTH 21
 #define RELOAD_HEIGHT 28
 
@@ -50,6 +52,7 @@
 #define RELOAD_IMAGE "reload"
 #define OK_IMAGE "ok"
 #define BKG_IMAGE "sea"
+#define CHECK_IMAGE "fullcheck"
 
 //** COLORS **//
 #define RED 1
