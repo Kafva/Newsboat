@@ -81,9 +81,13 @@
     -(void) finishFullReload: (NSNotification*)notification
     {
         int unviewedCount = [notification.userInfo[@"unviewedCount"] intValue]; 
+        NSString* channel = notification.userInfo[@"channel"];
+        int channelIndex = [[self.channels valueForKey:@"name"] indexOfObject: channel];
 
         // Set the unviewedCount for the channel that was pre-calculated and included in the notification
-        [[self.channels objectAtIndex: self.handler.channelCnt ] setUnviewedCount: unviewedCount];
+        [[self.channels objectAtIndex: channelIndex ] setUnviewedCount: unviewedCount];
+        
+        //NSLog(@"------------[channelCnt:%d] [channelIndex:%d]  %@------------", self.handler.channelCnt, channelIndex, [self.channels objectAtIndex: channelIndex ]  );
         self.handler.channelCnt++;
         
         NSLog(@"Reload: (%d / %lu)", self.handler.channelCnt, self.channels.count);

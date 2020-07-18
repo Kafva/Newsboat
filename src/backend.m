@@ -10,7 +10,7 @@
     // Create a getter/setter for the attributes which don't inherit from NSObject
     @synthesize unviewedCount;
    
-   -(NSString*) description { return [NSString stringWithFormat:@"<Channel:%p> %@ (%d)", self, self.name, self.unviewedCount ]; }
+   -(NSString*) description { return [NSString stringWithFormat:@"<Channel:%p> %@ (%d) [id:%d]", self, self.name, self.unviewedCount, self.id ]; }
 @end
 
 @implementation Video : NSObject
@@ -100,11 +100,11 @@
 
     //************** Utility *******************//
 
-    -(int) getUnviewedCount: (const char*)title count:(int)count
+    -(int) getUnviewedCount: (const char*)channel count:(int)count
     {
         int unviewedCount = VIDEOS_PER_CHANNEL;
         NSMutableArray* vids = [[NSMutableArray alloc] init];
-        [self getVideosFrom: title count:count videos: vids];
+        [self getVideosFrom: channel count:count videos: vids];
 
         // Edge case if the channel has less than the limit uploaded
         if (vids.count < unviewedCount) { unviewedCount = (int)vids.count; }
@@ -131,7 +131,6 @@
         //ret = sqlite3_exec( self.db , stmt, callbackPrint, NULL, &err_msg );
         
         if ( ret != SQLITE_OK  ){  NSLog(@"%s", err_msg);  }
-        //else { self.channelCnt++; }
 
         free(stmt);
 
@@ -404,8 +403,8 @@
                     
                     int unviewedCount = [self getUnviewedCount: [titles[0] cStringUsingEncoding: NSUTF8StringEncoding] count:cnt];
                     
-                    // Send the unviewedCount with the notification inisde the 'userInfo' dict
-                    NSDictionary* dict = @{@"unviewedCount": [NSNumber numberWithInt: unviewedCount]};
+                    // Send the unviewedCount and channel name with the notification inisde the 'userInfo' dict
+                    NSDictionary* dict = @{@"unviewedCount": [NSNumber numberWithInt: unviewedCount],  @"channel": titles[0] };
                     
                     [[NSNotificationCenter defaultCenter] postNotificationName: @FULL_NOTE object:self userInfo:dict];
                 }
