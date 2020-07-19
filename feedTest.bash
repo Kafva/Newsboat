@@ -15,10 +15,3 @@ elif [ "$1" = rollback ]; then
 elif [ "$1" = stop ]; then
 	pkill node
 fi
-
-
-
-
-
-
-
