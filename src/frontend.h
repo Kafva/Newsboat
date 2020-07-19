@@ -16,6 +16,10 @@
 #define BACK_WIDTH 21
 #define BACK_HEIGHT 28
 
+#define ERROR_LABEL_Y 90
+#define ERROR_LABEL_X 140
+#define ERROR_WIDTH 200
+
 #define LOADING_LABEL_X 10
 #define LOADING_WIDTH 70
 

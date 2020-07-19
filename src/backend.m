@@ -312,13 +312,13 @@
                 if ( atoi(results[0]) > 0 )
                 // 4. If at least one video older than the current video to add exists delete the oldest video
                 {
-                    stmt = [[NSString stringWithFormat: @"DELETE FROM `Videos` WHERE owner = %s ORDER BY `timestamp` ASC LIMIT 1);", owner_id] cStringUsingEncoding:NSUTF8StringEncoding];
-                    if (self.noteFlag == SINGLE_FLAG) { NSLog(@"addVideo() DEL: %s", stmt); }
+                    stmt = [[NSString stringWithFormat: @"DELETE FROM `Videos` WHERE owner = %s ORDER BY `timestamp` ASC LIMIT 1;", owner_id] cStringUsingEncoding:NSUTF8StringEncoding];
+                    //if ( atoi(owner_id) == TEST_ID ) { NSLog(@"addVideo(): %s", stmt); }
                     if ( sqlite3_exec(self.db, stmt, NULL,NULL, &err_msg) == SQLITE_OK ) {  NSLog(@"%s", err_msg); }
 
                     // 5. And add the new video
                     stmt = [[NSString stringWithFormat: @"INSERT INTO `Videos` (`timestamp`, `title`, `viewed`, `owner`, `link`) VALUES (DATETIME(\"%s\"), \"%s\", FALSE , %s, \"%s\"); ",timestamp, title, owner_id, link ] cStringUsingEncoding:NSUTF8StringEncoding];
-                    if (self.noteFlag == SINGLE_FLAG) { NSLog(@"addVideo() INS: %s", stmt); }
+                    //if ( atoi(owner_id) == TEST_ID ) { NSLog(@"addVideo(): %s", stmt); }
                     if ( sqlite3_exec(self.db, stmt, NULL,NULL, &err_msg) == SQLITE_OK ) {  NSLog(@"%s", err_msg); }
                 }
                 else { NSLog(@"No video older than \"%s\" to delete exists", title); }
@@ -327,11 +327,14 @@
             // If the limit hasn't been reached simply add the new video
             {
                 stmt = [[NSString stringWithFormat: @"INSERT INTO `Videos` (`timestamp`, `title`, `viewed`, `owner`, `link`) VALUES (DATETIME(\"%s\"), \"%s\", FALSE , %s, \"%s\"); ",timestamp, title, owner_id, link ] cStringUsingEncoding:NSUTF8StringEncoding];
-                if (self.noteFlag == SINGLE_FLAG) { NSLog(@"addVideo() INS: %s", stmt); }
+                //if ( atoi(owner_id) == TEST_ID) { NSLog(@"addVideo(): %s", stmt); }
                 if ( sqlite3_exec(self.db, stmt, NULL,NULL, &err_msg) == SQLITE_OK ) {  NSLog(@"%s", err_msg); }
             }
         }
-        else { NSLog(@"The video: \"%s\" already exists", title); }
+        else 
+        { 
+            //if ( atoi(owner_id) == TEST_ID) { NSLog(@"The video: \"%s\" already exists", title); } 
+        }
 
         free(title_);
         for (int i=0; i < VIDEOS_PER_CHANNEL+1; i++) { free(results[i]); }
@@ -344,15 +347,42 @@
         NSLog(@"Begin download of: %@", url);
         // Create a session with the default configuration and download the data from the given URL
         NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        sessionConfiguration.timeoutIntervalForResource = 5;
+
         NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
         NSURLSessionDownloadTask *downloadTask = [session downloadTaskWithURL:[NSURL URLWithString: url]];
         [downloadTask resume];
-    
     }
 
     //******* SESSION DELEGATE PROTOCOL ***********//
 
+    -(void) URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
+    // Handler for failed requests
+    {
+        if ( task.state != NSURLSessionTaskStateRunning && error.code != 0 )
+        {
+            // Dispatch to the main thread since we are going to issue a UI update
+            dispatch_async(dispatch_get_main_queue(), 
+            ^{
+                NSLog(@"************* Task state: %ld Error: %ld *********************", task.state, error.code);
+                NSDictionary* dict = @{@"error": error};
+                
+                if ( self.noteFlag == SINGLE_FLAG )
+                {
+                    [[NSNotificationCenter defaultCenter] postNotificationName: @SINGLE_NOTE object:self userInfo:dict];
+
+                }
+                else if ( self.noteFlag == FULL_FLAG )
+                {
+                    [[NSNotificationCenter defaultCenter] postNotificationName: @FULL_NOTE object:self userInfo:dict];
+                }
+            }); 
+        }
+        
+    }
+
     -(void) URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
+    // Handler for completed requests
     {
         // Important assignment
         NSData* data = [NSData dataWithContentsOfURL:location];

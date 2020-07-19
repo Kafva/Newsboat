@@ -2,6 +2,13 @@
 
 // Note that the <published> and <updated> fields in RSS may differ
 // Possible bug: Old videos sometimes become unviewed
+// New videos don't get tagged properly and don't appear on the main menu
+
+// Full reload fetches the correct videos and sets them as unviewed in the database but
+// they aren't displayed on the main menu
+
+// Going into a channel with a new video will display it as new and set it as such when clicking 'back'
+// but on the next visit it will once agian disappear, it is enough to issue a full reload for it to lose its status
 
 @implementation ViewController 
     //************* BASICS ******************************//
@@ -60,6 +67,12 @@
         self.backBtn = [self getButtonView: @BACK_IMAGE selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT x_offset:0 y_offset:BTN_Y_OFFSET ];
         self.backBtn.hidden = YES; 
         [self.view addSubview: [self backBtn]];
+
+        // Error label
+        self.errorLabel = getLabel(@"Error", ERROR_WIDTH, LABEL_HEIGHT, ERROR_LABEL_X, ERROR_LABEL_Y, [[UIColor alloc] initWithWhite:1 alpha:0.8 ], [UIFont fontWithName: @BOLD_FONT size:FONT_SIZE]  );
+        self.errorLabel.hidden = YES;
+        [self.view addSubview: [self errorLabel]];
+
     }
     
     -(void) viewDidLoad 
@@ -77,22 +90,30 @@
     }
     
     //************ NOTIFICATIONS *****************//
-
+    
     -(void) finishFullReload: (NSNotification*)notification
     {
-        int unviewedCount = [notification.userInfo[@"unviewedCount"] intValue]; 
-        NSString* channel = notification.userInfo[@"channel"];
-        int channelIndex = [[self.channels valueForKey:@"name"] indexOfObject: channel];
+        if ( !notification.userInfo[@"error"] )
+        {
+            int unviewedCount = [notification.userInfo[@"unviewedCount"] intValue]; 
+            NSString* channel = notification.userInfo[@"channel"];
+            int channelIndex = (int)[[self.channels valueForKey:@"name"] indexOfObject: channel];
 
-        // Set the unviewedCount for the channel that was pre-calculated and included in the notification
-        [[self.channels objectAtIndex: channelIndex ] setUnviewedCount: unviewedCount];
+            // Set the unviewedCount for the channel that was pre-calculated and included in the notification
+            [[self.channels objectAtIndex: channelIndex ] setUnviewedCount: unviewedCount];
+            
+            NSLog(@"------------[channelCnt:%d] [channelIndex:%d]  %@------------", self.handler.channelCnt, channelIndex, [self.channels objectAtIndex: channelIndex ]  );
+        }
+        else
+        {
+            NSLog(@"*********** finishFullReload(): FAILED [%ld] ******************", [notification.userInfo[@"error"] code]);
+        }
         
-        //NSLog(@"------------[channelCnt:%d] [channelIndex:%d]  %@------------", self.handler.channelCnt, channelIndex, [self.channels objectAtIndex: channelIndex ]  );
         self.handler.channelCnt++;
         
         NSLog(@"Reload: (%d / %lu)", self.handler.channelCnt, self.channels.count);
         self.loadingLabel.text = [NSString stringWithFormat: @"(%d/%lu)", self.handler.channelCnt, self.channels.count];
-
+        
         if ( self.handler.channelCnt == self.channels.count )
         {
             // Descriptor array for sorting purposes
@@ -120,12 +141,20 @@
 
     -(void) presentVideos:(NSNotification*)notification
     {
-        // Fetch video objects from the given channel from the database
-        [self.handler getVideosFrom: [self.currentViewFlag cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
-        NSLog(@"AFTER getVideosFrom() VIDS: %@", self.videos);
-        
         self.channelView.userInteractionEnabled = YES;
         self.searchBar.userInteractionEnabled = YES;   
+        
+        if ( !notification.userInfo[@"error"] )
+        {
+            // Fetch video objects from the given channel from the database
+            [self.handler getVideosFrom: [self.currentViewFlag cStringUsingEncoding: NSUTF8StringEncoding] count: VIDEOS_PER_CHANNEL videos:self.videos ];
+            NSLog(@"getVideosFrom() VIDS: %@", self.videos);
+        }
+        else
+        {
+            self.errorLabel.text = [NSString stringWithFormat: @"Error: %ld" , [notification.userInfo[@"error"] code]];
+            self.errorLabel.hidden = NO;
+        } 
         
         self.searchBar.hidden = YES;
         self.channelView.hidden = YES;
@@ -136,6 +165,9 @@
         self.backBtn.hidden = NO;
         self.reloadBtn.hidden = NO; 
         self.spinner.hidden = YES;
+
+        
+        
 
     }
 
@@ -516,7 +548,7 @@
         {
             NSString* link = [[tableView cellForRowAtIndexPath: indexPath ] link];
             NSLog(@"Tapped entry[%ld]: %@", indexPath.row, link);
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:link] options:NULL completionHandler:^(BOOL success) { NSLog(@"opened URL (%d)", success); } ];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:link] options:@{} completionHandler:^(BOOL success) { NSLog(@"opened URL (%d)", success); } ];
         } 
     }        
     
@@ -616,6 +648,7 @@
         self.channelView.hidden = NO;
         self.searchBar.hidden = NO;
         self.debugBtn.hidden = NO;
+        self.errorLabel.hidden = YES;
 
         // Reload the datasource on going back to display potential changes of the number of viewed videos
         [self.channelView reloadData];

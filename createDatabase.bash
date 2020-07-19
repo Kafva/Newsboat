@@ -6,7 +6,7 @@
 [ -n $1 ] && DBNAME=rss.db
 [ -n $1 ] || DBNAME=$1
 [ -n $2 ] && URLS=~/.newsboat/urls
-#[ -n $2 ] && URLS=urls
+#[ -n $2 ] && URLS=testing/urls
 [ -n $2 ] || URLS=$2
 
 [ -f $DBNAME ] && rm $DBNAME
@@ -40,7 +40,7 @@ if [ -f $URLS ]; then
 
     while IFS= read -r line; do
         
-        if $(echo $line | grep -q "^https://www.you"); then
+        if $(echo $line | grep -q "^https\?://"); then
             
             # Only names prepended with ~ get added to the database
             name=$(echo $line | sed 's/.*"\([~!][-_.,0-9A-Za-z ]\{1,\}\)"$/\1/g' | tr -d '"')

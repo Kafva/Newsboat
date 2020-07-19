@@ -13,6 +13,7 @@
 #define FULL_NOTE "Channel"
 
 #define DB_PATH "/Documents/rss.db"
+#define TEST_ID 1
 
 @interface Channel : NSObject
    @property (assign,nonatomic) int id;

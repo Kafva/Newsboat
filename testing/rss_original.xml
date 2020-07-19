@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns:media="http://search.yahoo.com/mrss/" xmlns="http://www.w3.org/2005/Atom">
+ <link rel="self" href="http://www.youtube.com/feeds/videos.xml?channel_id=UCZaT_X_mc0BI-djXOlfhqWQ"/>
+ <id>yt:channel:UCZaT_X_mc0BI-djXOlfhqWQ</id>
+ <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+ <title>Test</title>
+ <link rel="alternate" href="https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ"/>
+ <author>
+  <name>Test</name>
+  <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+ </author>
+ <published>2013-11-20T15:11:51+00:00</published>
+ <entry>
+  <id>yt:video:c7zmCK1Dkz0</id>
+  <yt:videoId>c7zmCK1Dkz0</yt:videoId>
+  <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+  <title>For Some Bad Cops, A Second Chance Is Actually Their Third</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=c7zmCK1Dkz0"/>
+  <author>
+   <name>Test</name>
+   <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+  </author>
+  <published>2020-07-17T21:11:19+00:00</published>
+  <updated>2020-07-17T22:24:33+00:00</updated>
+  <media:group>
+   <media:title>For Some Bad Cops, A Second Chance Is Actually Their Third</media:title>
+   <media:content url="https://www.youtube.com/v/c7zmCK1Dkz0?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i4.ytimg.com/vi/c7zmCK1Dkz0/hqdefault.jpg" width="480" height="360"/>
+   <media:description>How bad cops get work by skipping town. 
+
+Subscribe to Test here: http://bit.ly/Subscribe-to-VICE-News&#13;
+&#13;
+Check out Test for more: http://vicenews.com&#13;
+&#13;
+Follow Test here:&#13;
+Facebook: https://www.facebook.com/vicenews&#13;
+Twitter: https://twitter.com/vicenews&#13;
+Tumblr: http://vicenews.tumblr.com/&#13;
+Instagram: http://instagram.com/vicenews&#13;
+More videos from the VICE network: https://www.fb.com/vicevideo</media:description>
+   <media:community>
+    <media:starRating count="1343" average="4.49" min="1" max="5"/>
+    <media:statistics views="22998"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:2g2IQoALZUA</id>
+  <yt:videoId>2g2IQoALZUA</yt:videoId>
+  <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+  <title>Scare Tactics About ‘LGBTQ Ideology’ Helped Trump’s Ally Win the Polish Election</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=2g2IQoALZUA"/>
+  <author>
+   <name>Test</name>
+   <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+  </author>
+  <published>2020-07-17T16:56:13+00:00</published>
+  <updated>2020-07-17T22:12:06+00:00</updated>
+  <media:group>
+   <media:title>Scare Tactics About ‘LGBTQ Ideology’ Helped Trump’s Ally Win the Polish Election</media:title>
+   <media:content url="https://www.youtube.com/v/2g2IQoALZUA?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i3.ytimg.com/vi/2g2IQoALZUA/hqdefault.jpg" width="480" height="360"/>
+   <media:description>In the middle of a pandemic and a projected Europe-wide recession, Poland’s presidential election has been all about gay rights, as the incumbent president has relied heavily on homophobia to rally his supporters to win re-election. &#13;
+
+Subscribe to Test here: http://bit.ly/Subscribe-to-VICE-News&#13;
+&#13;
+Check out Test for more: http://vicenews.com&#13;
+&#13;
+Follow Test here:&#13;
+Facebook: https://www.facebook.com/vicenews&#13;
+Twitter: https://twitter.com/vicenews&#13;
+Tumblr: http://vicenews.tumblr.com/&#13;
+Instagram: http://instagram.com/vicenews&#13;
+More videos from the VICE network: https://www.fb.com/vicevideo</media:description>
+   <media:community>
+    <media:starRating count="1950" average="3.40" min="1" max="5"/>
+    <media:statistics views="27180"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:PM8lo4Dynew</id>
+  <yt:videoId>PM8lo4Dynew</yt:videoId>
+  <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+  <title>Florida Is Still Making Plans For the RNC Even as Coronavirus Cases Spike</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=PM8lo4Dynew"/>
+  <author>
+   <name>Test</name>
+   <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+  </author>
+  <published>2020-07-17T14:56:36+00:00</published>
+  <updated>2020-07-17T18:22:11+00:00</updated>
+  <media:group>
+   <media:title>Florida Is Still Making Plans For the RNC Even as Coronavirus Cases Spike</media:title>
+   <media:content url="https://www.youtube.com/v/PM8lo4Dynew?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i1.ytimg.com/vi/PM8lo4Dynew/hqdefault.jpg" width="480" height="360"/>
+   <media:description>When President Trump abandoned North Carolina for having too many safety rules for a convention, Florida stepped up. But with Florida cases skyrocketing, the Republican National Committee is making the kind of planning change they would have had to make in Charlotte anyway. 
+
+Subscribe to Test here: http://bit.ly/Subscribe-to-VICE-News&#13;
+&#13;
+Check out Test for more: http://vicenews.com&#13;
+&#13;
+Follow Test here:&#13;
+Facebook: https://www.facebook.com/vicenews&#13;
+Twitter: https://twitter.com/vicenews&#13;
+Tumblr: http://vicenews.tumblr.com/&#13;
+Instagram: http://instagram.com/vicenews&#13;
+More videos from the VICE network: https://www.fb.com/vicevideo</media:description>
+   <media:community>
+    <media:starRating count="479" average="4.11" min="1" max="5"/>
+    <media:statistics views="17087"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:wxcW0AwqrtE</id>
+  <yt:videoId>wxcW0AwqrtE</yt:videoId>
+  <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+  <title>Your Boss May Be Watching You Work From Home</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=wxcW0AwqrtE"/>
+  <author>
+   <name>Test</name>
+   <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+  </author>
+  <published>2020-07-16T22:22:29+00:00</published>
+  <updated>2020-07-17T02:51:45+00:00</updated>
+  <media:group>
+   <media:title>Your Boss May Be Watching You Work From Home</media:title>
+   <media:content url="https://www.youtube.com/v/wxcW0AwqrtE?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i4.ytimg.com/vi/wxcW0AwqrtE/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Some products allow a manager to watch over every aspect of an employee’s computer activity, with keystroke logging, email and website monitoring.
+
+Test spoke with the co-founders of two remote work programs to get their read on the market in this transformational moment.
+
+Subscribe to Test here: http://bit.ly/Subscribe-to-VICE-News&#13;
+&#13;
+Check out Test for more: http://vicenews.com&#13;
+&#13;
+Follow Test here:&#13;
+Facebook: https://www.facebook.com/vicenews&#13;
+Twitter: https://twitter.com/vicenews&#13;
+Tumblr: http://vicenews.tumblr.com/&#13;
+Instagram: http://instagram.com/vicenews&#13;
+More videos from the VICE network: https://www.fb.com/vicevideo</media:description>
+   <media:community>
+    <media:starRating count="1546" average="4.72" min="1" max="5"/>
+    <media:statistics views="74754"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:K87pW8o3XBA</id>
+  <yt:videoId>K87pW8o3XBA</yt:videoId>
+  <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+  <title>Threats to the 2020 Election - LIVE</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=K87pW8o3XBA"/>
+  <author>
+   <name>Test</name>
+   <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+  </author>
+  <published>2020-07-16T21:14:43+00:00</published>
+  <updated>2020-07-16T22:11:45+00:00</updated>
+  <media:group>
+   <media:title>Threats to the 2020 Election - LIVE</media:title>
+   <media:content url="https://www.youtube.com/v/K87pW8o3XBA?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i4.ytimg.com/vi/K87pW8o3XBA/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Test reporters David Gilbert, Lee Adams, and Cameron Joseph discuss the perfect storm of threats to the 2020 Election: Misinformation, coronavirus, voter suppression — and what’s being done about them.
+
+Subscribe to Test here: http://bit.ly/Subscribe-to-VICE-News
+
+Check out Test for more: http://vicenews.com
+
+Follow Test here:
+Facebook: https://www.facebook.com/vicenews
+Twitter: https://twitter.com/vicenews
+Tumblr: http://vicenews.tumblr.com/
+Instagram: http://instagram.com/vicenews
+More videos from the VICE network: https://www.fb.com/vicevideo</media:description>
+   <media:community>
+    <media:starRating count="280" average="3.06" min="1" max="5"/>
+    <media:statistics views="11921"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:S8Xhlvv2sL8</id>
+  <yt:videoId>S8Xhlvv2sL8</yt:videoId>
+  <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+  <title>These World Leaders Finally Learned How to Wear a Mask This Week</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=S8Xhlvv2sL8"/>
+  <author>
+   <name>Test</name>
+   <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+  </author>
+  <published>2020-07-16T18:00:05+00:00</published>
+  <updated>2020-07-16T21:00:37+00:00</updated>
+  <media:group>
+   <media:title>These World Leaders Finally Learned How to Wear a Mask This Week</media:title>
+   <media:content url="https://www.youtube.com/v/S8Xhlvv2sL8?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i4.ytimg.com/vi/S8Xhlvv2sL8/hqdefault.jpg" width="480" height="360"/>
+   <media:description>The news wasn't all doom and gloom this week; after 87 years, the Washington Football Team is finally changing its racist name and both Donald Trump and Boris Johnson agreed that wearing a mask is a good thing! 
+
+Subscribe to Test here: http://bit.ly/Subscribe-to-VICE-News&#13;
+&#13;
+Check out Test for more: http://vicenews.com&#13;
+&#13;
+Follow Test here:&#13;
+Facebook: https://www.facebook.com/vicenews&#13;
+Twitter: https://twitter.com/vicenews&#13;
+Tumblr: http://vicenews.tumblr.com/&#13;
+Instagram: http://instagram.com/vicenews&#13;
+More videos from the VICE network: https://www.fb.com/vicevideo</media:description>
+   <media:community>
+    <media:starRating count="1022" average="4.02" min="1" max="5"/>
+    <media:statistics views="27124"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:mn14a6EP_nc</id>
+  <yt:videoId>mn14a6EP_nc</yt:videoId>
+  <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+  <title>A Sex Trafficking Law is Fundamentally Changing the Internet</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=mn14a6EP_nc"/>
+  <author>
+   <name>Test</name>
+   <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+  </author>
+  <published>2020-07-16T16:23:52+00:00</published>
+  <updated>2020-07-17T02:49:06+00:00</updated>
+  <media:group>
+   <media:title>A Sex Trafficking Law is Fundamentally Changing the Internet</media:title>
+   <media:content url="https://www.youtube.com/v/mn14a6EP_nc?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i2.ytimg.com/vi/mn14a6EP_nc/hqdefault.jpg" width="480" height="360"/>
+   <media:description>The controversial law aims to hold Big Tech accountable for its role, but free speech advocates are fighting it.
+
+Subscribe to Test here: http://bit.ly/Subscribe-to-VICE-News&#13;
+&#13;
+Check out Test for more: http://vicenews.com&#13;
+&#13;
+Follow Test here:&#13;
+Facebook: https://www.facebook.com/vicenews&#13;
+Twitter: https://twitter.com/vicenews&#13;
+Tumblr: http://vicenews.tumblr.com/&#13;
+Instagram: http://instagram.com/vicenews&#13;
+More videos from the VICE network: https://www.fb.com/vicevideo</media:description>
+   <media:community>
+    <media:starRating count="1104" average="4.72" min="1" max="5"/>
+    <media:statistics views="42753"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:vvHAvFxZlCw</id>
+  <yt:videoId>vvHAvFxZlCw</yt:videoId>
+  <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+  <title>4 Months After Her Death and Louisville Is Still Demanding Justice for Breonna Taylor</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=vvHAvFxZlCw"/>
+  <author>
+   <name>Test</name>
+   <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+  </author>
+  <published>2020-07-16T14:14:51+00:00</published>
+  <updated>2020-07-16T22:28:13+00:00</updated>
+  <media:group>
+   <media:title>4 Months After Her Death and Louisville Is Still Demanding Justice for Breonna Taylor</media:title>
+   <media:content url="https://www.youtube.com/v/vvHAvFxZlCw?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i3.ytimg.com/vi/vvHAvFxZlCw/hqdefault.jpg" width="480" height="360"/>
+   <media:description>4 months later, and Louisville is still demanding justice for Breonna Taylor
+
+Subscribe to Test here: http://bit.ly/Subscribe-to-VICE-News&#13;
+&#13;
+Check out Test for more: http://vicenews.com&#13;
+&#13;
+Follow Test here:&#13;
+Facebook: https://www.facebook.com/vicenews&#13;
+Twitter: https://twitter.com/vicenews&#13;
+Tumblr: http://vicenews.tumblr.com/&#13;
+Instagram: http://instagram.com/vicenews&#13;
+More videos from the VICE network: https://www.fb.com/vicevideo</media:description>
+   <media:community>
+    <media:starRating count="1384" average="4.20" min="1" max="5"/>
+    <media:statistics views="23857"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:z9Gt_TctSOA</id>
+  <yt:videoId>z9Gt_TctSOA</yt:videoId>
+  <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+  <title>This Colombian City Is More Worried About Starvation Than Coronavirus</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=z9Gt_TctSOA"/>
+  <author>
+   <name>Test</name>
+   <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+  </author>
+  <published>2020-07-15T17:11:17+00:00</published>
+  <updated>2020-07-17T18:23:54+00:00</updated>
+  <media:group>
+   <media:title>This Colombian City Is More Worried About Starvation Than Coronavirus</media:title>
+   <media:content url="https://www.youtube.com/v/z9Gt_TctSOA?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i3.ytimg.com/vi/z9Gt_TctSOA/hqdefault.jpg" width="480" height="360"/>
+   <media:description>In many homes in the location of Soacha red rags can be seen hanging outside windows. This means families are suffering from a lack of food and basic needs and are asking for help.
+&#13;
+Subscribe to Test here: http://bit.ly/Subscribe-to-VICE-News&#13;
+&#13;
+Check out Test for more: http://vicenews.com&#13;
+&#13;
+Follow Test here:&#13;
+Facebook: https://www.facebook.com/vicenews&#13;
+Twitter: https://twitter.com/vicenews&#13;
+Tumblr: http://vicenews.tumblr.com/&#13;
+Instagram: http://instagram.com/vicenews&#13;
+More videos from the VICE network: https://www.fb.com/vicevideo</media:description>
+   <media:community>
+    <media:starRating count="1312" average="4.89" min="1" max="5"/>
+    <media:statistics views="54057"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:vCmTcS5YvOQ</id>
+  <yt:videoId>vCmTcS5YvOQ</yt:videoId>
+  <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+  <title>Denver Is Sending Social Workers Instead of Cops to Some 911 Calls</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=vCmTcS5YvOQ"/>
+  <author>
+   <name>Test</name>
+   <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+  </author>
+  <published>2020-07-15T14:20:41+00:00</published>
+  <updated>2020-07-15T14:20:41+00:00</updated>
+  <media:group>
+   <media:title>Denver Is Sending Social Workers Instead of Cops to Some 911 Calls</media:title>
+   <media:content url="https://www.youtube.com/v/vCmTcS5YvOQ?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i3.ytimg.com/vi/vCmTcS5YvOQ/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Denver just launched a program known as the Support Team Assisted Response (STAR). It involves dispatching a Denver Health paramedic and a social worker to minor 911 calls in a low-key van — instead of an armed cop.
+
+Subscribe to Test here: http://bit.ly/Subscribe-to-VICE-News&#13;
+&#13;
+Check out Test for more: http://vicenews.com&#13;
+&#13;
+Follow Test here:&#13;
+Facebook: https://www.facebook.com/vicenews&#13;
+Twitter: https://twitter.com/vicenews&#13;
+Tumblr: http://vicenews.tumblr.com/&#13;
+Instagram: http://instagram.com/vicenews&#13;
+More videos from the VICE network: https://www.fb.com/vicevideo</media:description>
+   <media:community>
+    <media:starRating count="2932" average="4.64" min="1" max="5"/>
+    <media:statistics views="79816"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:VOILsEamBbw</id>
+  <yt:videoId>VOILsEamBbw</yt:videoId>
+  <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+  <title>What It's Like To Be a Non-Binary Teen Today</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=VOILsEamBbw"/>
+  <author>
+   <name>Test</name>
+   <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+  </author>
+  <published>2020-07-14T23:03:07+00:00</published>
+  <updated>2020-07-15T00:27:37+00:00</updated>
+  <media:group>
+   <media:title>What It's Like To Be a Non-Binary Teen Today</media:title>
+   <media:content url="https://www.youtube.com/v/VOILsEamBbw?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i3.ytimg.com/vi/VOILsEamBbw/hqdefault.jpg" width="480" height="360"/>
+   <media:description>To mark Non-Binary People's Day, Test asked gender non-conforming teens around the world about how they identify.
+&#13;
+Subscribe to Test here: http://bit.ly/Subscribe-to-VICE-News&#13;
+&#13;
+Check out Test for more: http://vicenews.com&#13;
+&#13;
+Follow Test here:&#13;
+Facebook: https://www.facebook.com/vicenews&#13;
+Twitter: https://twitter.com/vicenews&#13;
+Tumblr: http://vicenews.tumblr.com/&#13;
+Instagram: http://instagram.com/vicenews&#13;
+More videos from the VICE network: https://www.fb.com/vicevideo</media:description>
+   <media:community>
+    <media:starRating count="6368" average="2.16" min="1" max="5"/>
+    <media:statistics views="76542"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:hA4g9Z6hkx0</id>
+  <yt:videoId>hA4g9Z6hkx0</yt:videoId>
+  <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+  <title>Trump's New Voice of America CEO Is Overhauling America's Message Overseas</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=hA4g9Z6hkx0"/>
+  <author>
+   <name>Test</name>
+   <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+  </author>
+  <published>2020-07-14T17:34:21+00:00</published>
+  <updated>2020-07-15T01:24:47+00:00</updated>
+  <media:group>
+   <media:title>Trump's New Voice of America CEO Is Overhauling America's Message Overseas</media:title>
+   <media:content url="https://www.youtube.com/v/hA4g9Z6hkx0?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i1.ytimg.com/vi/hA4g9Z6hkx0/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Michael Pack was confirmed by the Senate last month to be the director of the U.S. Agency for Global Media. And last Wednesday he gutted the organization in what many are calling a “Wednesday night massacre.” Many of the top leadership were fired without explanation causing a bipartisan group of Senators to write a letter asking for an explanation of the move. 
+&#13;
+Subscribe to Test here: http://bit.ly/Subscribe-to-VICE-News&#13;
+&#13;
+Check out Test for more: http://vicenews.com&#13;
+&#13;
+Follow Test here:&#13;
+Facebook: https://www.facebook.com/vicenews&#13;
+Twitter: https://twitter.com/vicenews&#13;
+Tumblr: http://vicenews.tumblr.com/&#13;
+Instagram: http://instagram.com/vicenews&#13;
+More videos from the VICE network: https://www.fb.com/vicevideo</media:description>
+   <media:community>
+    <media:starRating count="616" average="4.29" min="1" max="5"/>
+    <media:statistics views="24117"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:cU2qVMzZD3w</id>
+  <yt:videoId>cU2qVMzZD3w</yt:videoId>
+  <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+  <title>Home Births Are on the Rise as U.S. Hospitals Are Overwhelmed By Coronavirus</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=cU2qVMzZD3w"/>
+  <author>
+   <name>Test</name>
+   <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+  </author>
+  <published>2020-07-14T14:27:00+00:00</published>
+  <updated>2020-07-14T14:27:00+00:00</updated>
+  <media:group>
+   <media:title>Home Births Are on the Rise as U.S. Hospitals Are Overwhelmed By Coronavirus</media:title>
+   <media:content url="https://www.youtube.com/v/cU2qVMzZD3w?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i4.ytimg.com/vi/cU2qVMzZD3w/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Fearing New York City hospitals, couples are switching to midwifery during coronavirus. 
+
+Subscribe to Test here: http://bit.ly/Subscribe-to-VICE-News&#13;
+&#13;
+Check out Test for more: http://vicenews.com&#13;
+&#13;
+Follow Test here:&#13;
+Facebook: https://www.facebook.com/vicenews&#13;
+Twitter: https://twitter.com/vicenews&#13;
+Tumblr: http://vicenews.tumblr.com/&#13;
+Instagram: http://instagram.com/vicenews&#13;
+More videos from the VICE network: https://www.fb.com/vicevideo</media:description>
+   <media:community>
+    <media:starRating count="709" average="4.72" min="1" max="5"/>
+    <media:statistics views="31697"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:bnfRhkLmaqI</id>
+  <yt:videoId>bnfRhkLmaqI</yt:videoId>
+  <yt:channelId>UCZaT_X_mc0BI-djXOlfhqWQ</yt:channelId>
+  <title>Donald Trump's Two Week Notice</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=bnfRhkLmaqI"/>
+  <author>
+   <name>Test</name>
+   <uri>https://www.youtube.com/channel/UCZaT_X_mc0BI-djXOlfhqWQ</uri>
+  </author>
+  <published>2020-07-13T20:08:30+00:00</published>
+  <updated>2020-07-13T21:00:08+00:00</updated>
+  <media:group>
+   <media:title>Donald Trump's Two Week Notice</media:title>
+   <media:content url="https://www.youtube.com/v/bnfRhkLmaqI?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i3.ytimg.com/vi/bnfRhkLmaqI/hqdefault.jpg" width="480" height="360"/>
+   <media:description>All President Trump needs is two weeks.
+
+Subscribe to Test here: http://bit.ly/Subscribe-to-VICE-News&#13;
+&#13;
+Check out Test for more: http://vicenews.com&#13;
+&#13;
+Follow Test here:&#13;
+Facebook: https://www.facebook.com/vicenews&#13;
+Twitter: https://twitter.com/vicenews&#13;
+Tumblr: http://vicenews.tumblr.com/&#13;
+Instagram: http://instagram.com/vicenews&#13;
+More videos from the VICE network: https://www.fb.com/vicevideo</media:description>
+   <media:community>
+    <media:starRating count="5091" average="4.57" min="1" max="5"/>
+    <media:statistics views="191996"/>
+   </media:community>
+  </media:group>
+ </entry>
+</feed>
