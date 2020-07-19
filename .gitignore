@@ -1,4 +1,3 @@
-urls
 *.db
 test
 *vscode
@@ -13,5 +12,3 @@ _DS_Store
 *.o
 *.out
 build/*
-rss.xml
-testing

@@ -1,0 +1,20 @@
+http://10.0.1.34:8080/rss.xml "https://google.com" "👹" "~Test"
+
+https://www.youtube.com/feeds/videos.xml?channel_id=UCN5xN8gIljvWYnsj06V8WbQ "https://www.youtube.com/user/Pyrocynical/videos" "📺" "~Pyrocynical"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCfbnTUxUech4P1XgYUwYuKA "https://www.youtube.com/user/MrMonkRage/videos" "📺" "~Cold Ones"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCtHaxi4GTYDpJgMSGy7AeSw "https://www.youtube.com/channel/UCtHaxi4GTYDpJgMSGy7AeSw/videos" "📺" "~Michael Reeves"
+https://www.youtube.com/feeds/videos.xml?channel_id=UC4sxB7lQ17CKRpFQpntloRg "https://www.youtube.com/channel/UC4sxB7lQ17CKRpFQpntloRg/videos" "📺" "~twomad"
+
+https://www.youtube.com/feeds/videos.xml?channel_id=UCXU7XVK_2Wd6tAHYO8g9vAA "https://www.youtube.com/channel/UCXU7XVK_2Wd6tAHYO8g9vAA/videos" "🔰" "~Preston Jacobs"
+https://www.youtube.com/feeds/videos.xml?channel_id=UC2eYFnH61tmytImy1mTYvhA "https://www.youtube.com/channel/UC2eYFnH61tmytImy1mTYvhA/videos" "🔰" "~Luke Smith"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCAG1ABZP-c7wuNt0fziHtsA "https://www.youtube.com/channel/UCAG1ABZP-c7wuNt0fziHtsA/videos" "🔰" "~Caroline Konstnar"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCR1D15p_vdP3HkrH8wgjQRw "https://www.youtube.com/channel/UCR1D15p_vdP3HkrH8wgjQRw/videos" "🔰" "~Internet Historian"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCxsQFG_8Dbt1sZhLReL2mUw "https://www.youtube.com/channel/UCxsQFG_8Dbt1sZhLReL2mUw/videos" "🔰" "~Nerd City"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCcu65ocEWfvvX7W93n8fagg "https://www.youtube.com/user/Gokanaru/videos" "🔰" "~Gokanaru" 
+
+https://www.youtube.com/feeds/videos.xml?channel_id=UCSdma21fnJzgmPodhC9SJ3g "https://www.youtube.com/channel/UCSdma21fnJzgmPodhC9SJ3g/videos" "🎮" "~NakeyJakey"
+https://www.youtube.com/feeds/videos.xml?channel_id=UC4rqhyiTs7XyuODcECvuiiQ "https://www.youtube.com/user/scottthewoz/videos" "🎮" "~Scott The Woz"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCtUbO6rBht0daVIOGML3c8w "https://www.youtube.com/channel/UCtUbO6rBht0daVIOGML3c8w/videos" "🎮" "~Summoning Salt"
+
+https://www.youtube.com/feeds/videos.xml?channel_id=UCn8zNIfYAQNdrFRrr8oibKw "https://www.youtube.com/user/vice/videos" "🤡" "~VICE"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCZaT_X_mc0BI-djXOlfhqWQ "https://www.youtube.com/user/vicenews/videos" "🤡" "~VICE News"
