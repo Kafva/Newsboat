@@ -3,7 +3,7 @@
 if [ "$1" = start ]; then
 	# Start the web-server for the RSS feed with the original entries
 	cp testing/rss_original.xml testing/public/rss.xml
-	pgrep node || http-server testing/public/ 2> /dev/null 
+	pgrep node || http-server testing/public/
 
 elif [ "$1" = update ]; then
 	# Update the test feed with a new video entry

@@ -1,14 +1,7 @@
 #import "ViewController.h"
 
 // Note that the <published> and <updated> fields in RSS may differ
-// Possible bug: Old videos sometimes become unviewed
-// New videos don't get tagged properly and don't appear on the main menu
-
-// Full reload fetches the correct videos and sets them as unviewed in the database but
-// they aren't displayed on the main menu
-
-// Going into a channel with a new video will display it as new and set it as such when clicking 'back'
-// but on the next visit it will once agian disappear, it is enough to issue a full reload for it to lose its status
+// Videos that have their title changed retroactivley will be duplicated in the feed
 
 @implementation ViewController 
     //************* BASICS ******************************//
