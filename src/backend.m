@@ -347,7 +347,7 @@
         NSLog(@"Begin download of: %@", url);
         // Create a session with the default configuration and download the data from the given URL
         NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        sessionConfiguration.timeoutIntervalForResource = 5;
+        sessionConfiguration.timeoutIntervalForResource = 10;
 
         NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
         NSURLSessionDownloadTask *downloadTask = [session downloadTaskWithURL:[NSURL URLWithString: url]];

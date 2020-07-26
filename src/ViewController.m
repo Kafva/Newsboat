@@ -541,6 +541,10 @@
         {
             NSString* link = [[tableView cellForRowAtIndexPath: indexPath ] link];
             NSLog(@"Tapped entry[%ld]: %@", indexPath.row, link);
+
+            // Make the entry implicitly viewed when tapping it
+            [self toggleViewed: [[tableView cellForRowAtIndexPath: indexPath] videoBtn]];
+
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:link] options:@{} completionHandler:^(BOOL success) { NSLog(@"opened URL (%d)", success); } ];
         } 
     }        
