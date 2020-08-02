@@ -17,8 +17,10 @@ function deploy()
     # Create the database anew
     ./createDatabase.bash $DBNAME $URLS
 
+    # Remove unused function warnings since all the sqlite callbacks are listed as unused
+    # [-allowProvisioningUpdates] is essential for a new provisioning profile to be created once the
+    # one has expired (after 7 days)
     #   xcodebuild -showBuildSettings
-    #   Remove unused function warnings since all the sqlite callbacks are listed as unused
     xcodebuild build -destination "id=$iphone_id" -allowProvisioningUpdates OTHER_CFLAGS="-Xclang -Wno-unused-function" && 
     ideviceinstaller -i build/Release-iphoneos/${PROJECT}.app &&
 

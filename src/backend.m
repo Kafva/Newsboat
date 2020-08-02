@@ -405,36 +405,49 @@
 
             if (titles.count > 0)
             {
+                NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:3];
+                
                 // The first title will be the channelName which we can use to get the owner_id without the use
                 // of a member variable (that would be overwritten in every iteration in fullReload()) in the Handler
                 int channelId = [self channelIdFromName: [titles[0] cStringUsingEncoding: NSUTF8StringEncoding] ];
-                if ( channelId == -1 ){ NSLog(@"No channel found by the name: %@", titles[0]); }
 
                 int cnt = VIDEOS_PER_CHANNEL + 1;
                 if ( titles.count < cnt ){ cnt = (int)titles.count; }
-                
-                for (int i=1; i < cnt; i++)
-                // NOTE that we only attempt to add the number of videos set by the global constant
-                // incremented by 1 to take the inital value of i=1 into account
+
+                if ( channelId == -1 )
+                { 
+                    NSLog(@"No channel found by the name: %@ (make sure the ~Name and YT name match)", titles[0]); 
+                    NSError* err = [[NSError alloc] initWithDomain:@"UserDefined" code: (NSUInteger)1 userInfo:nil];
+                    [dict setObject: err forKey:@"error"];
+                }
+                else
                 {
-                    // addVideo() adds to the database not to the videos datasource
-                    [self addVideo: [ timestamps[i] cStringUsingEncoding:NSUTF8StringEncoding ] title: [titles[i] cStringUsingEncoding:NSUTF8StringEncoding] owner_id: [[NSString stringWithFormat: @"%d", channelId] cStringUsingEncoding: NSUTF8StringEncoding] link: [links[i] cStringUsingEncoding:NSUTF8StringEncoding]];
+                    for (int i=1; i < cnt; i++)
+                    // NOTE that we only attempt to add the number of videos set by the global constant
+                    // incremented by 1 to take the inital value of i=1 into account
+                    {
+                        // addVideo() adds to the database not to the videos datasource
+                        [self addVideo: [ timestamps[i] cStringUsingEncoding:NSUTF8StringEncoding ] title: [titles[i] cStringUsingEncoding:NSUTF8StringEncoding] owner_id: [[NSString stringWithFormat: @"%d", channelId] cStringUsingEncoding: NSUTF8StringEncoding] link: [links[i] cStringUsingEncoding:NSUTF8StringEncoding]];
+                    }
                 }
 
                 // Use seperate notication handlers for clicking an entry and pressing the full reload button
                 if ( self.noteFlag == SINGLE_FLAG )
                 {
-                    [[NSNotificationCenter defaultCenter] postNotificationName: @SINGLE_NOTE object:self];
+                    [[NSNotificationCenter defaultCenter] postNotificationName: @SINGLE_NOTE object:self userInfo:dict];
                 }
                 else if ( self.noteFlag == FULL_FLAG )
                 {
                     // For all the fetches to get the correct number of unviewed videos we need to fetch
                     // the 'viewed' status of each video from the database BEFORE sending the notification
-                    
-                    int unviewedCount = [self getUnviewedCount: [titles[0] cStringUsingEncoding: NSUTF8StringEncoding] count:cnt];
-                    
-                    // Send the unviewedCount and channel name with the notification inisde the 'userInfo' dict
-                    NSDictionary* dict = @{@"unviewedCount": [NSNumber numberWithInt: unviewedCount],  @"channel": titles[0] };
+                    if (channelId != -1)
+                    {
+                        int unviewedCount = [self getUnviewedCount: [titles[0] cStringUsingEncoding: NSUTF8StringEncoding] count:cnt];
+                        
+                        // Send the unviewedCount and channel name with the notification inisde the 'userInfo' dict
+                        [dict setObject: [NSNumber numberWithInt: unviewedCount] forKey:@"unviewedCount"]; 
+                        [dict setObject: titles[0] forKey:@"channel"]; 
+                    }
                     
                     [[NSNotificationCenter defaultCenter] postNotificationName: @FULL_NOTE object:self userInfo:dict];
                 }

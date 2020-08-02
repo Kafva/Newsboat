@@ -99,7 +99,7 @@
         }
         else
         {
-            NSLog(@"*********** finishFullReload(): FAILED [%ld] ******************", [notification.userInfo[@"error"] code]);
+            NSLog(@"*********** finishFullReload(): [%ld] ******************", [notification.userInfo[@"error"] code]);
         }
         
         self.handler.channelCnt++;
