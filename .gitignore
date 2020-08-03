@@ -12,3 +12,5 @@ _DS_Store
 *.o
 *.out
 build/*
+*.xarchive
+*.ipa.d

@@ -69,5 +69,13 @@ elif [ "$1" = debug ]; then
     #   thread backtrace
     #   frame select <...>
 
+elif [ "$1" = archive ]; then
+    # Generate an .ipa file by first creating an intermediary .xcarchive
+
+    [ -d  ./$PROJECT.xcarchive ] && rm -rf $PROJECT.xcarchive
+    xcodebuild -project $PROJECT.xcodeproj -scheme $PROJECT -archivePath ./$PROJECT.xcarchive OTHER_CFLAGS="-Xclang -Wno-unused-function" archive &&
+    xcodebuild -exportArchive -archivePath ./$PROJECT.xcarchive -exportPath ./$PROJECT.ipa.d -exportOptionsPlist src/exportOptions.plist &&
+    rm -rf $PROJECT.xcarchive
+
 fi
 
