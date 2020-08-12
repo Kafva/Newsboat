@@ -62,7 +62,9 @@ elif [ "$1" = run ]; then
     idevicedebug run $BUNDLE_ID
 elif [ "$1" = debug ]; then
     deploy && 
-    ios-deploy -d -b build/Release-iphoneos/${PROJECT}.app 
+
+    # The [-m] flag avoids reinstalling the app and starts debugging immediatelly
+    ios-deploy -m -b build/Release-iphoneos/${PROJECT}.app 
 
     ### Debug commands ###
     #   process int
