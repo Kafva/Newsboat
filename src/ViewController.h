@@ -9,6 +9,7 @@
     @property (strong, nonatomic) UIActivityIndicatorView* spinner;
     @property (strong, nonatomic) UILabel *loadingLabel;
     @property (strong, nonatomic) UILabel *errorLabel;
+    @property (strong, nonatomic) UILabel *errorCode;
     @property (strong, nonatomic) UIButton *backBtn;
     @property (strong, nonatomic) UIButton *reloadBtn;
     @property (strong, nonatomic) UIButton *debugBtn;

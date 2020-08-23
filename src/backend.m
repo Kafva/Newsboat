@@ -406,7 +406,7 @@
             if (titles.count > 0)
             {
                 NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:3];
-                
+
                 // The first title will be the channelName which we can use to get the owner_id without the use
                 // of a member variable (that would be overwritten in every iteration in fullReload()) in the Handler
                 int channelId = [self channelIdFromName: [titles[0] cStringUsingEncoding: NSUTF8StringEncoding] ];
@@ -416,9 +416,19 @@
 
                 if ( channelId == -1 )
                 { 
-                    NSLog(@"No channel found by the name: %@ (make sure the ~Name and YT name match)", titles[0]); 
-                    NSError* err = [[NSError alloc] initWithDomain:@"UserDefined" code: (NSUInteger)1 userInfo:nil];
-                    [dict setObject: err forKey:@"error"];
+                    
+                    if ( [titles[0] rangeOfString:@"Not Found"].location != NSNotFound )
+                    // If the RSS link returns a 404 page titles[0] will hold the <title></title>
+                    {
+                        NSError* err = [[NSError alloc] initWithDomain:@"UserDefined" code: (NSUInteger)404 userInfo:nil];
+                        [dict setObject: err forKey:@"error"];
+                    }
+                    else
+                    {
+                        NSString* err_str = [NSString stringWithFormat: @"No channel found by the name: %@ (make sure the ~Name and YT name match)", titles[0]]; 
+                        [dict setObject: err_str forKey:@"error"];
+                    }
+                    
                 }
                 else
                 {

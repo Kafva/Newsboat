@@ -61,10 +61,16 @@
         self.backBtn.hidden = YES; 
         [self.view addSubview: [self backBtn]];
 
-        // Error label
-        self.errorLabel = getLabel(@"Error", ERROR_WIDTH, LABEL_HEIGHT, ERROR_LABEL_X, ERROR_LABEL_Y, [[UIColor alloc] initWithWhite:1 alpha:0.8 ], [UIFont fontWithName: @BOLD_FONT size:FONT_SIZE]  );
+        // Error label (wall of text)
+        self.errorLabel = getLabel(@"Error", ERROR_LABEL_WIDTH, ERROR_LABEL_HEIGHT, ERROR_LABEL_X, ERROR_LABEL_Y, [[UIColor alloc] initWithWhite:1 alpha:0.8 ], [UIFont fontWithName: @BOLD_FONT size:FONT_SIZE]  );
+        self.errorLabel.numberOfLines = 5;
         self.errorLabel.hidden = YES;
         [self.view addSubview: [self errorLabel]];
+        
+        // Error label (codes)
+        self.errorCode = getLabel(@"Error", ERROR_CODE_WIDTH, LABEL_HEIGHT, ERROR_CODE_X, ERROR_CODE_Y, [[UIColor alloc] initWithWhite:1 alpha:0.8 ], [UIFont fontWithName: @BOLD_FONT size:FONT_SIZE]  );
+        self.errorCode.hidden = YES;
+        [self.view addSubview: [self errorCode]];
 
     }
     
@@ -145,8 +151,17 @@
         }
         else
         {
-            self.errorLabel.text = [NSString stringWithFormat: @"Error: %ld" , [notification.userInfo[@"error"] code]];
-            self.errorLabel.hidden = NO;
+            if ( [notification.userInfo[@"error"] isKindOfClass: [NSError class]] )
+            // Print the error code if the dictionary holds a NSError object otherwise NSString is assumed
+            {
+                self.errorCode.text = [NSString stringWithFormat: @"Error: %ld" , [notification.userInfo[@"error"] code]];
+                self.errorCode.hidden = NO;
+            }
+            else
+            {
+                self.errorLabel.text = notification.userInfo[@"error"];
+                self.errorLabel.hidden = NO;
+            }
         } 
         
         self.searchBar.hidden = YES;
@@ -649,6 +664,7 @@
         self.searchBar.hidden = NO;
         self.debugBtn.hidden = NO;
         self.errorLabel.hidden = YES;
+        self.errorCode.hidden = YES;
 
         // Reload the datasource on going back to display potential changes of the number of viewed videos
         [self.channelView reloadData];
