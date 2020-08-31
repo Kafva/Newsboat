@@ -12,7 +12,7 @@ function deploy()
 {
     # Same as `idevice_id`
     iphone_id=$(system_profiler SPUSBDataType | sed -n 's/^[ ]\{1,\}Serial Number: \(.*\)/\1/p')
-    [ -z $iphone_id ] && echo "No iOS device connected" && exit 1
+    [ -z "$iphone_id" ] && echo "No iOS device connected" && exit 1
 
     # Create the database anew
     ./createDatabase.bash $DBNAME $URLS
@@ -39,21 +39,21 @@ elif [ "$1" = ls ]; then
     [ -z $(system_profiler SPUSBDataType | sed -n 's/^[ ]\{1,\}Serial Number: \(.*\)/\1/p') ] && echo "No iOS device connected" && exit 1
     ios-deploy --bundle_id $BUNDLE_ID --list=/
 elif [ "$1" = listen ]; then
-    [ -z $(system_profiler SPUSBDataType | sed -n 's/^[ ]\{1,\}Serial Number: \(.*\)/\1/p') ] && echo "No iOS device connected" && exit 1
+    [ -z "$(system_profiler SPUSBDataType | sed -n 's/^[ ]\{1,\}Serial Number: \(.*\)/\1/p')" ] && echo "No iOS device connected" && exit 1
     idevicesyslog -p $PROJECT
 elif [ "$1" = build ]; then
     iphone_id=$(system_profiler SPUSBDataType | sed -n 's/^[ ]\{1,\}Serial Number: \(.*\)/\1/p')
-    [ -z $iphone_id ] && echo "No iOS device connected" && exit 1
+    [ -z "$iphone_id" ] && echo "No iOS device connected" && exit 1
     xcodebuild build -destination "id=$iphone_id" -allowProvisioningUpdates OTHER_CFLAGS="-Xclang -Wno-unused-function"
 elif [ "$1" = clean ]; then 
     [ -f test ] && rm test
     [ -d test.dSYM ] && rm -rf test.dSYM
     xcodebuild clean
 elif [ "$1" = download ]; then
-    [ -z $(system_profiler SPUSBDataType | sed -n 's/^[ ]\{1,\}Serial Number: \(.*\)/\1/p') ] && echo "No iOS device connected" && exit 1
+    [ -z "$(system_profiler SPUSBDataType | sed -n 's/^[ ]\{1,\}Serial Number: \(.*\)/\1/p')" ] && echo "No iOS device connected" && exit 1
     ios-deploy --bundle_id $BUNDLE_ID --download=/Documents/$DBNAME --to . && mv Documents/$DBNAME ./$DBNAME && rmdir Documents
 elif [ "$1" = upload ]; then
-    [ -z $(system_profiler SPUSBDataType | sed -n 's/^[ ]\{1,\}Serial Number: \(.*\)/\1/p') ] && echo "No iOS device connected" && exit 1
+    [ -z "$(system_profiler SPUSBDataType | sed -n 's/^[ ]\{1,\}Serial Number: \(.*\)/\1/p')" ] && echo "No iOS device connected" && exit 1
     ios-deploy --bundle_id $BUNDLE_ID --upload $DBNAME --to /Documents/$DBNAME
 elif [ "$1" = deploy ]; then
     deploy 

@@ -1,45 +1,20 @@
 #import <UIKit/UIKit.h>
 
-#define SCREEN_WIDTH 480
-#define SCREEN_HEIGTH 720
-#define Y_OFFSET 50
-
 // Note that char* can be used as NSStrings with an '@'
 #define FONT_SIZE 18
 #define REGULAR_FONT "Arial"
 #define BOLD_FONT "Arial-BoldMT"
+#define CHANNEL_VIEW "0"
 
-// BTN_X_OFFSET = SCREEN_WIDTH - BTN_Y_OFFSET*6 - 10;
-#define BTN_X_OFFSET 350
-#define BTN_Y_OFFSET 20
-
+//** CONSTANT OFFSETS **//
 #define BACK_WIDTH 21
 #define BACK_HEIGHT 28
 
-#define ERROR_LABEL_Y 20
-#define ERROR_LABEL_X 50
-#define ERROR_LABEL_WIDTH 280
 #define ERROR_LABEL_HEIGHT 200
 
-#define ERROR_CODE_Y 90
-#define ERROR_CODE_X 140
-#define ERROR_CODE_WIDTH 200
-
-
-#define LOADING_LABEL_X 10
-#define LOADING_WIDTH 70
-
-#define RIGHT_LABEL_X_OFFSET 300
-#define LEFT_LABEL_X_OFFSET 16
-#define LABEL_Y_OFFSET 15
-
 #define CELL_BTN_WIDTH 21
-#define CELL_BTN_HEIGHT 28
 
-#define LEFT_LABEL_WIDTH 300
-#define RIGHT_LABEL_WIDTH 50
 #define LABEL_HEIGHT 20
-
 #define DEBUG_WIDTH 28
 
 #define RELOAD_WIDTH 21
@@ -47,13 +22,6 @@
 
 #define OK_WIDTH 42
 #define OK_HEIGHT 56
-
-#define SEARCH_X_OFFSET 100
-#define SEARCH_WIDTH 200
-
-#define ROW_HEIGHT 70
-
-#define CHANNEL_VIEW "0"
 
 //** IMAGES **//
 #define VIEWED_IMAGE "plus"
@@ -78,8 +46,8 @@
     @property int owner_id;
 
     // Set the status image of the cell button in accordance with the 'viewed' attribute
-    -(void) setStatusImage;
-    -(void) setChannelImage;
+    -(void) setStatusImage: (CGFloat)height;
+    -(void) setChannelImage: (CGFloat)height;
     -(NSString*) description;
 
 @end
@@ -102,3 +70,4 @@
 UILabel* getLabel(NSString* str, int width, int height, int x_offset, int y_offset, UIColor* textColor,  UIFont* font);
 UIImage* imageWithImage( UIImage* image, CGSize size); 
 UIImage* getImage(NSString* imageName, int width, int height);
+void initPositioning(NSMutableDictionary* positions, NSInteger width, NSInteger heigth);

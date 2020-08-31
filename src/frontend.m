@@ -7,14 +7,14 @@
         return [NSString stringWithFormat:@"<CellButton:%p> %@ %d %d", self, self.title, self.viewed, self.owner_id ]; 
     }
     
-    -(void) setStatusImage
+    -(void) setStatusImage: (CGFloat) height
     // Set the corresponding image and color based upon the 'viewed' attribute
     {
         NSString* btnName = @VIEWED_IMAGE;
         if (self.viewed == FALSE) {  btnName = @UNVIEWED_IMAGE;  } 
     
         UIImage* btnImage = [UIImage imageNamed:btnName];
-        btnImage = imageWithImage( btnImage, CGSizeMake(CELL_BTN_WIDTH, CELL_BTN_HEIGHT));
+        btnImage = imageWithImage( btnImage, CGSizeMake(CELL_BTN_WIDTH, height));
         
         [self setImage: btnImage forState:UIControlStateNormal];
         
@@ -25,13 +25,13 @@
         else { self.tintColor = [[UIColor alloc] initWithWhite:1 alpha:0.6 ]; }
     }
     
-    -(void) setChannelImage
+    -(void) setChannelImage: (CGFloat) height
     // Set the corresponding image and color based upon the 'viewed' attribute
     {
         NSString* btnName = @OK_IMAGE;
     
         UIImage* btnImage = [UIImage imageNamed:btnName];
-        btnImage = imageWithImage( btnImage, CGSizeMake(CELL_BTN_WIDTH, CELL_BTN_HEIGHT));
+        btnImage = imageWithImage( btnImage, CGSizeMake(CELL_BTN_WIDTH, height));
         self.tintColor = [[UIColor alloc] initWithWhite:1 alpha:0.6 ];
         [self setImage: btnImage forState:UIControlStateNormal];
     }
@@ -89,3 +89,45 @@ UIImage* getImage(NSString* imageName, int width, int height)
     return imageWithImage(img, CGSizeMake(width, height));
 }
 
+void initPositioning(NSMutableDictionary* positions, NSInteger width, NSInteger height)
+{
+    // Note that when accessing elements from a NSDictionary `id` values will be returned,
+    // to access the actual value one must use (for floats) [dict['num1'] floatValue]
+    // Also note that floating point division needs to be made explicit with x./y
+
+    [positions setObject: [NSNumber numberWithInteger: width] forKey: @"screen_width"];
+    [positions setObject: [NSNumber numberWithInteger: height] forKey: @"screen_height"];
+
+    // Height: 667 Width: 375 (iPhone 6s)
+    // With this setup a scaling factor is determined for some of the offsets to enable a
+    // usable interface on different sized screens
+
+    // Y-axis
+    [positions setObject: [NSNumber numberWithFloat: 50./667 ] forKey: @"y_offset"];
+    [positions setObject: [NSNumber numberWithFloat: 20./667 ] forKey: @"btn_y_offset"];
+    [positions setObject: [NSNumber numberWithFloat: 20./667 ] forKey: @"error_y_label"];
+    [positions setObject: [NSNumber numberWithFloat: 90./667 ] forKey: @"error_y_code"];
+    [positions setObject: [NSNumber numberWithFloat: 15./667 ] forKey: @"label_y_offset"];
+
+    // Heights
+    [positions setObject: [NSNumber numberWithFloat: 70./667 ] forKey: @"row_height"];
+    [positions setObject: [NSNumber numberWithFloat: 28./667 ] forKey: @"cell_btn_height"];
+
+    // X-axis
+    [positions setObject: [NSNumber numberWithFloat: 350./375 ] forKey: @"btn_x_offset"];
+    [positions setObject: [NSNumber numberWithFloat: 60./375 ] forKey: @"error_x_label"];
+    [positions setObject: [NSNumber numberWithFloat: 150./375 ] forKey: @"error_x_code"];
+    [positions setObject: [NSNumber numberWithFloat: 300./375 ] forKey: @"right_label_x"];
+    [positions setObject: [NSNumber numberWithFloat: 16./375 ] forKey: @"left_label_x"];
+    [positions setObject: [NSNumber numberWithFloat: 100./375 ] forKey: @"search_x_offset"];
+    [positions setObject: [NSNumber numberWithFloat: 10./375 ] forKey: @"loading_x_offset"];
+
+    // Widths
+    [positions setObject: [NSNumber numberWithFloat: 70./375 ] forKey: @"loading_width"];
+    [positions setObject: [NSNumber numberWithFloat: 50./375 ] forKey: @"right_label_width"];
+    [positions setObject: [NSNumber numberWithFloat: 300./375 ] forKey: @"left_label_width"];
+    [positions setObject: [NSNumber numberWithFloat: 200./375 ] forKey: @"search_width"];
+    [positions setObject: [NSNumber numberWithFloat: 200./375 ] forKey: @"error_code_width"];
+    [positions setObject: [NSNumber numberWithFloat: 280./375 ] forKey: @"error_label_width"];
+
+}

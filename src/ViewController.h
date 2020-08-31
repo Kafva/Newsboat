@@ -5,6 +5,9 @@
 @interface ViewController : UIViewController <UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate>
     // The <...> objects are protocols used for the implementation of the tableView and the searchbar
 
+    //*********** ELEMENT POSITIONING *****//
+    @property (strong, nonatomic) NSMutableDictionary* positions;
+
     //*********** UI ELEMENTS **************//
     @property (strong, nonatomic) UIActivityIndicatorView* spinner;
     @property (strong, nonatomic) UILabel *loadingLabel;

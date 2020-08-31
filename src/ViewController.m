@@ -12,10 +12,15 @@
         // NOTE that we need to connect each view with the rectangle created with
         // the application frame
         CGRect rect = [UIScreen mainScreen].bounds;
-        
+
         self.view = [[UIView alloc] initWithFrame:rect];
         self.view.backgroundColor = [UIColor blackColor];
         
+        //*** Initialise positioning offsets ***//
+        self.positions = [[NSMutableDictionary alloc] init];
+        initPositioning(self.positions , rect.size.width, rect.size.height);
+        NSLog(@"(view) Height: %d Width: %d Y_OFFSET: %f", [self.positions[@"screen_height"] intValue], [self.positions[@"screen_width"] intValue], [self.positions[@"y_offset"] floatValue] * [self.positions[@"screen_height"] intValue] );
+
         //*** Initialise properties ***//
         NSString* home = NSHomeDirectory();
         NSMutableString* dbPath =[[NSMutableString alloc] initWithCString: DB_PATH encoding:NSUTF8StringEncoding];
@@ -39,16 +44,23 @@
         [self addChannelView];
 
         // Positioning of the reload button is not well made
-        self.reloadBtn = [self getButtonView: @RELOAD_IMAGE selector: @selector(rightBtn:) width: RELOAD_WIDTH height: RELOAD_HEIGHT x_offset: BTN_X_OFFSET y_offset: BTN_Y_OFFSET ];
+        self.reloadBtn = [self getButtonView: @RELOAD_IMAGE selector: @selector(rightBtn:) width: RELOAD_WIDTH height: RELOAD_HEIGHT x_offset: [self.positions[@"btn_x_offset"] floatValue] * [self.positions[@"screen_width"] intValue] y_offset: [self.positions[@"btn_y_offset"] floatValue] * [self.positions[@"screen_height"] intValue] ];
         [self.view addSubview: [self reloadBtn]];
         
-        self.debugBtn = [self getButtonView: @CHECK_IMAGE selector: @selector(debugBtn:) width: DEBUG_WIDTH height: RELOAD_HEIGHT x_offset: BTN_X_OFFSET - RELOAD_WIDTH*1.5 y_offset: BTN_Y_OFFSET ];
+        self.debugBtn = [self getButtonView: @CHECK_IMAGE selector: @selector(debugBtn:) width: DEBUG_WIDTH height: RELOAD_HEIGHT x_offset: [self.positions[@"btn_x_offset"] floatValue] * [self.positions[@"screen_width"] intValue] - RELOAD_WIDTH*1.5 y_offset: [self.positions[@"btn_y_offset"] floatValue] * [self.positions[@"screen_height"] intValue] ];
         [self.view addSubview: [self debugBtn]];
 
         [self addSearchBar];
 
         // Loading label
-        self.loadingLabel = getLabel(@"(?)", LOADING_WIDTH, LABEL_HEIGHT, LOADING_LABEL_X, BTN_Y_OFFSET, [[UIColor alloc] initWithWhite:1 alpha:0.6 ], [UIFont fontWithName: @BOLD_FONT size:FONT_SIZE]  );
+        self.loadingLabel = getLabel(@"(?)", 
+            [self.positions[@"loading_width"] floatValue] * [self.positions[@"screen_width"] intValue], 
+            LABEL_HEIGHT, 
+            [self.positions[@"loading_x_offset"] floatValue] * [self.positions[@"screen_width"] intValue], 
+            [self.positions[@"btn_y_offset"] floatValue] * [self.positions[@"screen_height"] intValue], 
+            [[UIColor alloc] initWithWhite:1 alpha:0.6 ], 
+            [UIFont fontWithName: @BOLD_FONT size:FONT_SIZE]  
+        );
         self.loadingLabel.hidden = YES;
         [self.view addSubview: [self loadingLabel]];
 
@@ -57,18 +69,37 @@
         [self.view addSubview: [self spinner]];
 
         // Back button
-        self.backBtn = [self getButtonView: @BACK_IMAGE selector: @selector(goBack:) width: BACK_WIDTH height: BACK_HEIGHT x_offset:0 y_offset:BTN_Y_OFFSET ];
+        self.backBtn = [self getButtonView: @BACK_IMAGE selector: @selector(goBack:) 
+            width: BACK_WIDTH 
+            height: BACK_HEIGHT 
+            x_offset:0 
+            y_offset:[self.positions[@"btn_y_offset"] floatValue] * [self.positions[@"screen_height"] intValue] 
+        ];
         self.backBtn.hidden = YES; 
         [self.view addSubview: [self backBtn]];
 
         // Error label (wall of text)
-        self.errorLabel = getLabel(@"Error", ERROR_LABEL_WIDTH, ERROR_LABEL_HEIGHT, ERROR_LABEL_X, ERROR_LABEL_Y, [[UIColor alloc] initWithWhite:1 alpha:0.8 ], [UIFont fontWithName: @BOLD_FONT size:FONT_SIZE]  );
+        self.errorLabel = getLabel(@"Error", 
+            [self.positions[@"error_label_width"] floatValue] * [self.positions[@"screen_width"] intValue], 
+            ERROR_LABEL_HEIGHT, 
+            [self.positions[@"error_x_label"] floatValue] * [self.positions[@"screen_width"] intValue], 
+            [self.positions[@"error_y_label"] floatValue] * [self.positions[@"screen_height"] intValue], 
+            [[UIColor alloc] initWithWhite:1 alpha:0.8 ], 
+            [UIFont fontWithName: @BOLD_FONT size:FONT_SIZE]  
+        );
         self.errorLabel.numberOfLines = 5;
         self.errorLabel.hidden = YES;
         [self.view addSubview: [self errorLabel]];
         
         // Error label (codes)
-        self.errorCode = getLabel(@"Error", ERROR_CODE_WIDTH, LABEL_HEIGHT, ERROR_CODE_X, ERROR_CODE_Y, [[UIColor alloc] initWithWhite:1 alpha:0.8 ], [UIFont fontWithName: @BOLD_FONT size:FONT_SIZE]  );
+        self.errorCode = getLabel(@"Error", 
+            [self.positions[@"error_code_width"] floatValue] * [self.positions[@"screen_width"] intValue],
+            LABEL_HEIGHT, 
+            [self.positions[@"error_x_code"] floatValue] * [self.positions[@"screen_width"] intValue],
+            [self.positions[@"error_y_code"] floatValue] * [self.positions[@"screen_height"] intValue],
+            [[UIColor alloc] initWithWhite:1 alpha:0.8 ], 
+            [UIFont fontWithName: @BOLD_FONT size:FONT_SIZE]  
+        );
         self.errorCode.hidden = YES;
         [self.view addSubview: [self errorCode]];
 
@@ -105,7 +136,14 @@
         }
         else
         {
-            NSLog(@"*********** finishFullReload(): [%ld] ******************", [notification.userInfo[@"error"] code]);
+            if ( [notification.userInfo[@"error"] isKindOfClass: [NSError class]] )
+            {
+                NSLog(@"*********** finishFullReload(): Error: %ld ******************", [notification.userInfo[@"error"] code]);
+            }
+            else
+            {
+                NSLog(@"*********** finishFullReload(): Error: %@ ******************", notification.userInfo[@"error"]);
+            }
         }
         
         self.handler.channelCnt++;
@@ -199,7 +237,7 @@
 
     -(void)addImageView
     {
-        UIImageView *imgview = [[UIImageView alloc] initWithFrame:CGRectMake(0,0,SCREEN_WIDTH,SCREEN_HEIGTH)  ];
+        UIImageView *imgview = [[UIImageView alloc] initWithFrame:CGRectMake(0,0, [self.positions[@"screen_width"] intValue] , [self.positions[@"screen_height"] intValue] )  ];
         [imgview setImage:[UIImage imageNamed:@BKG_IMAGE] ];
 
         // AspectFill will ensure that the whole screen is filled
@@ -211,7 +249,11 @@
     -(void) addChannelView
     {
         // Decrement the tableframe slightly to avoid having the last entry partially obscured
-        CGRect tableFrame = CGRectMake(0, Y_OFFSET, self.view.frame.size.width, self.view.frame.size.height - 50);
+        CGRect tableFrame = CGRectMake(0, 
+            [self.positions[@"y_offset"] floatValue] * [self.positions[@"screen_height"] intValue], 
+            [self.positions[@"screen_width"] intValue], 
+            [self.positions[@"screen_height"] intValue] - 50
+        );
 
         self.channelView = [[UITableView alloc]initWithFrame:tableFrame style:UITableViewStylePlain];
 
@@ -231,7 +273,7 @@
     
     -(void) addVideoView: (NSString*) channel
     {
-        CGRect tableFrame = CGRectMake(0, Y_OFFSET*1.5, self.view.frame.size.width, self.view.frame.size.height);
+        CGRect tableFrame = CGRectMake(0, [self.positions[@"y_offset"] floatValue ] * [self.positions[@"screen_height"] intValue]*1.5, [self.positions[@"screen_width"] intValue], [self.positions[@"screen_height"] intValue]);
 
         self.videoView = [[UITableView alloc]initWithFrame:tableFrame style:UITableViewStylePlain];
 
@@ -257,7 +299,12 @@
         // for the <UISearchBarDelegate> protocol
         self.searchBar.delegate = self;
         
-        [self.searchBar setFrame: CGRectMake(SEARCH_X_OFFSET,BTN_Y_OFFSET,SEARCH_WIDTH,RELOAD_HEIGHT)];
+        [self.searchBar setFrame: CGRectMake( 
+            [self.positions[@"search_x_offset"] floatValue] * [self.positions[@"screen_width"] intValue],
+            [self.positions[@"btn_y_offset"] floatValue] * [self.positions[@"screen_height"] intValue],
+            [self.positions[@"search_width"] floatValue] * [self.positions[@"screen_width"] intValue],
+            RELOAD_HEIGHT)
+        ];
         self.searchBar.tintColor = [[UIColor alloc] initWithRed:(CGFloat)RED green:(CGFloat)GREEN blue:(CGFloat)BLUE alpha:(CGFloat)1.0 ];
         
         [self.view addSubview: [self searchBar]];
@@ -272,7 +319,12 @@
             NSLog(@"Adding new button: %@", cell.videoBtn);
 
             cell.videoBtn = [CellButton buttonWithType: UIButtonTypeSystem];
-            [cell.videoBtn setFrame:CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, CELL_BTN_WIDTH, CELL_BTN_HEIGHT)];
+            [cell.videoBtn setFrame:CGRectMake(
+                [self.positions[@"btn_x_offset"] floatValue] * [self.positions[@"screen_width"] intValue], 
+                [self.positions[@"btn_y_offset"] floatValue] * [self.positions[@"screen_height"] intValue], 
+                CELL_BTN_WIDTH, 
+                [self.positions[@"cell_btn_height"] floatValue] * [self.positions[@"screen_height"] intValue] 
+            )];
             
             //**** NOTE **** that the target needs to be the ViewController (self)
             [cell.videoBtn addTarget:self action:@selector(toggleViewed:) forControlEvents:UIControlEventTouchUpInside ];
@@ -289,7 +341,7 @@
         cell.videoBtn.viewed = viewed;
 
         // Set the image depending on the videoBtn 'viewed' attribute
-        [cell.videoBtn setStatusImage];
+        [cell.videoBtn setStatusImage: [self.positions[@"cell_btn_height"] floatValue] * [self.positions[@"screen_height"] intValue]];
 
     }
     
@@ -301,7 +353,12 @@
             NSLog(@"Adding new button: %@", cell.channelBtn);
 
             cell.channelBtn = [CellButton buttonWithType: UIButtonTypeSystem];
-            [cell.channelBtn setFrame:CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, CELL_BTN_WIDTH, CELL_BTN_HEIGHT)];
+            [cell.channelBtn setFrame:CGRectMake(
+                [self.positions[@"btn_x_offset"] floatValue] * [self.positions[@"screen_width"] intValue], 
+                [self.positions[@"btn_y_offset"] floatValue] * [self.positions[@"screen_height"] intValue], 
+                CELL_BTN_WIDTH, 
+                [self.positions[@"cell_btn_height"] floatValue] * [self.positions[@"screen_height"] intValue] 
+            )];
             
             //**** NOTE **** that the target needs to be the ViewController (self)
             [cell.channelBtn addTarget:self action:@selector(channelRightBtn:) forControlEvents:UIControlEventTouchUpInside ];
@@ -311,7 +368,7 @@
         //NSLog(@"Setting new button: %@", cell.channelBtn);
         
         cell.channelBtn.title = cell.title;
-        [cell.channelBtn setChannelImage];
+        [cell.channelBtn setChannelImage: [self.positions[@"cell_btn_height"] floatValue] * [self.positions[@"screen_height"] intValue]  ];
     }
     
     //******************** MISC *************************//
@@ -382,7 +439,7 @@
     -(void) initSpinner
     {
         self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        self.spinner.frame = CGRectMake(BTN_X_OFFSET, BTN_Y_OFFSET, RELOAD_WIDTH, RELOAD_HEIGHT);
+        self.spinner.frame = CGRectMake([self.positions[@"btn_x_offset"] floatValue] * [self.positions[@"screen_width"] intValue], [self.positions[@"btn_y_offset"] floatValue] * [self.positions[@"screen_height"] intValue], RELOAD_WIDTH, RELOAD_HEIGHT);
         self.spinner.color = [UIColor whiteColor];
     }
     
@@ -457,8 +514,19 @@
             UIFont* bold = [UIFont fontWithName: @BOLD_FONT size:FONT_SIZE];
             UIFont* regular = [UIFont fontWithName: @REGULAR_FONT size:FONT_SIZE];
 
-            cell.leftLabel = [cell getUnviewedCounter: @"" width: LEFT_LABEL_WIDTH height: LABEL_HEIGHT x_offset: LEFT_LABEL_X_OFFSET y_offset: LABEL_Y_OFFSET textColor:[UIColor whiteColor] font:regular ]; 
-            cell.rightLabel = [cell getUnviewedCounter: @"" width: RIGHT_LABEL_WIDTH height: LABEL_HEIGHT x_offset: RIGHT_LABEL_X_OFFSET y_offset: LABEL_Y_OFFSET textColor:pink font:bold ]; 
+            cell.leftLabel = [cell getUnviewedCounter: @"" 
+                width: [self.positions[@"left_label_width"] floatValue] * [self.positions[@"screen_width"] intValue] 
+                height: LABEL_HEIGHT 
+                x_offset: [self.positions[@"left_label_x"] floatValue] * [self.positions[@"screen_width"] intValue] 
+                y_offset: [self.positions[@"label_y_offset"] floatValue] * [self.positions[@"screen_height"] intValue] 
+                textColor:[UIColor whiteColor] font:regular ]; 
+            
+            cell.rightLabel = [cell getUnviewedCounter: @"" 
+                width: [self.positions[@"right_label_width"] floatValue] * [self.positions[@"screen_width"] intValue]
+                height: LABEL_HEIGHT 
+                x_offset: [self.positions[@"right_label_x"] floatValue] * [self.positions[@"screen_width"] intValue] 
+                y_offset: [self.positions[@"label_y_offset"] floatValue] * [self.positions[@"screen_height"] intValue] 
+                textColor:pink font:bold ]; 
             
             [cell.contentView addSubview: cell.leftLabel];
             [cell.contentView addSubview: cell.rightLabel];
@@ -520,7 +588,7 @@
     -(CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
     // Returns the desired height of each row
     {
-        return ROW_HEIGHT;
+        return [self.positions[@"row_height"] floatValue]*[self.positions[@"screen_height"] intValue];
     }
 
     -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -581,7 +649,7 @@
         // Update the viewed status in the videos array
         [[self.videos objectAtIndex: getIndexByNameAndOwnerId( self.videos, btn.title, btn.owner_id ) ] setAllViewedAttr: btn.viewed];
         
-        [btn setStatusImage];
+        [btn setStatusImage:[self.positions[@"cell_btn_height"] floatValue] * [self.positions[@"screen_height"] intValue] ];
     }
     
     -(void) channelRightBtn: (CellButton*) btn
