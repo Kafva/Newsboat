@@ -622,7 +622,21 @@
         }
         else
         {
+            // By using custom inital schemes we can open urls using a different application
+            //  touch-https://www.youtube.com/watch?v=5qap5aO4i9A
+            //  firefox-focus://open-url?url=https://www.youtube.com/watch?v=5qap5aO4i9A
+            //  brave://open-url?url=https://www.youtube.com/watch?v=5qap5aO4i9A
+
             NSString* link = [[tableView cellForRowAtIndexPath: indexPath ] link];
+
+            if ( [[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"brave://"]]  )
+            // Prepend the brave:// URL handler to the link if brave is installed
+            // ***** NOTE ******* for this check to work Info.plist must be modified to include the brave:// scheme as
+            // an allowed scheme inside the 'LSApplicationQueriesSchemes' key
+            {
+                link = [NSString stringWithFormat: @"brave://open-url?url=%@",  link];
+            }
+            
             NSLog(@"Tapped entry[%ld]: %@", indexPath.row, link);
 
             if ( ![[[tableView cellForRowAtIndexPath: indexPath] videoBtn] viewed]  )
@@ -631,7 +645,10 @@
                 [self toggleViewed: [[tableView cellForRowAtIndexPath: indexPath] videoBtn]];
             }
 
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:link] options:@{} completionHandler:^(BOOL success) { NSLog(@"opened URL (%d)", success); } ];
+            [[UIApplication sharedApplication] openURL:
+                [NSURL URLWithString:link] options:@{} completionHandler:^(BOOL success) 
+                { NSLog(@"opened URL (%d)", success); } 
+            ];
         } 
     }        
     

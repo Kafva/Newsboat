@@ -1,4 +1,4 @@
-http://10.0.1.34:8080/rss.xml "https://google.com" "👹" "~Test"
+http://10.0.1.49:8080/rss.xml "https://google.com" "👹" "~Test"
 
 https://www.youtube.com/feeds/videos.xml?channel_id=UCN5xN8gIljvWYnsj06V8WbQ "https://www.youtube.com/user/Pyrocynical/videos" "📺" "~Pyrocynical"
 https://www.youtube.com/feeds/videos.xml?channel_id=UCfbnTUxUech4P1XgYUwYuKA "https://www.youtube.com/user/MrMonkRage/videos" "📺" "~Cold Ones"
