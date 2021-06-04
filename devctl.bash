@@ -66,11 +66,6 @@ elif [ "$1" = debug ]; then
     # The [-m] flag avoids reinstalling the app and starts debugging immediatelly
     ios-deploy -m -b build/Release-iphoneos/${PROJECT}.app 
 
-    ### Debug commands ###
-    #   process int
-    #   thread backtrace
-    #   frame select <...>
-
 elif [ "$1" = archive ]; then
     # Generate an .ipa file by first creating an intermediary .xcarchive
 
