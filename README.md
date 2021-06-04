@@ -1,7 +1,7 @@
 # Newsboat
 iOS app inspired by [newsboat](https://github.com/newsboat/newsboat) built specifically for organizing YouTube subscriptions.
 
-![](.github/screenshot.png | width=300px)
+![](.github/screenshot.png | width=50)
 
 ### Managing channels
 You cannot add or remove channels inside the app. To manage what channels are included run the `createDatabase.bash` script on a newsboat URL configuration file with lines akin to the one below for each channel. **NOTE** that the name in the configuration file must be the same as the channel title fetched from the RSS feed, otherwise certain SQL statements won't work (see `channelIdFromName()` in `backend.m`).
